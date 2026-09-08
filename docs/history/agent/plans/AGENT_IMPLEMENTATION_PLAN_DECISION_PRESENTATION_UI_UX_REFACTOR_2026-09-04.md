@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-2 CLOSED — OPEN-WORLD QUESTION/PERSPECTIVE INTELLIGENCE LIVE-ACCEPTED ON NEXT; DPR-3 ANALYSIS NARRATIVE PLANNER ACTIVE**
+Status: **DPR-3 CLOSED — ANALYSIS NARRATIVE PLANNER LIVE-ACCEPTED ON NEXT; DPR-4 BA STEP 2 INVESTIGATION MODEL ACTIVE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -12,9 +12,10 @@ Amended: 2026-09-08 — owner elevated app-wide information architecture/density
 Amended: 2026-09-08 — DPR-0 terminal workflow convergence source-closed at Product `ce5c961...`; corrected NEXT `/app` baseline accepted and evidence source-closed at `14c2d99...`; DPR-0 closed and DPR-1 is next.
 Amended: 2026-09-08 — DPR-1 provenance foundation source-closed at Product `d027bb3...`: exact plan vocabulary, explicit evidence/knowledge/derivation contract, non-escalation guard, shared Evidence Inspector and NEXT 5273 runtime acceptance. DPR-2 is active.
 Amended: 2026-09-08 — DPR-2 source/live-closed at Product `a876fb9...`: one deterministic open-world Question/Perspective Intelligence projection now separates Domain from Perspective, deduplicates governed + universal questions, admits MB/domain-context question candidates only as non-executable review items, preserves governed action authority, and passed NEXT 5273 runtime acceptance. DPR-3 is active.
+Amended: 2026-09-08 — DPR-3 source/live-closed at Product `804fb2f...`: deterministic `AnalysisNarrativePlan v1` now makes governed Deep BA/comparison output answer-first, deduplicates same-weight narrative output, applies supporting-analysis relevance gates, admits MB only as bounded ordinal narrative advice, and passed immutable NEXT 5273 browser acceptance. DPR-4 is active.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `a876fb998b980f1eef0c5834822f622a80435b44`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 is the active implementation phase.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `804fb2feec8528dc061ce299486ff653d02a92db`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 Analysis Narrative Planner is source/live-closed at `804fb2f...`; DPR-4 is the active implementation phase.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -771,6 +772,15 @@ Frappe Books and Frappe UI are external references only. No Vue/Electron depende
 - Add supporting-analysis relevance gate.
 - Preserve numeric/evidence parity.
 
+Closure evidence — 2026-09-08:
+
+- Product `804fb2feec8528dc061ce299486ff653d02a92db` publishes `lightbi.analysis-narrative-plan.v1`. Single-source roles are `primary_answer`, `key_driver`, `risk_exception`, `hypothesis`, `supporting_observation`, `unknown`, `next_action` and `supporting_evidence`; comparison briefs reuse the same answer-first policy rather than creating a second authority model.
+- The policy is explicit: `answerFirst=true`, `mbMayStrengthenAuthority=false`, `mbMayReorderNarrativeRoles=true`, finding identity/evidence rows are preserved, and retrieval score is never confidence. MB can add an ordinal role prior, evidence requirements, constraints/prohibitions and abstention signals, but deterministic base priority and existing governed evidence remain final.
+- `AnalysisNarrativeBoard` becomes the shared Deep BA narrative renderer. New DPR-3 surfaces avoid new card soup: hierarchy is carried by typography, spacing, dividers and restrained left-rule grouping; existing broad DPR-8 visual migration remains deferred to DPR-8. Legacy repeated findings/actions are suppressed when the deterministic narrative plan is available.
+- Comparison narrative deduplicates repeated sections/reason statements and keeps growth/decline/profit driver panels only when corresponding governed evidence exists. Neutral wording reports highest observed contribution or increase/decrease rather than default best/worst/leader/laggard judgments.
+- Focused DPR-3/Deep-BA/comparison/MB/i18n verification PASSed `56/56` across `10` test files. `tsc -b && vite build` PASSed with `3807` modules transformed; `git diff --check` PASSed. Representative full-suite failures outside DPR-3 were machine-checked against exact parent `a876fb9...` and traced to pre-existing missing historical audit/sample prerequisites or stale literal-governance tests on source files DPR-3 did not change.
+- Immutable NEXT root `/home/ubuntu/services/lightbi-next-web/dpr3-804fb2f` is active only on gateway 5273 and reports exact `804fb2f...`. Browser acceptance traversed `/app` -> built-in governed sales demo -> `/app/investigation` -> `Analyze deeper`, then observed `Analysis Narrative`, answer-first disclosure, `Main observed contributors`, `Risks & exceptions`, supporting evidence/checks and next-check guidance with no page error. Core 5272 PID `3376963`, Control Plane 5274 PID `2346997`, signer `12020`, installation issuer `3817149`, attestation `1505209` and user manager `943` remained unchanged. Production remained untouched.
+
 ### DPR-4 — BA Step 2 investigation model
 
 - Make selected-data Step 2 a dedicated reversible analysis surface that is mutually exclusive with full-scope Deep BA at full visual weight.
@@ -891,7 +901,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 
 This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is now source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`, but it is not wired into current BA/chart runtime selection. No NEXT generation, Production service, metric authority, domain-support pack or release artifact is changed by this planning update.
 
-DPR-0 and DPR-1 are CLOSED. The active implementation phase is DPR-2 Open-world Question / Perspective Intelligence. DPR-2 may consume `domainInference` and bounded Micro Brain presentation advice for relevance, abstention and missing-evidence signals, but deterministic governed question/metric gates remain final and no downstream planner may strengthen authority. Broad surface migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
+DPR-0, DPR-1, DPR-2 and DPR-3 are CLOSED. The active implementation phase is DPR-4 BA Step 2 investigation model. DPR-4 must preserve the DPR-0 reversible terminal-state grammar, DPR-1 provenance/non-escalation contract, DPR-2 question/perspective authority boundaries and DPR-3 answer-first narrative policy while making selected-data investigation a dedicated bounded surface rather than a second full-weight Deep BA report. Broad visual-system migration remains owned by DPR-8 after the preceding planner/ontology phases. Documentation work must continue to follow `docs/project-book/LIBRARY_RULES.md`.
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.
