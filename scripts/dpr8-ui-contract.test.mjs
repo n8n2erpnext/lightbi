@@ -51,7 +51,7 @@ test('DPR-8 Understanding uses the shared canvas hierarchy and ranked stacks', a
   assert.match(understanding, /<Canvas density="working"/);
   assert.match(understanding, /<Section density="summary"/);
   assert.match(understanding, /<Inset density="summary"/);
-  assert.match(understanding, /data-layout="ranked-question-stack"/);
+  assert.match(understanding, /data-layout="ranked-question-grid"/);
   assert.match(perspectives, /data-layout="ranked-stack"/);
   assert.match(perspectives, /data-density="compact"/);
   assert.match(perspectives, /min-h-10/);
@@ -101,7 +101,7 @@ test('DPR-8 Deep BA reads as a numbered management document instead of a card st
   const single = await read('apps/desktop/src/components/investigation/SingleSourceBAOverviewCard.tsx');
   const comparison = await read('apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx');
   const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
-  assert.match(shell, /data-testid="deep-analysis-surface" data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
+  assert.match(shell, /data-testid="deep-analysis-surface"[\s\S]{0,120}data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
   assert.match(shell, /data-testid="deep-analysis-export-surface"/);
   assert.match(shell, /data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
   assert.match(shell, /data-testid="deep-ba-legacy-brief-details"/);
@@ -113,7 +113,7 @@ test('DPR-8 Deep BA reads as a numbered management document instead of a card st
   assert.match(comparison, /data-testid="comparison-management-document" data-layout="management-document"/);
   for (const number of ['01', '02', '03', '04', '05']) assert.match(comparison, new RegExp(`data-section-number="${number}"`));
   assert.doesNotMatch(comparison, /rounded-xl border p-4 shadow-sm/);
-  assert.match(multi, /data-testid="collection-deep-perspective-surface" data-layout="management-document"/);
+  assert.match(multi, /data-testid="collection-deep-perspective-surface"[\s\S]{0,120}data-layout="management-document"/);
 });
 
 test('DPR-8 BA Step 2 is a focused selected-subject investigation, not a second full report', async () => {
@@ -126,9 +126,9 @@ test('DPR-8 BA Step 2 is a focused selected-subject investigation, not a second 
   assert.deepEqual([...order].sort((a, b) => a - b), order, 'Step 2 must progress context -> answer -> components -> unknowns -> next -> evidence');
   assert.doesNotMatch(board, /selected-subject-next-actions[\s\S]{0,500}lg:grid-cols-2/);
   assert.match(single, /data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
-  const selectedStart = multi.indexOf("analysisView === 'deep_selected'");
-  const selectedEnd = multi.indexOf("analysisView === 'deep_perspective'", selectedStart);
-  const selectedBlock = multi.slice(selectedStart, selectedEnd);
-  assert.match(selectedBlock, /data-layout="focused-investigation"/);
+  const selectedStart = multi.indexOf('data-testid="collection-deep-selected-surface"');
+  const selectedBlock = multi.slice(selectedStart, selectedStart + 4200);
+  assert.ok(selectedStart >= 0, 'multi-file Step 2 dock must exist');
+  assert.match(selectedBlock, /data-docked="true"[\s\S]{0,80}data-layout="focused-investigation"/);
   assert.doesNotMatch(selectedBlock, /bg-slate-950|rounded-2xl[^\n]*shadow-sm/);
 });

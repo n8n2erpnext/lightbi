@@ -99,7 +99,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
     expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-layout')).toBe('focused-investigation');
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
-    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
+    expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('true');
     expect(screen.getByTestId('collection-deep-export-image')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-export-pdf')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-analysis-export-surface').getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');
@@ -143,7 +144,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     fireEvent.click(screen.getByRole('button', { name: /What drove the change/i }));
     expect(screen.getByTestId('collection-deep-perspective-surface')).toBeTruthy();
     expect(screen.getByTestId('governed-ba-deep-dive')).toBeTruthy();
-    expect(screen.queryByTestId('collection-decision-workspace')).toBeNull();
+    expect(screen.getByTestId('collection-decision-workspace')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-perspective-surface').getAttribute('data-docked')).toBe('true');
     expect(screen.queryByTestId('collection-deep-selected-surface')).toBeNull();
     expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
 
@@ -159,7 +161,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-deep-selected-surface')).toBeTruthy();
     expect(screen.queryByTestId('collection-deep-perspective-surface')).toBeNull();
     expect(screen.queryByTestId('governed-ba-deep-dive')).toBeNull();
-    expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
+    expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('true');
 
     fireEvent.click(screen.getByTestId('collection-deep-selected-back'));
     expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();

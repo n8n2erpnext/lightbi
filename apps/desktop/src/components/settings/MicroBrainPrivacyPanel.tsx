@@ -36,7 +36,7 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
   };
 
   return <div className="space-y-5">
-    <section className="rounded-xl border border-violet-200 bg-violet-50/50 p-5">
+    <section className="border-y border-violet-200 py-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <BrainCircuit className="mt-0.5 h-5 w-5 text-violet-700" />
@@ -47,10 +47,10 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
         </div>
         <label className="flex shrink-0 items-center gap-2 text-sm font-semibold text-slate-700"><input type="checkbox" checked={state.learningEnabled} onChange={event=>setMicroBrainLearningEnabled(event.target.checked)} className="h-4 w-4" />{state.learningEnabled?t("On"):t("Off")}</label>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg bg-white/80 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("This session")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{runtime.retrievals}</div><div className="text-xs text-slate-500">{t("semantic retrievals")}</div></div>
-        <div className="rounded-lg bg-white/80 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("Learning evidence")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{state.evidence.retrievals}</div><div className="text-xs text-slate-500">{t("sanitized events stored locally")}</div></div>
-        <div className="rounded-lg bg-white/80 p-3"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("Local memory")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{memoryBytes} B</div><div className="text-xs text-slate-500">{t("no raw values or queries")}</div></div>
+      <div className="mt-4 grid border-y border-[var(--lb-divider)] sm:grid-cols-3 sm:divide-x sm:divide-[var(--lb-divider)]">
+        <div className="py-3 sm:pr-4"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("This session")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{runtime.retrievals}</div><div className="text-xs text-slate-500">{t("semantic retrievals")}</div></div>
+        <div className="border-t border-[var(--lb-divider)] py-3 sm:border-t-0 sm:px-4"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("Learning evidence")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{state.evidence.retrievals}</div><div className="text-xs text-slate-500">{t("sanitized events stored locally")}</div></div>
+        <div className="border-t border-[var(--lb-divider)] py-3 sm:border-t-0 sm:pl-4"><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t("Local memory")}</div><div className="mt-1 text-lg font-semibold text-slate-900">{memoryBytes} B</div><div className="text-xs text-slate-500">{t("no raw values or queries")}</div></div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" onClick={()=>void openExternalUrl(lightBIFrontendUrl("microBrainStatus"))} className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white"><ExternalLink className="h-4 w-4" />{t("View Micro Brain live status")}</button>
@@ -69,9 +69,9 @@ export const MicroBrainPrivacyPanel: React.FC = () => {
       {health && <div className="mt-4 text-xs text-slate-500">{t("Active semantic pack")}: {health.activePackVersion ?? t("Bundled fallback")} · {(health.bundledFootprintBytes / 1024 / 1024).toFixed(2)} MiB / {(health.bundledCeilingBytes / 1024 / 1024).toFixed(0)} MiB</div>}
     </section>
 
-    <div className="grid gap-3 sm:grid-cols-2">
-      <div className="flex gap-3 rounded-lg border border-slate-200 p-4"><HardDrive className="mt-0.5 h-5 w-5 text-slate-500"/><div><div className="font-medium text-slate-800">{t("On-device boundary")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Local learning memory stays on this device. When local learning and anonymous pairing are enabled, an assigned internal learning job may upload a strictly sanitized aggregate package directly to private R2 intake; raw files, SQL, queries, business values and local memory are never included.")}</p></div></div>
-      <div className="flex gap-3 rounded-lg border border-slate-200 p-4"><ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-600"/><div><div className="font-medium text-slate-800">{t("Evidence authority stays unchanged")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Turning learning on never lets retrieval similarity override evidence, domain support, formulas, governed metrics, or deterministic presentation planners.")}</p></div></div>
+    <div className="grid border-y border-[var(--lb-divider)] sm:grid-cols-2 sm:divide-x sm:divide-[var(--lb-divider)]">
+      <div className="flex gap-3 py-4 sm:pr-5"><HardDrive className="mt-0.5 h-5 w-5 text-slate-500"/><div><div className="font-medium text-slate-800">{t("On-device boundary")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Local learning memory stays on this device. When local learning and anonymous pairing are enabled, an assigned internal learning job may upload a strictly sanitized aggregate package directly to private R2 intake; raw files, SQL, queries, business values and local memory are never included.")}</p></div></div>
+      <div className="flex gap-3 border-t border-[var(--lb-divider)] py-4 sm:border-t-0 sm:pl-5"><ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-600"/><div><div className="font-medium text-slate-800">{t("Evidence authority stays unchanged")}</div><p className="mt-1 text-sm leading-6 text-slate-500">{t("Turning learning on never lets retrieval similarity override evidence, domain support, formulas, governed metrics, or deterministic presentation planners.")}</p></div></div>
     </div>
   </div>;
 };

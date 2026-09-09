@@ -8,7 +8,7 @@ const requiredPngs = [
   ['128x128.png', 128, 1_200],
   ['128x128@2x.png', 256, 2_500],
 ];
-const primaryMarkSha256 = '9486181bb525d1d4a704addaebfc2f1caa5abbd9d1240bad252b85a3f58e0d7b';
+const primaryMarkSha256 = '47220c4ae55ec2fc9abb6d621cb1c2c3f638c956620144ceb5a922de5b8889a5';
 
 function pngSize(buffer) {
   if (buffer.length < 24 || buffer.subarray(1, 4).toString('ascii') !== 'PNG') throw new Error('Invalid PNG signature');
@@ -26,7 +26,7 @@ for (const [name, expected, minBytes] of requiredPngs) {
 const mark = await readFile(resolve(root, 'apps/desktop/public/branding/lightbi-icon.svg'));
 const favicon = await readFile(resolve(root, 'apps/desktop/public/favicon.svg'));
 const markSha256 = createHash('sha256').update(mark).digest('hex');
-if (markSha256 !== primaryMarkSha256) throw new Error('Primary LightBI SVG mark does not match the approved optimized-li authority');
+if (markSha256 !== primaryMarkSha256) throw new Error('Primary LightBI SVG mark does not match the owner-restored pre-optimized LightBI mark authority');
 if (!mark.equals(favicon)) throw new Error('favicon.svg must be derived byte-for-byte from the primary LightBI SVG mark');
 
 const appIcon = await readFile(resolve(root, 'apps/desktop/public/branding/lightbi-app-icon.png'));

@@ -144,22 +144,21 @@ export const AppLayout: React.FC = () => {
           )}
         >
           {/* Header / Logo Area */}
-          <div className="flex h-[var(--lb-app-header-height)] items-center gap-2 px-3">
+          <div className="flex h-[var(--lb-app-header-height)] items-center gap-1.5 px-3">
             <button
               type="button"
               onClick={toggleSidebar}
               title={`${isSidebarExpanded ? t("Collapse sidebar") : t("Expand sidebar")} · Ctrl+B`}
               aria-label={isSidebarExpanded ? t("Collapse sidebar") : t("Expand sidebar")}
-              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-black/55 transition hover:bg-white/80 hover:text-black md:inline-flex"
+              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-md text-black/50 transition hover:bg-white/70 hover:text-black md:inline-flex"
             >
               {isSidebarExpanded ? <PanelLeftClose className="h-[18px] w-[18px]" strokeWidth={1.6} /> : <PanelLeftOpen className="h-[18px] w-[18px]" strokeWidth={1.6} />}
             </button>
             <div className="flex min-w-0 flex-1 items-center">
-              <img src="/branding/lightbi-icon.svg" alt="" className="h-8 w-8 flex-shrink-0 drop-shadow-sm" />
-              {isSidebarExpanded && <img src="/branding/lightbi-wordmark.svg" alt="LightBI" className="ml-2.5 hidden h-5 w-[76px] object-contain md:block" />}
+              <img src="/branding/lightbi-icon.svg" alt="" className="h-8 w-8 flex-shrink-0" />
+              {isSidebarExpanded && <img src="/branding/lightbi-wordmark.svg" alt="LightBI" className="ml-2 hidden h-4 w-[66px] object-contain md:block" />}
             </div>
-            {isSidebarExpanded && <UpdateNotificationMenu />}
-            {isSidebarExpanded && generation.channel === "internal" && <span title={generation.generation_id} className="hidden rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700 md:inline">NEXT</span>}
+            {isSidebarExpanded && <div className="shrink-0"><UpdateNotificationMenu /></div>}
           </div>
 
           {/* Navigation */}
@@ -170,7 +169,7 @@ export const AppLayout: React.FC = () => {
             </button>
             {isSidebarExpanded && (
               <div className="mb-3 hidden px-2 text-[11px] font-medium text-black/40 md:block">
-                {t("Workspace")}
+                <span>{t("Workspace")}</span>{generation.channel === "internal" && <span title={generation.generation_id} className="ml-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-violet-600">NEXT</span>}
               </div>
             )}
             <div className="flex flex-col gap-1.5">
@@ -207,7 +206,7 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* Bottom Navigation */}
-          <div className="flex flex-col gap-2 p-3">
+          <div className="flex flex-col border-t border-[var(--lb-divider)] px-3 py-2.5">
             <div ref={accountMenuRef} className="relative">
               {accountMenuOpen && (
                 <div
@@ -272,10 +271,10 @@ export const AppLayout: React.FC = () => {
                   type="button"
                   onClick={() => setAccountMenuOpen((value) => !value)}
                   aria-expanded={accountMenuOpen}
-                  className="hidden w-full rounded-[14px] border border-black/10 bg-white/80 p-3 text-left shadow-sm hover:bg-white md:block"
+                  className="hidden w-full rounded-lg px-2 py-2 text-left transition hover:bg-white/70 md:block"
                 >
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-amber-400 text-[11px] font-semibold text-black shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-amber-300/80 text-[11px] font-semibold text-black">
                       {lightbiAccount.account?.account.avatar_url ? (
                         <img
                           src={lightbiAccount.account.account.avatar_url}
@@ -290,7 +289,7 @@ export const AppLayout: React.FC = () => {
                       <div className="truncate text-[13px] font-medium text-[#202123]">{lightbiAccount.account?.account.display_name || lightbiAccount.account?.account.email || "LightBI Desktop"}</div>
                       {lightbiAccount.account && <div className="truncate text-[11px] text-black/45">{lightbiAccount.account.account.email}</div>}
                     </div>
-                    <ChevronsUpDown className="h-4 w-4 shrink-0 text-black/35" strokeWidth={1.6} />
+                    <ChevronsUpDown className="h-4 w-4 shrink-0 text-black/30" strokeWidth={1.6} />
                   </div>
                 </button>
               ) : (

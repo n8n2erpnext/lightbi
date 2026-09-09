@@ -41,12 +41,14 @@ describe('InvestigationDeepAnalysis export boundary', () => {
         onClose={vi.fn()}
         onCreateDashboard={vi.fn()}
         canCreateDashboard
+        docked
         preferences={DEFAULT_PREFERENCES}
       />,
     );
 
     const deepSurface = screen.getByTestId('deep-analysis-surface');
     expect(deepSurface.getAttribute('data-layout')).toBe('management-document');
+    expect(deepSurface.getAttribute('data-docked')).toBe('true');
     const exportSurface = screen.getByTestId('deep-analysis-export-surface');
     expect(exportSurface.getAttribute('data-layout')).toBe('management-document');
     expect(exportSurface.getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');

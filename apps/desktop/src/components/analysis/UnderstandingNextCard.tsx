@@ -687,7 +687,7 @@ const CanonicalAnalysisStates: React.FC<{
         </div>
         <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold text-slate-600">{otherActionableQuestions.length} {t('other questions')}</span>
       </div>
-      <div className="border-y border-[var(--lb-divider)]" data-layout="ranked-question-stack">
+      <div className="grid border-y border-[var(--lb-divider)] lg:grid-cols-2" data-layout="ranked-question-grid">
         {otherActionableQuestions.map((candidate, index) => {
           const action = candidate.actionId ? actionById.get(candidate.actionId) : undefined;
           return <button
@@ -697,7 +697,7 @@ const CanonicalAnalysisStates: React.FC<{
             onClick={() => action && onSelectAction?.(adaptNextActionsToLegacy([action])[0])}
             aria-posinset={index + 1}
             aria-setsize={otherActionableQuestions.length}
-            className="flex w-full min-w-0 gap-4 border-b border-[var(--lb-divider)] px-1 py-3 text-left transition last:border-b-0 hover:bg-blue-50/35"
+            className={`flex w-full min-w-0 gap-4 border-b border-[var(--lb-divider)] px-3 py-3 text-left transition hover:bg-blue-50/35 lg:px-4 ${index % 2 === 0 ? 'lg:border-r' : ''}`}
           >
             <span className="w-7 shrink-0 pt-0.5 text-[11px] font-semibold tabular-nums text-[var(--lb-ink-muted)]">{String(index + 1).padStart(2, '0')}</span>
             <div className="min-w-0 flex-1">

@@ -16,6 +16,7 @@ const governed = [
   ['DPR-8 shared canvas and density contract', ['exec','node','--test','scripts/dpr8-ui-contract.test.mjs']],
   ['DPR-9 report page model contract', ['exec','node','--test','scripts/dpr9-report-contract.test.mjs']],
   ['DPR-10 MB advisory determinism contract', ['exec','node','--test','scripts/dpr10-mb-advisory-contract.test.mjs']],
+  ['DPR-10 native-UAT convergence contract', ['exec','node','--test','scripts/dpr10-native-uat-convergence.test.mjs']],
   ['DPR-10 cross-domain presentation acceptance', ['--dir','apps/desktop','exec','vitest','run',
     'src/lib/dpr10-cross-domain-acceptance.test.ts',
     'src/lib/question-perspective-intelligence.test.ts',

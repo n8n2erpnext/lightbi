@@ -55,62 +55,62 @@ export const UpdateSettingsPanel: React.FC = () => {
               : updater.status === 'failed'
                 ? friendlyFailure(updater.error)
                 : 'LightBI is up to date.';
-  return <div className="p-6">
-    <div className="mb-5 flex items-center gap-3">
-      <div className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-900 text-white"><RefreshCw className="h-5 w-5" /></div>
+  return <div className="py-6">
+    <div className="mb-6 flex items-start gap-3">
+      <RefreshCw className="mt-0.5 h-5 w-5 text-slate-700" />
       <div><h2 className="text-lg font-semibold text-slate-900">LightBI Desktop</h2><p className="text-sm text-slate-500">Updates install only when you choose to apply them.</p></div>
     </div>
 
-    <div className="overflow-hidden rounded-2xl border border-slate-200">
-      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-y border-[var(--lb-divider)] divide-y divide-[var(--lb-divider)]">
+      <div className="flex flex-col gap-4 px-1 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><ShieldCheck className="h-4 w-4 text-emerald-600" />Update status</div>
           <p className={`mt-1 text-sm leading-6 ${updater.status === 'failed' ? 'text-amber-700' : 'text-slate-500'}`}>{statusLabel}</p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
-          {updater.status === 'available' && !updater.autoDownload && <button type="button" onClick={() => void updater.prepare()} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"><Download className="h-4 w-4" />Download</button>}
-          {updater.status === 'ready' && !updater.qaSimulation && <button type="button" onClick={() => void updater.install()} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">{linux ? 'Open .deb installer' : 'Update & Restart'}</button>}
-          <button type="button" disabled={busy} onClick={() => void updater.check(true)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Check now</button>
+          {updater.status === 'available' && !updater.autoDownload && <button type="button" onClick={() => void updater.prepare()} className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white"><Download className="h-4 w-4" />Download</button>}
+          {updater.status === 'ready' && !updater.qaSimulation && <button type="button" onClick={() => void updater.install()} className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">{linux ? 'Open .deb installer' : 'Update & Restart'}</button>}
+          <button type="button" disabled={busy} onClick={() => void updater.check(true)} className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Check now</button>
         </div>
       </div>
 
-      {(updater.status === 'downloading' || updater.status === 'verifying') && <div className="border-b border-slate-100 px-5 py-4"><div className="h-2 overflow-hidden rounded-full bg-blue-100"><div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${updater.status === 'verifying' ? 100 : Math.max(progress, 4)}%` }} /></div></div>}
-      <label className="flex cursor-pointer items-center justify-between gap-5 border-b border-slate-100 p-5">
+      {(updater.status === 'downloading' || updater.status === 'verifying') && <div className="px-1 py-4"><div className="h-2 overflow-hidden rounded-full bg-blue-100"><div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${updater.status === 'verifying' ? 100 : Math.max(progress, 4)}%` }} /></div></div>}
+      <label className="flex cursor-pointer items-center justify-between gap-5 px-1 py-4">
         <span><span className="block text-sm font-semibold text-slate-900">Automatically download updates</span><span className="mt-1 block text-sm text-slate-500">LightBI may download and integrity-check an update in the background. Installation still requires your action.</span></span>
         <input type="checkbox" checked={updater.autoDownload} onChange={(event) => updater.setAutoDownload(event.target.checked)} className="h-5 w-5 shrink-0 accent-blue-600" />
       </label>
 
-      <div className="flex items-center justify-between gap-4 p-5">
+      <div className="flex items-center justify-between gap-4 px-1 py-4">
         <span><span className="block text-sm font-semibold text-slate-900">Current release</span><span className="mt-1 block text-sm text-slate-500">{updater.manifest?.version ? `Latest checked: ${updater.manifest.version}` : 'Public Beta channel'}</span></span>
         <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
       </div>
     </div>
 
-    {internal && <button type="button" disabled={busy} onClick={() => void updater.simulateForQa()} className="mt-4 rounded-xl border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 disabled:opacity-50">Test update progress</button>}
+    {internal && <button type="button" disabled={busy} onClick={() => void updater.simulateForQa()} className="mt-4 rounded-lg border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 disabled:opacity-50">Test update progress</button>}
 
-    <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
-      <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-6 border-y border-[var(--lb-divider)] divide-y divide-[var(--lb-divider)]">
+      <div className="flex flex-col gap-4 px-1 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><ShieldCheck className="h-4 w-4 text-violet-600" />Intelligence Pack</div>
           <p className={`mt-1 text-sm leading-6 ${intelligence.status === 'failed' ? 'text-amber-700' : 'text-slate-500'}`}>{native ? intelligenceStatus : 'Desktop native builds can update intelligence independently; web/demo uses the bundled Brain.'}</p>
         </div>
         {native && <div className="flex shrink-0 flex-wrap gap-2">
-          {intelligence.status === 'available' && <button type="button" onClick={() => void intelligence.update()} className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white">Update intelligence</button>}
-          {intelligence.runtime?.previousPackVersion && <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.rollback()} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Rollback pack</button>}
-          <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.check(true)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Check intelligence</button>
+          {intelligence.status === 'available' && <button type="button" onClick={() => void intelligence.update()} className="rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white">Update intelligence</button>}
+          {intelligence.runtime?.previousPackVersion && <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.rollback()} className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Rollback pack</button>}
+          <button type="button" disabled={intelligenceBusy} onClick={() => void intelligence.check(true)} className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">Check intelligence</button>
         </div>}
       </div>
-      <div className="grid gap-3 p-5 text-xs text-slate-500 sm:grid-cols-2">
+      <div className="grid gap-4 px-1 py-4 text-xs text-slate-500 sm:grid-cols-2 sm:divide-x sm:divide-[var(--lb-divider)] [&>div:nth-child(2)]:sm:pl-5">
         <div><span className="font-semibold text-slate-700">Runtime source</span><p className="mt-1">{activeIntelligence ? `Signed pack ${activeIntelligence.packVersion}` : 'Bundled Micro Brain'}</p></div>
         <div><span className="font-semibold text-slate-700">Identity</span><p className="mt-1 break-all">{activeIntelligence?.payloadSha256 ?? bundledMicroBrainIndexIdentity()}</p></div>
       </div>
-      <p className="border-t border-slate-100 px-5 py-4 text-xs leading-5 text-slate-500">Intelligence Packs are signed data only. They may improve semantic recall and knowledge, but they cannot add executable code, create canonical signals, activate official domain support, or grant metric/formula authority.</p>
-      {intelligence.error && <code className="block overflow-x-auto border-t border-slate-100 bg-slate-50 p-4 text-[11px] text-amber-700">{intelligence.error}</code>}
+      <p className="px-1 py-4 text-xs leading-5 text-slate-500">Intelligence Packs are signed data only. They may improve semantic recall and knowledge, but they cannot add executable code, create canonical signals, activate official domain support, or grant metric/formula authority.</p>
+      {intelligence.error && <code className="block overflow-x-auto border-l-2 border-amber-300 bg-transparent px-3 py-3 text-[11px] text-amber-700">{intelligence.error}</code>}
     </div>
 
-    <details className="mt-5 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-500">
+    <details className="mt-6 border-y border-[var(--lb-divider)] px-1 py-3 text-sm text-slate-500">
       <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-700">Technical details <ChevronRight className="h-4 w-4" /></summary>
-      <div className="mt-3 space-y-2 text-xs leading-5"><p>SHA-256 protects download/staging integrity only. Official LightBI identity additionally requires the independent REL/ATT evidence and applicable OS publisher identity.</p>{updater.error && <code className="block overflow-x-auto rounded-lg bg-white p-3 text-[11px] text-slate-600">{updater.error}</code>}</div>
+      <div className="mt-3 space-y-2 text-xs leading-5"><p>SHA-256 protects download/staging integrity only. Official LightBI identity additionally requires the independent REL/ATT evidence and applicable OS publisher identity.</p>{updater.error && <code className="block overflow-x-auto border-l-2 border-slate-200 pl-3 text-[11px] text-slate-600">{updater.error}</code>}</div>
     </details>
   </div>;
 };

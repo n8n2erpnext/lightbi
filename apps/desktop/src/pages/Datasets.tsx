@@ -85,7 +85,7 @@ export const Datasets: React.FC = () => {
 
   return (
     <div className="flex-1 overflow-auto bg-[#fafafa] p-6 lg:p-8">
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-[1240px] space-y-6">
         <section className="rounded-3xl bg-[#071022] p-7 text-white shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="max-w-3xl">

@@ -488,9 +488,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
     </div>
   );
 
-  if (analysisView === 'evidence_drill' && chartSelection) {
+  if ((analysisView === 'evidence_drill' || analysisView === 'deep_selected') && chartSelection) {
     return (
-      <section data-testid="perspective-collection-result" className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+      <section data-testid="perspective-collection-result" className={`relative bg-white ${analysisView === 'deep_selected' ? 'lg:pr-[48%]' : ''}`}>
         <div data-testid="collection-evidence-drill-surface" className="bg-white">
           <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 bg-slate-950 px-5 py-5 text-white md:px-6">
             <div className="flex items-start gap-3">
@@ -510,18 +510,11 @@ export const PerspectiveCollectionResultCard: React.FC<{
               {activeEvidence && previewRows.length > 0 && <div className="mt-4 max-h-[420px] overflow-auto rounded-lg border border-slate-200 bg-white"><table className="min-w-full text-left text-[11px]"><thead className="sticky top-0 bg-slate-50 text-slate-500"><tr>{previewColumns.map(column => <th key={column} className="whitespace-nowrap border-b border-slate-200 px-3 py-2 font-semibold">{column}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex} className="border-b border-slate-100 last:border-0">{previewColumns.map(column => <td key={column} className="max-w-[240px] truncate whitespace-nowrap px-3 py-2 text-slate-700">{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table><p className="border-t border-slate-100 px-3 py-2 text-[11px] text-slate-500">{t(focusSubject ? 'Preview shows the first 100 exact Focus Subject matches; the investigation uses that exact matched row scope. The source chip keeps the full source-row count visible.' : 'Preview shows the first 100 selected rows; the investigation keeps the full source-row scope disclosed.')}</p></div>}
             </>}
           </div>
-          {renderCollectionActionBar(false)}
+          {analysisView === 'evidence_drill' && renderCollectionActionBar(false)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
         </div>
-      </section>
-    );
-  }
-
-  if (analysisView === 'deep_selected' && chartSelection) {
-    return (
-      <section data-testid="perspective-collection-result" className="bg-white">
-        <div data-testid="collection-deep-selected-surface" data-layout="focused-investigation">
-          <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></header>
+        {analysisView === 'deep_selected' && chartSelection && <aside data-testid="collection-deep-selected-surface" data-docked="true" data-layout="focused-investigation" className="fixed inset-0 z-40 overflow-y-auto border-l border-[var(--lb-divider)] bg-white lg:absolute lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[48%]">
+          <header className="sticky top-0 z-10 flex items-start gap-3 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur md:px-6"><button data-testid="collection-deep-selected-back" type="button" onClick={() => setAnalysisView('evidence_drill')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700">{t('Selected-subject investigation')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{chartSelection.period} · {displayMetricLabel(chartSelection.metricId)}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t('This surface investigates only the selected evidence scope; source evidence remains separate and the governed summary remains unchanged.')}</p></div></header>
           {renderCollectionActionBar(true)}
           {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
           <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="focused-investigation" className="px-5 py-4 md:px-6">
@@ -529,26 +522,14 @@ export const PerspectiveCollectionResultCard: React.FC<{
               {selectedSubjectInvestigationPlan ? <SelectedSubjectInvestigationBoard plan={selectedSubjectInvestigationPlan} sourceOverviews={subsetOverviews.map(({ source, overview }) => ({ sourceKey: `${source.period}:${source.role}:${source.sourceName}`, overview }))} preferences={preferences} /> : <p className="border-y border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">{t('No eligible selected evidence is available for this investigation.')}</p>}
             </div>
           </div>
-        </div>
+        </aside>}
       </section>
     );
   }
 
-  if (analysisView === 'deep_perspective' && effectiveDeepDiveBrief) {
-    return (
-      <section data-testid="perspective-collection-result" data-layout="management-document" className="bg-white">
-        <div data-testid="collection-deep-perspective-surface" data-layout="management-document">
-          <header className="flex items-start gap-3 border-y border-[var(--lb-divider)] px-5 py-4 md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{displayPerspectiveLabel}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></header>
-          {renderCollectionActionBar(true)}
-          {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-          <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="management-document" className="px-5 py-4 md:px-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
-        </div>
-      </section>
-    );
-  }
 
   return (
-    <section data-testid="perspective-collection-result" data-layout="answer-first-canvas" className="bg-white">
+    <section data-testid="perspective-collection-result" data-layout="answer-first-canvas" className={`relative bg-white ${analysisView === 'deep_perspective' && effectiveDeepDiveBrief ? 'lg:pr-[48%]' : ''}`}>
       <header className="border-y border-[var(--lb-divider)] px-5 py-4 md:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -608,6 +589,12 @@ export const PerspectiveCollectionResultCard: React.FC<{
         </details>
         {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
       </div>
+      {analysisView === 'deep_perspective' && effectiveDeepDiveBrief && <aside data-testid="collection-deep-perspective-surface" data-docked="true" data-layout="management-document" className="fixed inset-0 z-40 overflow-y-auto border-l border-[var(--lb-divider)] bg-white lg:absolute lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[48%]">
+        <header className="sticky top-0 z-10 flex items-start gap-3 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => setAnalysisView('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{displayPerspectiveLabel}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div></header>
+        {renderCollectionActionBar(true)}
+        {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
+        <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="management-document" className="px-5 py-4 md:px-6"><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} /></div></div>
+      </aside>}
     </section>
   );
 };

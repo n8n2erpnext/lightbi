@@ -44,7 +44,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
         onSourceInspected={handleOnlineSourceInspected}
       />
 
-      <div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 py-8 md:px-8 lg:px-10" onClick={e => e.stopPropagation()}>
+      <div className="mx-auto flex w-full max-w-[1240px] flex-col px-6 py-8 md:px-8 lg:px-10 xl:px-12" onClick={e => e.stopPropagation()}>
         {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready'
           && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0) && (
           <HomeSourceUnderstandingSummary

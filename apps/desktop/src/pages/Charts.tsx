@@ -163,7 +163,7 @@ export const Charts: React.FC = () => {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa] text-[#202123]">
-      <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-5 px-5 py-8 md:px-8 lg:px-10">
+      <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-6 py-8 md:px-8 lg:px-10 xl:px-12">
         <header className="flex flex-col gap-4 border-b border-black/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><BarChart3 className="h-4 w-4" strokeWidth={1.7} /> {t('Chart Library')}</div>

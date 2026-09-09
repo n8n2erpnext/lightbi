@@ -655,7 +655,8 @@ export const Investigation: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa]">
+    <div className="flex h-full min-h-0 overflow-hidden bg-[#fbfbfa]">
+      <div data-testid="investigation-primary-pane" className="flex min-w-0 flex-1 flex-col overflow-y-auto">
       <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-black/10 bg-[#fbfbfa]/95 px-5 py-3 backdrop-blur">
         <button
           data-testid="investigation-back-to-perspectives"
@@ -681,7 +682,7 @@ export const Investigation: React.FC = () => {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 p-5 pb-24 md:p-8">
+      <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 px-6 pb-24 pt-5 md:px-8 lg:px-10">
         {aiBriefing && <InvestigationSemanticContext
           briefing={aiBriefing}
           briefingRationale={briefingRationale}
@@ -802,6 +803,7 @@ export const Investigation: React.FC = () => {
         />
 
       </main>
+      </div>
       {deepAnalysisView && <InvestigationDeepAnalysis
         action={filteredDeepAnalysisOrigin?.analysisAction ?? analysisAction}
         brief={filteredDeepAnalysisScope ? null : baDecisionBrief}
@@ -818,6 +820,7 @@ export const Investigation: React.FC = () => {
         onClose={() => setDeepAnalysisView(null)}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}
+        docked
         preferences={preferences}
       />}
       <DisplayPreferencesModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
