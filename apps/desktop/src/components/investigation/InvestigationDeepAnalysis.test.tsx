@@ -22,7 +22,8 @@ const selectedOverview = {
 } as any;
 
 describe('InvestigationDeepAnalysis export boundary', () => {
-  it('keeps the dashboard CTA visible but outside the image/PDF capture surface', () => {
+  it('opens in primary mode and only requests side-panel presentation after an explicit toggle', () => {
+    const onPresentationModeChange = vi.fn();
     render(
       <InvestigationDeepAnalysis
         action={{
@@ -41,14 +42,18 @@ describe('InvestigationDeepAnalysis export boundary', () => {
         onClose={vi.fn()}
         onCreateDashboard={vi.fn()}
         canCreateDashboard
-        docked
+        presentationMode="primary"
+        onPresentationModeChange={onPresentationModeChange}
         preferences={DEFAULT_PREFERENCES}
       />,
     );
 
     const deepSurface = screen.getByTestId('deep-analysis-surface');
     expect(deepSurface.getAttribute('data-layout')).toBe('management-document');
-    expect(deepSurface.getAttribute('data-docked')).toBe('true');
+    expect(deepSurface.getAttribute('data-docked')).toBe('false');
+    expect(screen.getByTestId('deep-analysis-shell').getAttribute('data-presentation-mode')).toBe('primary');
+    fireEvent.click(screen.getByTestId('deep-analysis-presentation-toggle'));
+    expect(onPresentationModeChange).toHaveBeenCalledWith('side_panel');
     const exportSurface = screen.getByTestId('deep-analysis-export-surface');
     expect(exportSurface.getAttribute('data-layout')).toBe('management-document');
     expect(exportSurface.getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');

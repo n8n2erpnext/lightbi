@@ -100,7 +100,11 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-layout')).toBe('focused-investigation');
     expect(screen.getByTestId('collection-subset-deep-ba')).toBeTruthy();
     expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('false');
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-presentation-mode')).toBe('primary');
+    fireEvent.click(screen.getByTestId('collection-deep-selected-presentation-toggle'));
     expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('true');
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-presentation-mode')).toBe('side_panel');
     expect(screen.getByTestId('collection-deep-export-image')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-export-pdf')).toBeTruthy();
     expect(screen.getByTestId('collection-deep-analysis-export-surface').getAttribute('data-report-plan')).toBe('lightbi.analysis-report-plan.v1');
@@ -145,7 +149,11 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-deep-perspective-surface')).toBeTruthy();
     expect(screen.getByTestId('governed-ba-deep-dive')).toBeTruthy();
     expect(screen.getByTestId('collection-decision-workspace')).toBeTruthy();
+    expect(screen.getByTestId('collection-deep-perspective-surface').getAttribute('data-docked')).toBe('false');
+    expect(screen.getByTestId('collection-deep-perspective-surface').getAttribute('data-presentation-mode')).toBe('primary');
+    fireEvent.click(screen.getByTestId('collection-deep-perspective-presentation-toggle'));
     expect(screen.getByTestId('collection-deep-perspective-surface').getAttribute('data-docked')).toBe('true');
+    expect(screen.getByTestId('collection-deep-perspective-surface').getAttribute('data-presentation-mode')).toBe('side_panel');
     expect(screen.queryByTestId('collection-deep-selected-surface')).toBeNull();
     expect(screen.queryByTestId('collection-chart-drill')).toBeNull();
 
@@ -162,7 +170,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.queryByTestId('collection-deep-perspective-surface')).toBeNull();
     expect(screen.queryByTestId('governed-ba-deep-dive')).toBeNull();
     expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
-    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('true');
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-docked')).toBe('false');
+    expect(screen.getByTestId('collection-deep-selected-surface').getAttribute('data-presentation-mode')).toBe('primary');
 
     fireEvent.click(screen.getByTestId('collection-deep-selected-back'));
     expect(screen.getByTestId('collection-evidence-drill-surface')).toBeTruthy();

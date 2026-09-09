@@ -214,6 +214,143 @@ describe('Home workspace session restoration', () => {
     expect(result.current.sessionStatus).toContain('complete saved source file');
   }, 30_000);
 
+
+  it('restores a persisted multi-file perspective with Focus metadata while keeping source evidence exact', async () => {
+    const mayCsv = 'Product,Revenue\nWidget A,100\nWidget B,200\n';
+    const juneCsv = 'Product,Revenue\nWidget A,120\nWidget B,180\n';
+    const mayFile = new File([mayCsv], 'sales-may.csv', { type: 'text/csv' });
+    const juneFile = new File([juneCsv], 'sales-june.csv', { type: 'text/csv' });
+    const mayPersisted = { fileId: 'may-file', originalName: mayFile.name, filePath: 'project/source-files/may.csv', bytesWritten: mayFile.size };
+    const junePersisted = { fileId: 'june-file', originalName: juneFile.name, filePath: 'project/source-files/june.csv', bytesWritten: juneFile.size };
+    vi.mocked(downloadProjectSourceFile).mockResolvedValueOnce(mayFile).mockResolvedValueOnce(juneFile);
+    const setCurrentDataset = vi.fn();
+    const rememberRestoredLocalBatch = vi.fn();
+    const setPendingLocalBatch = vi.fn();
+    const setMultiSourceBuildResult = vi.fn();
+    const deps = {
+      currentDataset: null, registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch, setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult,
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), rememberRestoredLocalBatch, requestLocalFileReselection: vi.fn(),
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    const focusSubject = { canonicalId: 'product', value: 'Widget A', displayLabel: 'Widget A' };
+    const session: WorkspaceSessionRecord = {
+      id: 'multi-focus', title: 'Revenue analysis', sourceType: 'canonical_perspective_collection', rowCount: 4, columnCount: 2,
+      sourceSummary: [
+        { name: mayFile.name, rows: 2, persistedFile: mayPersisted },
+        { name: juneFile.name, rows: 2, persistedFile: junePersisted },
+      ],
+      snapshot: { currentDataset: {
+        status: 'ready', file_name: 'Revenue analysis', sourceType: 'canonical_perspective_collection', rows_count: 4, columns: ['reporting_period', 'sales_revenue'],
+        sourceFiles: [
+          { name: mayFile.name, rows: 2, role: 'sales', sourceId: 'source-may', reportingPeriod: '2026-05-01/2026-05-31', persistedFile: mayPersisted },
+          { name: juneFile.name, rows: 2, role: 'sales', sourceId: 'source-june', reportingPeriod: '2026-06-01/2026-06-30', persistedFile: junePersisted },
+        ],
+        semanticRows: [], previewRows: [],
+        analysisRows: [{ reporting_period: '2026-05', sales_revenue: 300 }, { reporting_period: '2026-06', sales_revenue: 300 }],
+        canonicalPerspectivePersistence: {
+          perspectiveId: 'executive_overview', deepDiveBrief: { headline: 'Revenue analysis' }, focusDeepDiveBrief: { headline: 'Widget A analysis' }, focusSubject,
+          evidenceSources: [
+            { period: '2026-05', role: 'sales', sourceId: 'source-may', sourceName: mayFile.name, sourceRowCount: 2, semanticFields: [{ canonicalId: 'product', physicalColumn: 'Product' }], focusBinding: { state: 'matched_exact', field: 'Product' } },
+            { period: '2026-06', role: 'sales', sourceId: 'source-june', sourceName: juneFile.name, sourceRowCount: 2, semanticFields: [{ canonicalId: 'product', physicalColumn: 'Product' }], focusBinding: { state: 'matched_exact', field: 'Product' } },
+          ],
+        },
+      } },
+      createdAt: '', updatedAt: '',
+    };
+    await act(async () => { await result.current.handleOpenWorkspaceSession(session); });
+    const restored = setCurrentDataset.mock.calls.map(call => call[0]).find(value => value?.sourceType === 'canonical_perspective_collection');
+    expect(restored).toMatchObject({ status: 'ready', canonicalPerspectiveId: 'executive_overview', canonicalPerspectiveFocusSubject: focusSubject, restoredFromSessionId: 'multi-focus' });
+    expect(restored.canonicalSourceBoundary).toBeTruthy();
+    expect(restored.runtimeFileReferences).toHaveLength(2);
+    expect(restored.canonicalPerspectiveEvidenceSources).toHaveLength(2);
+    expect(restored.canonicalPerspectiveEvidenceSources[0].rows).toEqual(expect.arrayContaining([expect.objectContaining({ Product: 'Widget A' })]));
+    expect(restored.canonicalPerspectiveEvidenceSources[1].rows).toEqual(expect.arrayContaining([expect.objectContaining({ Product: 'Widget B' })]));
+    expect(rememberRestoredLocalBatch).toHaveBeenCalledTimes(1);
+    expect(setPendingLocalBatch).toHaveBeenLastCalledWith(null);
+    expect(setMultiSourceBuildResult).not.toHaveBeenCalledWith(expect.objectContaining({ blockers: expect.arrayContaining([expect.stringContaining('relationship')]) }));
+    expect(result.current.sessionStatus).toContain('Multi-file Focus analysis restored');
+  }, 30_000);
+
+
+  it('restores canonical multi-source files into source review and keeps execution fail-closed until the relationship is rebuilt', async () => {
+    const salesFile = new File(['Order,Amount\nA,100\n'], 'sales.csv', { type: 'text/csv' });
+    const accountingFile = new File(['Voucher,Amount\nV1,80\n'], 'accounting.csv', { type: 'text/csv' });
+    const salesPersisted = { fileId: 'sales-file', originalName: salesFile.name, filePath: 'project/source-files/sales.csv', bytesWritten: salesFile.size };
+    const accountingPersisted = { fileId: 'accounting-file', originalName: accountingFile.name, filePath: 'project/source-files/accounting.csv', bytesWritten: accountingFile.size };
+    vi.mocked(downloadProjectSourceFile).mockResolvedValueOnce(salesFile).mockResolvedValueOnce(accountingFile);
+    const setCurrentDataset = vi.fn();
+    const setPendingLocalBatch = vi.fn();
+    const setMultiSourceDrafts = vi.fn();
+    const setMultiSourceBuildResult = vi.fn();
+    const deps = {
+      currentDataset: null, registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch, setMultiSourceDrafts, setMultiSourceBuildResult,
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection: vi.fn(),
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    const declaration = (kind: string, value: Record<string, unknown>) => ({ validationStatus: 'valid', value: { kind, ...value } });
+    const session: WorkspaceSessionRecord = {
+      id: 'canonical-multi', title: 'Governed multi-source dataset', sourceType: 'canonical_multisource', rowCount: 2, columnCount: 2,
+      sourceSummary: [
+        { name: salesFile.name, persistedFile: salesPersisted },
+        { name: accountingFile.name, persistedFile: accountingPersisted },
+      ],
+      snapshot: { currentDataset: {
+        status: 'ready', file_name: 'Governed multi-source dataset', sourceType: 'canonical_multisource', sourceFiles: [
+          { name: salesFile.name, persistedFile: salesPersisted }, { name: accountingFile.name, persistedFile: accountingPersisted },
+        ],
+        canonicalMultiSourcePersistence: { memberships: [
+          { overlay: { binding: { datasetId: salesFile.name }, sourceEvidenceDeclarations: [
+            declaration('source_role', { role: 'sales' }), declaration('reporting_period', { start: '2026-05-01', end: '2026-05-31' }), declaration('reporting_currency', { currency: 'VND', monetaryColumns: ['Amount'] }),
+          ] } },
+          { overlay: { binding: { datasetId: accountingFile.name }, sourceEvidenceDeclarations: [
+            declaration('source_role', { role: 'accounting' }), declaration('reporting_period', { start: '2026-05-01', end: '2026-05-31' }), declaration('reporting_currency', { currency: 'VND', monetaryColumns: ['Amount'] }),
+          ] } },
+        ] },
+      } },
+      createdAt: '', updatedAt: '',
+    };
+    await act(async () => { await result.current.handleOpenWorkspaceSession(session); });
+    expect(setCurrentDataset).toHaveBeenCalledWith(null);
+    expect(setPendingLocalBatch).toHaveBeenCalledWith(expect.objectContaining({ status: 'ready', isRestored: true }));
+    const drafts = setMultiSourceDrafts.mock.calls.at(-1)?.[0];
+    expect(drafts['0:sales.csv']).toMatchObject({ selected: true, role: 'sales', periodStart: '2026-05-01', currency: 'VND' });
+    expect(drafts['1:accounting.csv']).toMatchObject({ selected: true, role: 'accounting', periodEnd: '2026-05-31', monetaryColumns: 'Amount' });
+    expect(setMultiSourceBuildResult).toHaveBeenCalledWith({ relationshipState: null, blockers: [expect.stringContaining('Rebuild the relationship before analysis')] });
+    expect(result.current.sessionStatus).toContain('rebuild the governed multi-source dataset');
+  }, 30_000);
+
+  it('fails closed to restored source review when a multi-file analysis snapshot is missing its recovery metadata', async () => {
+    const csv = 'Product,Revenue\nWidget A,100\n';
+    const file = new File([csv], 'sales-missing-meta.csv', { type: 'text/csv' });
+    const persisted = { fileId: 'missing-meta', originalName: file.name, filePath: 'project/source-files/missing-meta.csv', bytesWritten: file.size };
+    vi.mocked(downloadProjectSourceFile).mockResolvedValue(file);
+    const setCurrentDataset = vi.fn();
+    const setPendingLocalBatch = vi.fn();
+    const setMultiSourceBuildResult = vi.fn();
+    const deps = {
+      currentDataset: null, registerAdvancedSource: vi.fn(), setCurrentDataset, setWorkspaceState: vi.fn(), setDecisionTrustReport: vi.fn(),
+      setPendingLocalBatch, setMultiSourceDrafts: vi.fn(), setMultiSourceBuildResult,
+      setSelectedTopic: vi.fn(), setResult: vi.fn(), setPreviewActionId: vi.fn(), requestLocalFileReselection: vi.fn(),
+    };
+    const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
+    const { result } = renderHook(() => useHomeWorkspaceSessions(deps), { wrapper });
+    const session: WorkspaceSessionRecord = {
+      id: 'bad-multi', title: 'Old multi-file analysis', sourceType: 'canonical_perspective_collection', rowCount: 1, columnCount: 2,
+      sourceSummary: [{ name: file.name, rows: 1, persistedFile: persisted }],
+      snapshot: { currentDataset: { status: 'ready', file_name: 'Old multi-file analysis', sourceType: 'canonical_perspective_collection', rows_count: 1, columns: ['Product', 'Revenue'], sourceFiles: [{ name: file.name, persistedFile: persisted }] } },
+      createdAt: '', updatedAt: '',
+    };
+    await act(async () => { await result.current.handleOpenWorkspaceSession(session); });
+    expect(setCurrentDataset).toHaveBeenCalledWith(null);
+    expect(setPendingLocalBatch).toHaveBeenCalledWith(expect.objectContaining({ status: 'ready', isRestored: true }));
+    expect(setMultiSourceBuildResult).toHaveBeenCalledWith(expect.objectContaining({ blockers: expect.arrayContaining([expect.stringContaining('metadata is incomplete')]) }));
+    expect(result.current.sessionStatus).toContain('metadata is incomplete');
+  }, 30_000);
+
   it('refuses to claim a new local session was saved when no runtime or persisted source survives', async () => {
     const requestLocalFileReselection = vi.fn();
     const dataset = {

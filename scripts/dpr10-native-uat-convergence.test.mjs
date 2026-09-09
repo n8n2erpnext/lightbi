@@ -54,16 +54,41 @@ test('DPR-10 question density and balanced reading gutters are shared-source con
   assert.match(investigation, /max-w-\[1180px\][^\n]*px-6[^\n]*lg:px-10/);
 });
 
-test('DPR-10 single and multi-file Deep BA keep the primary workspace visible in a right dock', async () => {
+test('DPR-10 single and multi-file Deep BA use explicit primary-or-side-panel presentation', async () => {
   const investigation = await read('apps/desktop/src/pages/Investigation.tsx');
   const deep = await read('apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx');
   const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
   assert.match(investigation, /data-testid="investigation-primary-pane"/);
-  assert.match(investigation, /<InvestigationDeepAnalysis[\s\S]{0,1800}\bdocked\b/);
-  assert.match(deep, /data-docked=\{docked \? "true" : "false"\}/);
-  assert.match(deep, /lg:w-\[min\(48vw,760px\)\]/);
-  assert.match(multi, /data-testid="collection-deep-selected-surface" data-docked="true"/);
-  assert.match(multi, /data-testid="collection-deep-perspective-surface" data-docked="true"/);
-  assert.match(multi, /collection-decision-workspace[\s\S]*collection-deep-perspective-surface/);
-  assert.match(multi, /collection-evidence-drill-surface[\s\S]*collection-deep-selected-surface/);
+  assert.match(investigation, /useState<AnalysisPresentationMode>\('primary'\)/);
+  assert.match(investigation, /presentationMode=\{analysisPresentationMode\}/);
+  assert.doesNotMatch(investigation, /<InvestigationDeepAnalysis[\s\S]{0,1800}docked/);
+  assert.match(deep, /data-presentation-mode=\{presentationMode\}/);
+  assert.match(deep, /data-docked=\{sidePanel \? "true" : "false"\}/);
+  assert.match(deep, /data-testid="deep-analysis-presentation-toggle"/);
+  assert.match(deep, /xl:w-\[clamp\(420px,36vw,680px\)\]/);
+  assert.match(multi, /useState<AnalysisPresentationMode>\('primary'\)/);
+  assert.match(multi, /data-testid="collection-deep-selected-surface" data-docked=\{sidePanelActive \? 'true' : 'false'\}/);
+  assert.match(multi, /data-testid="collection-deep-perspective-surface" data-docked=\{sidePanelActive \? 'true' : 'false'\}/);
+  assert.match(multi, /collection-deep-selected-presentation-toggle/);
+  assert.match(multi, /collection-deep-perspective-presentation-toggle/);
+  assert.doesNotMatch(multi, /lg:pr-\[48%\]/);
+});
+
+
+test('DPR-10 history keeps durable retention separate from 6x5 navigation and restores multi-file state fail-closed', async () => {
+  const history = await read('apps/desktop/src/components/home/HomeSessionHistoryPanel.tsx');
+  const persistence = await read('apps/desktop/src/lib/home-workspace-persistence.ts');
+  const restore = await read('apps/desktop/src/hooks/useHomeWorkspaceSessions.ts');
+  const server = await read('apps/server/src/advanced_workspace.rs');
+  assert.match(history, /const HISTORY_PAGE_SIZE = 6;/);
+  assert.match(history, /const HISTORY_MAX_PAGES = 5;/);
+  assert.match(history, /HISTORY_PAGE_SIZE \* HISTORY_MAX_PAGES/);
+  assert.match(server, /const SESSION_LIMIT: i64 = 100;/);
+  assert.doesNotMatch(server, /const SESSION_LIMIT: i64 = 30;/);
+  assert.match(persistence, /canonicalPerspectivePersistence/);
+  assert.doesNotMatch(persistence, /canonicalPerspectiveEvidenceSources[\s\S]{0,300}rows: source\.rows/);
+  assert.match(restore, /sourceType === 'canonical_perspective_collection'/);
+  assert.match(restore, /Multi-file Focus analysis restored from complete saved source files/);
+  assert.match(restore, /sourceType === 'canonical_multisource'/);
+  assert.match(restore, /Rebuild the relationship before analysis; prior executable handoffs remain invalid/);
 });

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ClipboardCheck, Download, FileImage, FileSpreadsheet, FileText, LayoutDashboard, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
 import type { AnalysisAction } from '../../lib/analysis-opportunity-actions';
 import { BADecisionBriefPanel } from '../analysis/BADecisionBriefPanel';
 import type { BADecisionBrief } from '../../lib/ba-decision-engine';
@@ -26,6 +26,7 @@ import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
 import type { BAAnalysisAuthorityContextV1 } from '../../lib/understanding-core/ba-analysis-authority-context';
 import { buildSelectedSubjectInvestigationPlan } from '../../lib/selected-subject-investigation';
 import { SelectedSubjectInvestigationBoard } from './SelectedSubjectInvestigationBoard';
+import type { AnalysisPresentationMode } from '../../lib/analysis-presentation-mode';
 
 export interface InvestigationDeepAnalysisProps {
   action: AnalysisAction;
@@ -43,13 +44,15 @@ export interface InvestigationDeepAnalysisProps {
   onClose: () => void;
   onCreateDashboard?: () => void;
   canCreateDashboard?: boolean;
-  docked?: boolean;
+  presentationMode?: AnalysisPresentationMode;
+  onPresentationModeChange?: (mode: AnalysisPresentationMode) => void;
   preferences: DisplayPreferences;
 }
 
-export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, filteredFocusComparison = null, analysisAuthority = null, onClose, onCreateDashboard, canCreateDashboard = false, docked = false, preferences }) => {
+export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps> = ({ action, brief, businessFusionOverview, singleSourceBAOverview, chartModel, decisionVisualizationPlan = null, canonicalSourceBoundary = null, sourceName, filteredScope, focusComparison = null, filteredFocusComparison = null, analysisAuthority = null, onClose, onCreateDashboard, canCreateDashboard = false, presentationMode = 'primary', onPresentationModeChange, preferences }) => {
   const { t, localize } = useUiLanguage();
   const exportRef = useRef<HTMLDivElement>(null);
+  const sidePanel = presentationMode === 'side_panel';
   const [exportState, setExportState] = useState<'idle' | 'image' | 'pdf' | 'excel'>('idle');
   const [exportError, setExportError] = useState('');
   const [pivotMenuOpen, setPivotMenuOpen] = useState(false);
@@ -126,9 +129,9 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     finally { setPivotProgress(null); setExportState('idle'); }
   };
   return (
-  <div className={docked ? "fixed inset-0 z-40 flex justify-end bg-black/10 lg:relative lg:inset-auto lg:z-auto lg:h-full lg:w-[min(48vw,760px)] lg:shrink-0 lg:bg-transparent" : "fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]"} onClick={onClose}>
-    <aside data-testid="deep-analysis-surface" data-docked={docked ? "true" : "false"} data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className={docked ? "h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white lg:max-w-none" : "h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white"} onClick={event => event.stopPropagation()}>
-      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Selected-subject investigation') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('This investigation is bounded to the selected evidence scope; the governed summary remains unchanged.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div>
+  <div data-testid="deep-analysis-shell" data-presentation-mode={presentationMode} className={sidePanel ? "fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px] xl:relative xl:inset-auto xl:z-auto xl:h-full xl:w-[clamp(420px,36vw,680px)] xl:shrink-0 xl:bg-transparent xl:backdrop-blur-none" : "fixed inset-0 z-40 flex justify-end bg-black/15 backdrop-blur-[1px]"} onClick={onClose}>
+    <aside data-testid="deep-analysis-surface" data-docked={sidePanel ? "true" : "false"} data-layout={filteredScope ? 'focused-investigation' : 'management-document'} className={sidePanel ? "h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white xl:max-w-none" : "h-full w-full max-w-[1120px] overflow-y-auto border-l border-[var(--lb-divider)] bg-white"} onClick={event => event.stopPropagation()}>
+      <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur"><div className="flex items-start gap-3"><button data-testid="deep-analysis-back" onClick={onClose} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Back to chart')}><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600"><ClipboardCheck className="h-3.5 w-3.5" />{filteredScope ? t('Selected-subject investigation') : focusComparison ? 'Deep BA analysis · Focus' : t('Deep BA analysis')}</div><h2 className="mt-1 text-xl font-semibold text-[#202123]">{focusComparison && !filteredScope ? `${focusComparison.subject.displayLabel} · ${localize(action.opportunityName)}` : localize(action.opportunityName)}</h2><p className="mt-1 text-xs leading-5 text-black/50">{filteredScope ? t('This investigation is bounded to the selected evidence scope; the governed summary remains unchanged.') : focusComparison ? `Every Deep BA readout remains anchored to ${focusComparison.subject.displayLabel}; the full population is comparison evidence only.` : t('Explanation, governed evidence, caveats, drivers, and recommended actions for the decision angle currently shown in the chart.')}</p></div></div><div className="flex shrink-0 items-center gap-2">{onPresentationModeChange && <button data-testid="deep-analysis-presentation-toggle" type="button" onClick={() => onPresentationModeChange(sidePanel ? 'primary' : 'side_panel')} className="hidden items-center gap-1.5 border border-black/10 bg-white px-2.5 py-2 text-xs font-semibold text-black/60 transition-colors hover:bg-black/[0.035] hover:text-black xl:inline-flex" title={t(sidePanel ? 'Return analysis to full view' : 'Move analysis to side panel')}>{sidePanel ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}<span>{t(sidePanel ? 'Full view' : 'Side panel')}</span></button>}<button onClick={onClose} className="rounded-full border border-black/10 bg-white p-2 text-black/50 transition-colors hover:bg-black/[0.035] hover:text-black" title={t('Close analysis panel')}><X className="h-4 w-4" /></button></div></div>
       <div data-testid="deep-analysis-export-tools" className="border-b border-[var(--lb-divider)] bg-white px-5 py-2">
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="mr-auto inline-flex items-center gap-2 text-xs text-black/45"><Download className="h-3.5 w-3.5" />{t(filteredScope ? 'Export this selected-subject investigation' : 'Export this complete perspective analysis')}</span>

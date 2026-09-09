@@ -33,6 +33,20 @@ export function createWorkspaceSessionSnapshot(dataset: any, analysisSessionIden
       understandingProfiles: dataset.understandingProfiles, understandingSourceRowCount: dataset.understandingSourceRowCount,
       selectedBusinessView: dataset.selectedBusinessView, businessFusionOverview: dataset.businessFusionOverview,
       objectKey: dataset.objectKey, canonicalUserOverlay: parseCanonicalUserOverlay(dataset.canonicalUserOverlay),
+      canonicalPerspectivePersistence: dataset.sourceType === 'canonical_perspective_collection' && dataset.canonicalPerspectiveId ? {
+        perspectiveId: dataset.canonicalPerspectiveId,
+        deepDiveBrief: dataset.canonicalPerspectiveBrief ?? null,
+        focusDeepDiveBrief: dataset.canonicalPerspectiveFocusBrief ?? null,
+        focusSubject: dataset.canonicalPerspectiveFocusSubject ?? null,
+        evidenceSources: Array.isArray(dataset.canonicalPerspectiveEvidenceSources)
+          ? dataset.canonicalPerspectiveEvidenceSources.map((source: any) => ({
+            period: source.period, role: source.role, sourceId: source.sourceId ?? null,
+            sourceName: source.sourceName, sourceRowCount: Number(source.sourceRowCount) || 0,
+            semanticFields: Array.isArray(source.semanticFields) ? source.semanticFields : [],
+            focusBinding: source.focusBinding ?? null,
+          }))
+          : [],
+      } : undefined,
       canonicalMultiSourcePersistence: dataset.canonicalMultiSourceDataset ? {
         schemaVersion: dataset.canonicalMultiSourceDataset.schemaVersion,
         multiSourceDatasetId: dataset.canonicalMultiSourceDataset.multiSourceDatasetId,

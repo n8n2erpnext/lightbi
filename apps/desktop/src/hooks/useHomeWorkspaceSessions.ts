@@ -36,6 +36,7 @@ interface HomeWorkspaceSessionDependencies {
   setSelectedTopic: (value: any) => void;
   setResult: (value: any) => void;
   setPreviewActionId: (value: any) => void;
+  rememberRestoredLocalBatch?: (value: any) => void;
   requestLocalFileReselection?: (session: WorkspaceSessionRecord) => void;
 }
 
@@ -284,6 +285,82 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           throw new Error('One or more saved files could not be parsed after reload.');
         }
         const families = classifyDatasetFamilies(files.map((file, index) => ({ file, result: results[index] as SourceInspectionResult })), 'strict');
+        const restoredBatch = { files, status: 'ready' as const, results, families, selectedFamilyId: null, isRestored: true, step: 'family_selection' as const, businessOverview: createBusinessFusionOverview(families) };
+        deps.rememberRestoredLocalBatch?.(restoredBatch);
+        if (restoredDataset.sourceType === 'canonical_perspective_collection') {
+          const persistence = restoredDataset.canonicalPerspectivePersistence;
+          if (!persistence?.perspectiveId || !Array.isArray(persistence.evidenceSources)) {
+            deps.setCurrentDataset(null);
+            deps.setPendingLocalBatch(restoredBatch);
+            deps.setMultiSourceBuildResult({ relationshipState: null, blockers: ['Saved multi-file analysis metadata is incomplete. Rebuild the governed perspective from the restored sources.'] });
+            setSessionStatus('Sources reloaded, but the saved multi-file analysis metadata is incomplete. Rebuild the governed perspective before analysis.');
+            return;
+          }
+          const sourceFiles = files.map((file, index) => {
+            const prior = Array.isArray(restoredDataset.sourceFiles)
+              ? restoredDataset.sourceFiles.find((source: any) => source?.name === file.name) ?? restoredDataset.sourceFiles[index]
+              : null;
+            const result = results[index];
+            const md = result.status === 'accessible' ? result.metadata : null;
+            return { ...(prior ?? {}), name: file.name, persistedFile: md?.persisted_file ?? persistedFiles[index] };
+          });
+          const evidenceSources = files.map((file, index) => {
+            const result = results[index];
+            if (result.status !== 'accessible') throw new Error(`Saved source ${file.name} is not accessible after reload.`);
+            const md = result.metadata;
+            const sheet = md.is_workbook && md.default_sheet && md.sheets ? md.sheets[md.default_sheet] : null;
+            const rows = sheet?.analysis_rows ?? md.analysis_rows ?? sheet?.semantic_rows ?? md.semantic_rows ?? sheet?.preview_rows ?? md.preview_rows ?? [];
+            const saved = persistence.evidenceSources.find((source: any) => source?.sourceName === file.name) ?? persistence.evidenceSources[index] ?? {};
+            const prior = sourceFiles[index] ?? {};
+            return {
+              period: saved.period ?? (typeof prior.reportingPeriod === 'string' ? prior.reportingPeriod.slice(0, 7) : 'unavailable'),
+              role: saved.role ?? prior.role ?? 'source', sourceId: saved.sourceId ?? prior.sourceId ?? null,
+              sourceName: file.name, sourceRowCount: Number(saved.sourceRowCount) || Number(prior.rows) || Number(sheet?.rows_count ?? md.rows_count) || rows.length,
+              rows, semanticFields: Array.isArray(saved.semanticFields) ? saved.semanticFields : [], focusBinding: saved.focusBinding ?? null,
+            };
+          });
+          const primaryResult = results[0];
+          const primaryMd = primaryResult?.status === 'accessible' ? primaryResult.metadata : null;
+          const primarySheet = primaryMd?.is_workbook && primaryMd.default_sheet && primaryMd.sheets ? primaryMd.sheets[primaryMd.default_sheet] : null;
+          const primarySemanticRows = primarySheet?.semantic_rows ?? primaryMd?.semantic_rows ?? primarySheet?.preview_rows ?? primaryMd?.preview_rows ?? [];
+          const primaryColumns = primarySheet?.columns ?? primaryMd?.columns ?? [];
+          const canonicalSourceBoundary = primaryResult?.status === 'accessible'
+            ? createLocalCanonicalSourceBoundary({
+              datasetId: primaryResult.metadata.name || files[0].name,
+              columns: primaryColumns,
+              semanticRows: primarySemanticRows,
+              semanticSample: primarySheet?.semantic_sample ?? primaryMd?.semantic_sample,
+              profile: primarySheet?.canonical_full_file_profile ?? primaryMd?.canonical_full_file_profile,
+              file: files[0],
+              sheetName: primaryMd?.is_workbook ? primaryMd.default_sheet : undefined,
+            })
+            : undefined;
+          if (!canonicalSourceBoundary) {
+            deps.setCurrentDataset(null);
+            deps.setPendingLocalBatch(restoredBatch);
+            deps.setMultiSourceBuildResult({ relationshipState: null, blockers: ['Saved multi-file sources were reloaded, but the canonical primary-source boundary could not be reconstructed exactly.'] });
+            setSessionStatus('Sources reloaded, but the canonical primary-source boundary could not be reconstructed exactly. Review the restored sources before analysis.');
+            return;
+          }
+          const readyDataset = attachAnalysisIdentityRevalidation({
+            ...restoredDataset, status: 'ready', sourceType: 'canonical_perspective_collection', sourceFiles,
+            file_reference: files[0] ?? null, runtimeFileReferences: files,
+            runtimeDatasetSource: canonicalSourceBoundary?.runtimeSource, canonicalSourceBoundary,
+            canonicalPerspectiveId: persistence.perspectiveId,
+            canonicalPerspectiveBrief: persistence.deepDiveBrief ?? null,
+            canonicalPerspectiveFocusBrief: persistence.focusDeepDiveBrief ?? null,
+            canonicalPerspectiveFocusSubject: persistence.focusSubject ?? null,
+            canonicalPerspectiveEvidenceSources: evidenceSources,
+            restoredFromSessionId: session.id,
+          }, savedAnalysisIdentity);
+          deps.setCurrentDataset(readyDataset);
+          deps.setPendingLocalBatch(null);
+          resetAnalysisState(session.id);
+          setSessionStatus(persistence.focusSubject
+            ? 'Multi-file Focus analysis restored from complete saved source files. Governed summary values remain the saved result; source evidence was reloaded exactly.'
+            : 'Multi-file analysis restored from complete saved source files. Governed summary values remain the saved result; source evidence was reloaded exactly.');
+          return;
+        }
         if (restoredDataset.sourceType === 'canonical_multisource') {
           const memberships = restoredDataset.canonicalMultiSourcePersistence?.memberships ?? [];
           const drafts = Object.fromEntries(files.map((file, index) => {
@@ -303,7 +380,7 @@ export function useHomeWorkspaceSessions(deps: HomeWorkspaceSessionDependencies)
           deps.setCurrentDataset(null);
           deps.setMultiSourceDrafts(drafts);
           deps.setMultiSourceBuildResult({ relationshipState: null, blockers: ['Saved evidence was reloaded. Rebuild the relationship before analysis; prior executable handoffs remain invalid.'] });
-          deps.setPendingLocalBatch({ files, status: 'ready', results, families, selectedFamilyId: null, isRestored: true, step: 'family_selection', businessOverview: createBusinessFusionOverview(families) });
+          deps.setPendingLocalBatch(restoredBatch);
           setSessionStatus('Sources reloaded. Review source-bound evidence and rebuild the governed multi-source dataset.');
           return;
         }

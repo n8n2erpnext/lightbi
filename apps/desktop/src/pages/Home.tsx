@@ -107,6 +107,7 @@ export const Home: React.FC = () => {
   } = useHomeWorkspaceSessions({
     currentDataset, registerAdvancedSource, setCurrentDataset, setWorkspaceState, setDecisionTrustReport, setPendingLocalBatch,
     setMultiSourceDrafts, setMultiSourceBuildResult, setSelectedTopic, setResult, setPreviewActionId,
+    rememberRestoredLocalBatch: setLastInspectedBatch,
     requestLocalFileReselection: session => {
       pendingSessionReselectionRef.current = session;
       openLocalFilePicker();

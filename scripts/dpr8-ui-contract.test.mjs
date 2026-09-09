@@ -128,7 +128,8 @@ test('DPR-8 BA Step 2 is a focused selected-subject investigation, not a second 
   assert.match(single, /data-layout=\{filteredScope \? 'focused-investigation' : 'management-document'\}/);
   const selectedStart = multi.indexOf('data-testid="collection-deep-selected-surface"');
   const selectedBlock = multi.slice(selectedStart, selectedStart + 4200);
-  assert.ok(selectedStart >= 0, 'multi-file Step 2 dock must exist');
-  assert.match(selectedBlock, /data-docked="true"[\s\S]{0,80}data-layout="focused-investigation"/);
+  assert.ok(selectedStart >= 0, 'multi-file Step 2 surface must exist');
+  assert.match(selectedBlock, /data-docked=\{sidePanelActive \? 'true' : 'false'\}[\s\S]{0,140}data-presentation-mode=\{analysisPresentationMode\}[\s\S]{0,160}data-layout="focused-investigation"/);
+  assert.match(selectedBlock, /collection-deep-selected-presentation-toggle/);
   assert.doesNotMatch(selectedBlock, /bg-slate-950|rounded-2xl[^\n]*shadow-sm/);
 });

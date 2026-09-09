@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { WorkspaceSessionRecord } from '../../lib/workspace-session-api';
 import { HomeSessionHistoryPanel } from './HomeSessionHistoryPanel';
 
@@ -16,6 +16,8 @@ const session = {
   createdAt: '2026-09-08T00:00:00Z',
   updatedAt: '2026-09-08T00:00:00Z',
 } as WorkspaceSessionRecord;
+
+afterEach(() => cleanup());
 
 const baseProps = {
   activeSessionId: undefined,
@@ -34,6 +36,31 @@ describe('HomeSessionHistoryPanel', () => {
     expect(onOpen).toHaveBeenCalledWith(session);
     fireEvent.click(screen.getByTitle('Delete session'));
     expect(onDelete).toHaveBeenCalledWith('session-1');
+  });
+
+  it('paginates the newest 30 sessions as six rows per page without deleting older records', () => {
+    const sessions = Array.from({ length: 36 }, (_, index) => ({
+      ...session,
+      id: `session-${index + 1}`,
+      title: `Session ${index + 1}`,
+      updatedAt: new Date(Date.UTC(2026, 8, 9, 0, index)).toISOString(),
+    }));
+    render(<HomeSessionHistoryPanel {...baseProps} sessions={sessions} onOpen={vi.fn()} onDelete={vi.fn()} />);
+    expect(screen.getAllByTestId('session-history-item')).toHaveLength(6);
+    expect(screen.getByTestId('session-history-count').textContent).toBe('30 / 36');
+    expect(screen.getByTestId('session-history-pagination')).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: /Page [1-5]/ })).toHaveLength(5);
+    expect(screen.getByText('Session 36')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('session-history-page-5'));
+    expect(screen.getByText('Session 12')).toBeTruthy();
+    expect(screen.queryByText('Session 6')).toBeNull();
+  });
+
+  it('labels a persisted multi-file session with its source count', () => {
+    render(<HomeSessionHistoryPanel {...baseProps} sessions={[{ ...session, sourceType: 'canonical_perspective_collection', sourceSummary: [{ name: 'sales.xlsx' }, { name: 'accounting.xlsx' }] }]} onOpen={vi.fn()} onDelete={vi.fn()} />);
+    const row = screen.getByTestId('session-history-item');
+    expect(row.textContent).toContain('Multi-file');
+    expect(row.textContent).toContain('2 sources');
   });
 
   it('keeps empty and connection-retry states inline and actionable', () => {

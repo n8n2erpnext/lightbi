@@ -43,6 +43,7 @@ import { useFocusSubjectComparison } from '../hooks/useFocusSubjectComparison';
 import { FocusSubjectComparisonCard } from '../components/investigation/FocusSubjectComparisonCard';
 import { FocusSubjectBAAnswerCard, FocusSubjectBANextAction, FocusSubjectContextBundle } from '../components/investigation/FocusSubjectContextBundle';
 import { buildFocusSubjectComparison } from '../lib/focus-subject-analysis';
+import type { AnalysisPresentationMode } from '../lib/analysis-presentation-mode';
 const SINGLE_SOURCE_BA_OVERVIEW_ROW_LIMIT = 1000;
 
 function safeFileStem(value: string): string {
@@ -94,6 +95,15 @@ export const Investigation: React.FC = () => {
   const [deepAnalysisView, setDeepAnalysisView] = useState<
     { kind: 'perspective' } | { kind: 'selected_data'; scope: FilteredDeepAnalysisScope; origin: InvestigationDrillOrigin } | null
   >(null);
+  const [analysisPresentationMode, setAnalysisPresentationMode] = useState<AnalysisPresentationMode>('primary');
+  const openDeepAnalysis = (view: NonNullable<typeof deepAnalysisView>) => {
+    setAnalysisPresentationMode('primary');
+    setDeepAnalysisView(view);
+  };
+  const closeDeepAnalysis = () => {
+    setDeepAnalysisView(null);
+    setAnalysisPresentationMode('primary');
+  };
   const filteredDeepAnalysisScope = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.scope : null;
   const filteredDeepAnalysisOrigin = deepAnalysisView?.kind === 'selected_data' ? deepAnalysisView.origin : null;
   const filteredAnalysisAuthority = useMemo(() => {
@@ -448,7 +458,7 @@ export const Investigation: React.FC = () => {
     addChartToDashboard,
     persistWorkspaceSession,
     setSavedChartNotice,
-    closeDeepAnalysis: () => setDeepAnalysisView(null),
+    closeDeepAnalysis,
     navigate,
     t,
   });
@@ -713,7 +723,7 @@ export const Investigation: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               <button onClick={() => setIsSettingsOpen(true)} className="inline-flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-[#fbfbfa] px-3 py-2 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035] hover:text-[#202123]" title="Chart display preferences"><Settings2 className="h-3.5 w-3.5" strokeWidth={1.7} />{t('View')}</button>
-              <button data-testid="perspective-deep-analysis-button" onClick={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }} disabled={isExecuting || previewResult?.status !== 'executed' || !canExecute} className="inline-flex items-center gap-1.5 rounded-[10px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 transition-colors hover:bg-violet-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30" title="Open a deeper BA explanation for this selected decision angle"><ClipboardCheck className="h-3.5 w-3.5" strokeWidth={1.7} />{t('Analyze deeper')}</button>
+              <button data-testid="perspective-deep-analysis-button" onClick={() => { void persistWorkspaceSession().finally(() => openDeepAnalysis({ kind: 'perspective' })); }} disabled={isExecuting || previewResult?.status !== 'executed' || !canExecute} className="inline-flex items-center gap-1.5 rounded-[10px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 transition-colors hover:bg-violet-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30" title="Open a deeper BA explanation for this selected decision angle"><ClipboardCheck className="h-3.5 w-3.5" strokeWidth={1.7} />{t('Analyze deeper')}</button>
               <button onClick={() => { void saveChartToLibrary(); }} disabled={!chartModel || chartModel.status !== 'ready'} className="inline-flex items-center gap-1.5 rounded-[10px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-white disabled:text-black/30" title="Save this executed chart as a reusable dashboard card"><FileSpreadsheet className="h-3.5 w-3.5" strokeWidth={1.7} />{t('Save chart')}</button>
               <button data-run-preview="true" onClick={handleRunPreview} disabled={isExecuting || !canExecute} title={!canExecute ? 'Resolve the runtime preflight blockers before running this analysis.' : undefined} className="rounded-[10px] bg-[#202123] px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-black disabled:opacity-50">{isExecuting ? t('Running...') : previewResult ? t('Refresh preview') : t('Run preview')}</button>
             </div>
@@ -768,7 +778,7 @@ export const Investigation: React.FC = () => {
               </section>
             )}
 
-            {focusComparison.status === 'ready' ? <FocusSubjectBANextAction canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }} /> : baDecisionBrief ? <BasicBANextAction brief={baDecisionBrief} canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => setDeepAnalysisView({ kind: 'perspective' })); }} /> : null}
+            {focusComparison.status === 'ready' ? <FocusSubjectBANextAction canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => openDeepAnalysis({ kind: 'perspective' })); }} /> : baDecisionBrief ? <BasicBANextAction brief={baDecisionBrief} canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => openDeepAnalysis({ kind: 'perspective' })); }} /> : null}
 
             {(runtimeIntent.dimensions.length > 0 || runtimeIntent.measures.length > 0 || (runtimeIntent.derivedMeasures?.length ?? 0) > 0 || (previewResult?.status === 'executed' && session.canonicalExecutionResult && canonicalHandoff)) && (
               <div data-testid="decision-evidence-details">
@@ -785,7 +795,7 @@ export const Investigation: React.FC = () => {
               </div>
             )}
 
-            <InvestigationDrillThroughPanel drillError={drillError} drillExportBaseName={drillExportBaseName} drillResult={drillResult} isDrilling={isDrilling} onAnalyzeSelection={(scope) => { if (drillOrigin) setDeepAnalysisView({ kind: 'selected_data', scope, origin: drillOrigin }); }} preferences={preferences} selectedDrillRows={selectedDrillRows} selectedRows={selectedRows} setSelectedDrillRows={setSelectedDrillRows} onClose={closeDrillThrough} />
+            <InvestigationDrillThroughPanel drillError={drillError} drillExportBaseName={drillExportBaseName} drillResult={drillResult} isDrilling={isDrilling} onAnalyzeSelection={(scope) => { if (drillOrigin) openDeepAnalysis({ kind: 'selected_data', scope, origin: drillOrigin }); }} preferences={preferences} selectedDrillRows={selectedDrillRows} selectedRows={selectedRows} setSelectedDrillRows={setSelectedDrillRows} onClose={closeDrillThrough} />
           </div>
         </section>
         <InvestigationDiagnostics
@@ -817,10 +827,11 @@ export const Investigation: React.FC = () => {
         focusComparison={focusComparison.status === 'ready' ? focusComparison.comparison : null}
         filteredFocusComparison={filteredFocusComparison}
         analysisAuthority={filteredDeepAnalysisScope ? filteredAnalysisAuthority : primaryAnalysisAuthority}
-        onClose={() => setDeepAnalysisView(null)}
+        onClose={closeDeepAnalysis}
         onCreateDashboard={filteredDeepAnalysisScope ? undefined : () => { void createPerspectiveDashboard(); }}
         canCreateDashboard={!filteredDeepAnalysisScope && previewResult?.status === 'executed' && chartModel?.status === 'ready'}
-        docked
+        presentationMode={analysisPresentationMode}
+        onPresentationModeChange={setAnalysisPresentationMode}
         preferences={preferences}
       />}
       <DisplayPreferencesModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
