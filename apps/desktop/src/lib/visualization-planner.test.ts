@@ -32,14 +32,14 @@ describe('DPR-6 governed visualization planner', () => {
     expect(plan.rendererFamily).toBe('table');
   });
 
-  it('falls back when a suitable semantic pattern has no renderer capability yet', () => {
+  it('uses the histogram renderer when the semantic distribution shape is supported', () => {
     const plan = createGovernedVisualizationPlan({
       analyticalIntent: 'distribution', availableRoles: ['numeric_observation','entity_key'],
       cardinality: { points: 100 }, requiredSurfaces: ['preview','persistence','dashboard'],
     });
-    expect(plan.candidates[0]).toMatchObject({ patternId: 'distribution_histogram', eligible: true, rendererAvailable: false });
-    expect(plan.patternId).toBe('evidence_table');
-    expect(plan.rendererFamily).toBe('table');
+    expect(plan.candidates[0]).toMatchObject({ patternId: 'distribution_histogram', eligible: true, rendererAvailable: true });
+    expect(plan.patternId).toBe('distribution_histogram');
+    expect(plan.rendererFamily).toBe('histogram');
   });
   it('preserves relationship semantics as scatter instead of collapsing to bar', () => {
     const plan = createGovernedVisualizationPlan({
@@ -54,7 +54,7 @@ describe('DPR-6 governed visualization planner', () => {
     expect(analyticalIntentFromRuntimeIntentType('trend')).toBe('trend');
     expect(analyticalIntentFromRuntimeIntentType('relationship')).toBe('relationship');
     expect(analyticalIntentFromRuntimeIntentType('group_by')).toBe('category_comparison');
-    expect(analyticalIntentFromRuntimeIntentType('distribution')).toBe('category_comparison');
+    expect(analyticalIntentFromRuntimeIntentType('distribution')).toBe('distribution');
     expect(analyticalIntentFromRuntimeIntentType('table_preview')).toBe('evidence_detail');
   });
 });

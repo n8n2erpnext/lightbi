@@ -52,6 +52,39 @@ describe('DPR-6 investigation chart persistence', () => {
 });
 
 
+
+
+describe('Gate D rich renderer persistence', () => {
+  it('preserves histogram semantics through a coarse persisted chart transport', () => {
+    let captured: any = null;
+    const rows = [{ profit: 10 }, { profit: 14 }, { profit: 18 }, { profit: 35 }];
+    const model: ChartPreviewModel = {
+      id: 'chart_hist', sourceResultId: 'result_hist', status: 'ready', chartType: 'bar', title: 'Profit distribution',
+      yField: 'profit', seriesFields: ['profit'], rows, warnings: [], source: 'duckdb_preview_result',
+    };
+    const plan = createDecisionVisualizationPlan({
+      perspectiveId: 'profit_distribution', sourceCount: 1, dimensionField: 'profit', xFieldRole: 'measure',
+      metricIds: ['profit'], rows, analyticalIntent: 'distribution', availableRoles: ['numeric_observation'],
+      cardinality: { points: rows.length, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
+    });
+    const actions = createInvestigationChartActions({
+      session: { datasetId: 'dataset_1' } as any,
+      analysisAction: { id: 'action_distribution', opportunityName: 'Profit distribution', measures: ['profit'] } as any,
+      chartModel: model, previewResult: null, primaryDecisionVisualizationPlan: plan,
+      singleSourceBAOverview: null, baDecisionBrief: null, governedResultTotal: null, supportingCharts: [],
+      createChart: input => { captured = input; return 'chart_hist_saved'; },
+      createDashboard: () => 'dashboard_1', addChartToDashboard: () => undefined,
+      persistWorkspaceSession: async () => null, setSavedChartNotice: () => undefined,
+      closeDeepAnalysis: () => undefined, navigate: () => undefined, t: value => value,
+    });
+    actions.persistChartModel(model, 'Profit distribution', 'test', plan);
+    expect(captured.type).toBe('Bar');
+    expect(captured.formatting.lightbiData.decisionVisualizationPlan.visualizationPlan).toMatchObject({
+      patternId: 'distribution_histogram', rendererFamily: 'histogram',
+    });
+  });
+});
+
 describe('DPR-7 single-source dashboard composition', () => {
   it('plans membership before chart creation and persists ranked breakdown visualization authority', async () => {
     const model: ChartPreviewModel = {
@@ -104,7 +137,7 @@ describe('DPR-7 single-source dashboard composition', () => {
       expect(chart.formatting.lightbiData.decisionVisualizationPlan.schemaVersion).toBe('lightbi.decision-visualization-plan.v2');
       expect(chart.formatting.lightbiData.decisionVisualizationPlan.visualizationPlan.analyticalIntent).toBe('ranking');
       expect(chart.formatting.lightbiData.decisionVisualizationPlan.visualizationPlan.patternId).toBe('ranking_bar');
-      expect(chart.type).toBe('Bar');
+      expect(chart.type).toBe('Row');
     }
     expect(composition.items.some((item: any) => item.semanticRole === 'hero_metric')).toBe(true);
     expect(composition.items.some((item: any) => item.semanticRole === 'primary_answer')).toBe(true);

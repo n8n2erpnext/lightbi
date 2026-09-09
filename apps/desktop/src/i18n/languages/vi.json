@@ -2861,6 +2861,11 @@
     ,"Source-to-target flow": "Luồng từ nguồn đến đích"
     ,"Three-variable relationship": "Mối quan hệ ba biến"
     ,"Two-dimensional intensity": "Cường độ hai chiều"
+    ,"Count": "Số lượng"
+    ,"Cumulative %": "% lũy kế"
+    ,"Pattern preview · presentation only": "Xem trước mẫu biểu đồ · chỉ dùng cho trình bày"
+    ,"Renderer pending": "Bộ dựng biểu đồ đang chờ hoàn thiện"
+    ,"Template saved as an unbound chart card. Bind real BA or Advanced fields before using it.": "Đã lưu mẫu thành thẻ biểu đồ chưa gắn dữ liệu. Hãy gắn trường dữ liệu thật từ BA hoặc Advanced trước khi sử dụng."
   },
   "patterns": [
     {

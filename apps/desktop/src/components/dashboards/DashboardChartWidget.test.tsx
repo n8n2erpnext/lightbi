@@ -86,4 +86,49 @@ describe('DashboardChartWidget formatting', () => {
     expect(formatDashboardCategory(1_735_689_600_000, 'event_date', 'en-US')).toContain('2025');
     expect(formatDashboardCategory('not-a-date', 'event_date', 'en-US')).toBe('not-a-date');
   });
+
+  it('uses a rich axis tooltip with a category header, series markers and full values', () => {
+    const options = generateDashboardChartOptions({
+      ...chartProps,
+      data: [{ name: 'North', actual: 1500000, target: 1700000 }],
+      seriesKey: 'actual',
+      seriesKeys: ['actual', 'target'],
+      rendererFamily: 'combo_bar_line',
+    }, mockPreferences, true) as any;
+    const html = options.tooltip.formatter([
+      { dataIndex: 0, seriesName: 'actual', value: 1500000, marker: '<span>●</span>' },
+      { dataIndex: 0, seriesName: 'target', value: 1700000, marker: '<span>●</span>' },
+    ]);
+    expect(html).toContain('North');
+    expect(html).toContain('actual');
+    expect(html).toContain('1,500,000');
+    expect(html).toContain('target');
+    expect(html).toContain('1,700,000');
+  });
+
+  it('materializes rich ECharts families instead of collapsing them all to ordinary bars', () => {
+    const cases: Array<{ family: any; data: any[]; xAxisKey?: string; seriesKeys?: string[]; expected: string }> = [
+      { family: 'area', data: [{ month: 'Jan', value: 10 }, { month: 'Feb', value: 14 }], xAxisKey: 'month', seriesKeys: ['value'], expected: 'line' },
+      { family: 'box_plot', data: [{ group: 'A', value: 10 }, { group: 'A', value: 14 }, { group: 'A', value: 18 }], xAxisKey: 'group', seriesKeys: ['value'], expected: 'boxplot' },
+      { family: 'heatmap', data: [{ row: 'A', col: 'X', value: 5 }, { row: 'B', col: 'X', value: 7 }], xAxisKey: 'row', seriesKeys: ['col', 'value'], expected: 'heatmap' },
+      { family: 'calendar_heatmap', data: [{ date: '2026-09-01', value: 5 }, { date: '2026-09-02', value: 7 }], xAxisKey: 'date', seriesKeys: ['value'], expected: 'heatmap' },
+      { family: 'sankey', data: [{ source: 'A', target: 'B', value: 5 }], xAxisKey: 'source', seriesKeys: ['value'], expected: 'sankey' },
+      { family: 'timeline', data: [{ date: '2026-09-01', event: 'Opened' }], xAxisKey: 'date', seriesKeys: ['event'], expected: 'scatter' },
+      { family: 'small_multiples', data: [{ period: 'Jan', sales: 10, cost: 6 }, { period: 'Feb', sales: 12, cost: 8 }], xAxisKey: 'period', seriesKeys: ['sales', 'cost'], expected: 'line' },
+      { family: 'sparkline', data: [{ period: 'Jan', value: 10 }, { period: 'Feb', value: 12 }], xAxisKey: 'period', seriesKeys: ['value'], expected: 'line' },
+    ];
+    for (const item of cases) {
+      const options = generateDashboardChartOptions({
+        ...chartProps,
+        rendererFamily: item.family,
+        data: item.data,
+        xAxisKey: item.xAxisKey,
+        seriesKey: item.seriesKeys?.[0] ?? 'value',
+        seriesKeys: item.seriesKeys,
+      }, mockPreferences, false) as any;
+      const series = Array.isArray(options.series) ? options.series : [options.series];
+      expect(series.some((entry: any) => entry?.type === item.expected), item.family).toBe(true);
+    }
+  });
+
 });

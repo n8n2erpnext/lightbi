@@ -6,6 +6,8 @@ import type { Chart, DashboardWidget } from '@lightbi/core-types';
 import { DashboardKPIWidget } from '../components/dashboards/DashboardKPIWidget';
 import { DashboardChartWidget } from '../components/dashboards/DashboardChartWidget';
 import { useUiLanguage } from '../lib/ui-language';
+import { VISUALIZATION_RENDERER_CAPABILITIES_V1, type VisualizationRendererFamilyV1 } from '../lib/visualization-renderer-registry';
+import { VISUALIZATION_PATTERN_BY_ID_V1, type VisualizationColorSemanticsV1, type VisualizationPatternIdV1 } from '../lib/visualization-ontology';
 
 type DashboardInsight = { id?: string; title?: string; statement?: string; severity?: 'positive' | 'neutral' | 'warning' | 'critical'; confidence?: number; evidence?: string[] };
 type DashboardSuggestion = { title?: string; action?: string; priority?: 'high' | 'medium' | 'low' };
@@ -30,10 +32,28 @@ type SavedChartPayload = {
 
 export const resolveDashboardRendererType = (chartType: Chart['type']): 'bar' | 'row' | 'line' | 'donut' | 'scatter' => {
   if (chartType === 'Line') return 'line';
-  if (chartType === 'Scatter') return 'scatter';
+  if (chartType === 'Scatter' || chartType === 'Bubble') return 'scatter';
   if (chartType === 'Donut' || chartType === 'Pie') return 'donut';
   if (chartType === 'Row') return 'row';
   return 'bar';
+};
+
+export const resolveDashboardVisualizationMetadata = (chart: Chart): {
+  rendererFamily: VisualizationRendererFamilyV1;
+  patternId: VisualizationPatternIdV1 | null;
+  colorSemantics: VisualizationColorSemanticsV1[] | null;
+} => {
+  const visual = (chart.formatting?.lightbiData as any)?.decisionVisualizationPlan?.visualizationPlan;
+  const rendererFamily = typeof visual?.rendererFamily === 'string' && visual.rendererFamily in VISUALIZATION_RENDERER_CAPABILITIES_V1
+    ? visual.rendererFamily as VisualizationRendererFamilyV1
+    : chart.type === 'Bubble' ? 'bubble'
+      : chart.type === 'Funnel' ? 'funnel'
+      : resolveDashboardRendererType(chart.type) as VisualizationRendererFamilyV1;
+  const patternId = typeof visual?.patternId === 'string' && VISUALIZATION_PATTERN_BY_ID_V1.has(visual.patternId as VisualizationPatternIdV1)
+    ? visual.patternId as VisualizationPatternIdV1 : null;
+  const colorSemantics = Array.isArray(visual?.patternRules?.colorSemantics)
+    ? visual.patternRules.colorSemantics as VisualizationColorSemanticsV1[] : null;
+  return { rendererFamily, patternId, colorSemantics };
 };
 
 const getSavedChartPayload = (chart: Chart): SavedChartPayload | null => {
@@ -64,13 +84,15 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
     );
   }
 
-  const scatterFields = chart.type === 'Scatter' ? payload.seriesFields?.slice(0, 2) ?? [] : [];
-  const xAxisKey = chart.type === 'Scatter'
-    ? scatterFields[0] || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'x'
+  const visualization = resolveDashboardVisualizationMetadata(chart);
+  const relationshipFields = ['scatter', 'bubble'].includes(visualization.rendererFamily) ? payload.seriesFields?.slice(0, 3) ?? [] : [];
+  const xAxisKey = ['scatter', 'bubble'].includes(visualization.rendererFamily)
+    ? relationshipFields[0] || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'x'
     : payload.xField || chart.xAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {})[0] || 'name';
-  const seriesKey = chart.type === 'Scatter'
-    ? scatterFields[1] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'y'
+  const seriesKey = ['scatter', 'bubble'].includes(visualization.rendererFamily)
+    ? relationshipFields[1] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'y'
     : payload.yField || payload.seriesFields?.[0] || chart.yAxis?.[0]?.columnName || Object.keys(payload.rows[0] ?? {}).find(key => key !== xAxisKey) || 'value';
+  const seriesKeys = payload.seriesFields?.length ? payload.seriesFields : [seriesKey];
 
   if (chart.type === 'Number') {
     const value = Number(payload.rows[0]?.[seriesKey] ?? payload.rowCount ?? 0);
@@ -94,9 +116,13 @@ const DashboardWidgetCard: React.FC<{ widget: DashboardWidget; chart?: Chart }> 
       <DashboardChartWidget
         title={localize(chart.name)}
         chartType={resolveDashboardRendererType(chart.type)}
+        rendererFamily={visualization.rendererFamily}
+        patternId={visualization.patternId}
+        colorSemantics={visualization.colorSemantics}
         data={payload.rows}
         xAxisKey={xAxisKey}
         seriesKey={seriesKey}
+        seriesKeys={seriesKeys}
         valueType={payload.valueKind === 'money' ? 'currency' : 'number'}
         className="h-full"
         colSpan={widget.layout.w}

@@ -75,10 +75,10 @@ function stableId(value: string): string {
 }
 
 function previewTypeForRendererFamily(family: GovernedVisualizationPlanV1['rendererFamily']): DecisionVisualizationPlanV1['primaryVisualization']['type'] {
-  if (family === 'line') return 'line';
-  if (family === 'scatter') return 'scatter';
-  if (family === 'table') return 'table';
-  if (family === 'bar' || family === 'column' || family === 'row') return 'bar';
+  if (family === 'line' || family === 'area' || family === 'sparkline' || family === 'control_chart') return 'line';
+  if (family === 'scatter' || family === 'bubble') return 'scatter';
+  if (family === 'table' || family === 'timeline' || family === 'number') return 'table';
+  if (family && ['bar','column','row','grouped_bar','stacked_bar','normalized_stacked','combo_bar_line','donut','waterfall','histogram','funnel','pareto','bullet','diverging_bar','radar'].includes(family)) return 'bar';
   throw new Error(`DECISION_VISUALIZATION_RENDERER_UNSUPPORTED:${family ?? 'none'}`);
 }
 

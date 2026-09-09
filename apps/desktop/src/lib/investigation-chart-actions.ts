@@ -25,7 +25,7 @@ export interface InvestigationChartActionsContext {
   singleSourceBAOverview: SingleSourceBAOverview | null;
   baDecisionBrief: BADecisionBrief | null;
   governedResultTotal: number | null;
-  supportingCharts: Array<{ actionId: string; label: string; chartModel: ChartPreviewModel }>;
+  supportingCharts: Array<{ actionId: string; label: string; chartModel: ChartPreviewModel; decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null }>;
   createChart: (input: any) => string;
   createDashboard: (name: string, metadata: any) => string;
   addChartToDashboard: (dashboardId: string, chartId: string) => void;
@@ -210,7 +210,8 @@ const createPerspectiveDashboard = async () => {
 
   supportingCharts.forEach((item, index) => {
     const supportingAction = session.supportingAnalyses?.find(candidate => candidate.analysisAction.id === item.actionId)?.analysisAction;
-    const semanticRole = item.chartModel.chartType === 'scatter' ? 'relationship_context' : item.chartModel.chartType === 'line' ? 'trend_context' : item.chartModel.chartType === 'table' ? 'evidence_table' : 'ranked_driver';
+    const supportingFamily = item.decisionVisualizationPlan?.visualizationPlan.rendererFamily;
+    const semanticRole = ['scatter','bubble'].includes(String(supportingFamily)) || item.chartModel.chartType === 'scatter' ? 'relationship_context' : ['line','area','control_chart'].includes(String(supportingFamily)) || item.chartModel.chartType === 'line' ? 'trend_context' : supportingFamily === 'table' || item.chartModel.chartType === 'table' ? 'evidence_table' : 'ranked_driver';
     const candidateId = `visual:supporting:${item.actionId}`;
     candidates.push({
       id: candidateId, managementQuestion: `What does ${item.label} add to the decision context?`,
@@ -219,9 +220,10 @@ const createPerspectiveDashboard = async () => {
       analysisShape: { dimension: item.chartModel.xField, measure: item.chartModel.yField ?? supportingAction?.measures[0] ?? 'record_count' },
       advisoryRoles: dashboardAdvisoryRoles(semanticRole, [item.label, item.chartModel.xField ?? '', item.chartModel.yField ?? '', domainId ?? '']),
       placementGroup: semanticRole === 'evidence_table' ? 'evidence' : 'supporting',
+      visualizationPlanId: item.decisionVisualizationPlan?.visualizationPlan.planId ?? null,
       reasonForInclusion: 'Adds a distinct supporting analysis only when its management question and analytical shape survive composition gates.',
     });
-    materializers.set(candidateId, () => persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting'));
+    materializers.set(candidateId, () => persistChartModel(item.chartModel, item.label, 'perspective_dashboard_supporting', item.decisionVisualizationPlan ?? null));
   });
 
   const advice = adviseDashboardComposition({

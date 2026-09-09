@@ -181,6 +181,7 @@ export function analyticalIntentFromRuntimeIntentType(
 ): VisualizationAnalyticalIntentV1 {
   if (type === 'trend') return 'trend';
   if (type === 'relationship') return 'relationship';
+  if (type === 'distribution') return 'distribution';
   if (type === 'table_preview') return 'evidence_detail';
   return 'category_comparison';
 }

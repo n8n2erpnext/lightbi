@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildInvestigationDecisionVisualizationPlan } from './investigation-visualization-plan';
+import { buildInvestigationDecisionVisualizationPlan, resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
 
 const action = (actionType: 'group_by' | 'relationship') => ({
   id: `action_${actionType}`, opportunityName: actionType, label: actionType, description: actionType,
@@ -29,7 +29,7 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(plan?.primaryVisualization.type).toBe('bar');
   });
 
-  it('keeps relationship measures as a true scatter plan even with domain advice present', () => {
+  it('keeps relationship measures as a true scatter plan even with inferred-domain advice present', () => {
     const plan = buildInvestigationDecisionVisualizationPlan({
       analysisAction: action('relationship'), runtimeIntent: runtimeIntent('relationship'), primaryDomain: 'retail',
       chartModel: {
@@ -43,5 +43,41 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(plan?.visualizationPlan.patternId).toBe('relationship_scatter');
     expect(plan?.visualizationPlan.rendererFamily).toBe('scatter');
     expect(plan?.visualizationPlan.governance.mbAuthority).toBe('advisory_only');
+  });
+
+  it('maps a real numeric distribution to the histogram family instead of category bars', () => {
+    const distributionAction = {
+      ...action('group_by'), id: 'action_distribution', opportunityName: 'Profit distribution', description: 'Profit distribution',
+      actionType: 'distribution' as const, dimensions: [], measures: ['profit'],
+    };
+    const distributionIntent = {
+      ...runtimeIntent('group_by'), id: 'intent_distribution', sourceActionId: 'action_distribution', type: 'distribution' as const,
+      dimensions: [], measures: ['profit'], expectedShape: 'bar_chart' as const,
+    };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: distributionAction, runtimeIntent: distributionIntent, primaryDomain: 'finance',
+      chartModel: {
+        id: 'chart_dist', sourceResultId: 'result_dist', status: 'ready', chartType: 'bar', title: 'Profit distribution',
+        yField: 'profit', seriesFields: ['profit'], rows: [{ profit: 10 }, { profit: 20 }, { profit: 18 }, { profit: 35 }],
+        warnings: [], source: 'duckdb_preview_result',
+      },
+    });
+    expect(plan?.result.xFieldRole).toBe('measure');
+    expect(plan?.visualizationPlan.patternId).toBe('distribution_histogram');
+    expect(plan?.visualizationPlan.rendererFamily).toBe('histogram');
+  });
+
+  it('recognizes explicit actual-vs-target semantics as presentation intent without authorizing a metric', () => {
+    const targetAction = {
+      ...action('relationship'), id: 'action_target', opportunityName: 'Actual vs target', description: 'Compare actual performance with target',
+      measures: ['actual','target'], dimensions: [],
+    };
+    const intent = { ...runtimeIntent('relationship'), id: 'intent_target', measures: ['actual','target'] };
+    expect(resolveInvestigationVisualizationIntent(intent, targetAction)).toBe('target_attainment');
+  });
+
+  it('recognizes ranking language as a presentation-only ranking intent', () => {
+    const rankAction = { ...action('group_by'), opportunityName: 'Top customers by revenue', description: 'Rank top customers' };
+    expect(resolveInvestigationVisualizationIntent(runtimeIntent('group_by'), rankAction)).toBe('ranking');
   });
 });

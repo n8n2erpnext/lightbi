@@ -3,24 +3,23 @@ import { Link } from 'react-router-dom';
 import { BarChart3, CheckCircle2, Gauge, LayoutDashboard, LineChart, PieChart, Plus, Search, Sparkles, Table2 } from 'lucide-react';
 import { useAppRuntime } from '@lightbi/runtime';
 import type { Chart, ChartType } from '@lightbi/core-types';
+import { VISUALIZATION_CHART_TEMPLATE_LIBRARY_V1, type VisualizationChartTemplateV1 } from '../lib/visualization-chart-templates';
 import { useUiLanguage } from '../lib/ui-language';
+import { LIGHTBI_QUALITATIVE_PALETTE_V1 } from '../lib/visualization-palette';
+import { ChartTemplatePreview } from '../components/charts/ChartTemplatePreview';
 
-type ChartTemplate = {
-  id: string;
-  name: string;
-  type: ChartType;
-  intent: string;
-  bestFor: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+type ChartTemplate = VisualizationChartTemplateV1;
+const chartTemplates: ChartTemplate[] = VISUALIZATION_CHART_TEMPLATE_LIBRARY_V1;
+
+const templateIcon = (template: ChartTemplate): React.ComponentType<{ className?: string; strokeWidth?: number }> => {
+  if (template.rendererFamily === 'number' || template.rendererFamily === 'bullet') return Gauge;
+  if (['line','area','sparkline','control_chart','calendar_heatmap'].includes(template.rendererFamily)) return LineChart;
+  if (template.rendererFamily === 'donut') return PieChart;
+  if (template.rendererFamily === 'table' || template.rendererFamily === 'timeline') return Table2;
+  return BarChart3;
 };
 
-const chartTemplates: ChartTemplate[] = [
-  { id: 'trend', name: 'Trend over time', type: 'Line', intent: 'Track movement by date/time', bestFor: 'Revenue, inventory, delivery duration, open tickets', icon: LineChart },
-  { id: 'group-bar', name: 'Compare groups', type: 'Bar', intent: 'Rank categories and spot concentration', bestFor: 'Top customers, routes, branches, users, SKUs', icon: BarChart3 },
-  { id: 'share', name: 'Share of total', type: 'Donut', intent: 'Understand contribution by segment', bestFor: 'Status mix, channel mix, payment method, product family', icon: PieChart },
-  { id: 'kpi', name: 'KPI scorecard', type: 'Number', intent: 'Show one decision metric clearly', bestFor: 'Total value, overdue count, completion rate, margin', icon: Gauge },
-  { id: 'detail-table', name: 'Evidence table', type: 'Table', intent: 'Keep raw rows near the visual decision', bestFor: 'Exceptions, missing fields, duplicated records, drilldown', icon: Table2 },
-];
+const rendererLabel = (value: string) => value.replace(/_/g, ' ').replace(/\w/g, char => char.toUpperCase());
 
 const chartTypeClass = (type: string) => {
   const normalized = type.toLowerCase();
@@ -66,14 +65,14 @@ const MiniChartPreview: React.FC<{ type: ChartType; payload?: SavedChartPayload 
       );
     }
     if (type === 'Donut' || type === 'Pie') {
-      return <div className="mx-auto h-20 w-20 rounded-full border-[18px] border-indigo-500 border-r-violet-300 border-t-emerald-300" />;
+      return <div className="mx-auto h-20 w-20 rounded-full" style={{ background: `conic-gradient(${LIGHTBI_QUALITATIVE_PALETTE_V1[0]} 0 40%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[1]} 40% 68%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[2]} 68% 86%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[3]} 86% 100%)`, WebkitMask: 'radial-gradient(circle at center, transparent 0 46%, #000 48%)', mask: 'radial-gradient(circle at center, transparent 0 46%, #000 48%)' }} />;
     }
     const values = payload.rows.slice(0, 8).map(row => Number(row[yField ?? ''] ?? 0));
     const max = Math.max(1, ...values.map(value => Math.abs(value)));
     return (
       <div className="flex h-full items-end justify-center gap-2 px-6 pb-5">
         {values.map((value, index) => (
-          <div key={index} className={`w-8 rounded-t ${type === 'Line' ? 'bg-blue-500' : 'bg-indigo-500'}`} style={{ height: Math.max(8, Math.round((Math.abs(value) / max) * 86)) }} />
+          <div key={index} className="w-8 rounded-t" style={{ height: Math.max(8, Math.round((Math.abs(value) / max) * 86)), background: LIGHTBI_QUALITATIVE_PALETTE_V1[index % LIGHTBI_QUALITATIVE_PALETTE_V1.length] }} />
         ))}
       </div>
     );
@@ -83,7 +82,7 @@ const MiniChartPreview: React.FC<{ type: ChartType; payload?: SavedChartPayload 
     return <div className="flex h-full flex-col items-center justify-center"><div className="text-3xl font-semibold text-gray-900">24.8K</div><div className="mt-1 text-[11px] text-emerald-600">+12% vs previous</div></div>;
   }
   if (type === 'Donut' || type === 'Pie') {
-    return <div className="mx-auto h-20 w-20 rounded-full border-[18px] border-indigo-500 border-r-violet-300 border-t-emerald-300" />;
+    return <div className="mx-auto h-20 w-20 rounded-full" style={{ background: `conic-gradient(${LIGHTBI_QUALITATIVE_PALETTE_V1[0]} 0 40%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[1]} 40% 68%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[2]} 68% 86%, ${LIGHTBI_QUALITATIVE_PALETTE_V1[3]} 86% 100%)`, WebkitMask: 'radial-gradient(circle at center, transparent 0 46%, #000 48%)', mask: 'radial-gradient(circle at center, transparent 0 46%, #000 48%)' }} />;
   }
   if (type === 'Table') {
     return (
@@ -96,7 +95,7 @@ const MiniChartPreview: React.FC<{ type: ChartType; payload?: SavedChartPayload 
   return (
     <div className="flex h-full items-end justify-center gap-2 px-6 pb-5">
       {bars.map((height, index) => (
-        <div key={index} className={`w-8 rounded-t ${type === 'Line' ? 'bg-blue-500' : 'bg-indigo-500'}`} style={{ height }} />
+        <div key={index} className="w-8 rounded-t" style={{ height, background: LIGHTBI_QUALITATIVE_PALETTE_V1[index % LIGHTBI_QUALITATIVE_PALETTE_V1.length] }} />
       ))}
     </div>
   );
@@ -146,19 +145,30 @@ export const Charts: React.FC = () => {
   };
 
   const handleCreateFromTemplate = (template: ChartTemplate) => {
-    if (!selectedDataset) return;
+    if (!selectedDataset || !template.rendererReady || !template.persistedChartType) return;
     const chartId = createChart({
       projectId: selectedDataset.projectId,
       datasetId: selectedDataset.id,
       name: `${template.name} - ${selectedDataset.name}`,
-      type: template.type,
-      xAxis: [{ columnName: template.type === 'Line' ? 'Date' : 'Category' }],
-      yAxis: [{ columnName: template.type === 'Number' ? 'Value' : 'Measure', aggregation: template.type === 'Number' ? 'Sum' : 'Count' }],
-      formatting: {},
-      filters: {},
+      type: template.persistedChartType,
+      // Templates are presentation-only until real BA/Advanced fields are bound.
+      // Do not fabricate Category/Measure columns or analytical authority here.
+      xAxis: [], yAxis: [], filters: {},
+      formatting: {
+        lightbiData: {
+          source: 'visualization_chart_template',
+          visualizationTemplate: {
+            schemaVersion: template.schemaVersion,
+            patternId: template.patternId,
+            rendererFamily: template.rendererFamily,
+            authority: 'presentation_only',
+            dataBindingState: 'unbound',
+          },
+        },
+      },
     });
     handleAddChart(chartId);
-    setNotice(t('Template saved as a chart card and added to dashboard.'));
+    setNotice(t('Template saved as an unbound chart card. Bind real BA or Advanced fields before using it.'));
   };
 
   return (
@@ -248,14 +258,16 @@ export const Charts: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
             {chartTemplates.map(template => {
-              const Icon = template.icon;
+              const Icon = templateIcon(template);
               return (
-                <div key={template.id} className="border-b border-[var(--lb-divider)] p-4 md:border-r">
-                  <div className="mb-4 flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center text-black/65"><Icon className="h-5 w-5" strokeWidth={1.7} /></div><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(template.type)}`}>{template.type}</span></div>
+                <div key={template.patternId} className="border-b border-[var(--lb-divider)] p-4 md:border-r">
+                  <div className="mb-3 flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center text-black/65"><Icon className="h-5 w-5" strokeWidth={1.7} /></div><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(template.rendererFamily)}`}>{rendererLabel(template.rendererFamily)}</span></div>
+                  <div className="mb-4 h-24 border-y border-[var(--lb-divider)] bg-black/[0.008]" title={t('Pattern preview · presentation only')}><ChartTemplatePreview patternId={template.patternId} /></div>
                       <h3 className="text-[15px] font-semibold">{t(template.name)}</h3>
                       <p className="mt-1 text-[13px] leading-5 text-black/50">{t(template.intent)}</p>
                       <div className="mt-4 border-l-2 border-[var(--lb-divider)] pl-3 text-[12px] leading-5 text-black/45">{t('Best for')}: {t(template.bestFor)}</div>
-                  <button disabled={!selectedDataset} onClick={() => handleCreateFromTemplate(template)} className="lb-action-primary mt-4 h-9 w-full text-[12px] disabled:opacity-40">{t('Create chart card')}</button>
+                      <div className="mt-2 text-[10px] font-medium uppercase tracking-wider text-black/30">{template.patternId}</div>
+                  <button disabled={!selectedDataset || !template.rendererReady} onClick={() => handleCreateFromTemplate(template)} className="lb-action-primary mt-4 h-9 w-full text-[12px] disabled:opacity-40">{template.rendererReady ? t('Create chart card') : t('Renderer pending')}</button>
                 </div>
               );
             })}

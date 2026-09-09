@@ -190,6 +190,53 @@ test('DPR-10 single and multi-file Deep BA use explicit primary-or-side-panel pr
 });
 
 
+
+test('DPR-10 Gate D exposes the canonical 30-chart library and preserves official/inferred/shape-only authority lanes', async () => {
+  const templates = await read('apps/desktop/src/lib/visualization-chart-templates.ts');
+  const ontology = await read('apps/desktop/src/lib/visualization-ontology.ts');
+  const domainSets = await read('apps/desktop/src/lib/domain-chart-sets.ts');
+  const domainProfile = await read('apps/desktop/src/lib/domain-visual-profile.ts');
+  const planner = await read('apps/desktop/src/lib/visualization-planner.ts');
+  const investigationPlan = await read('apps/desktop/src/lib/investigation-visualization-plan.ts');
+  assert.match(templates, /VISUALIZATION_PATTERN_LIBRARY_V1\.map/);
+  assert.match(ontology, /export type VisualizationPatternIdV1 =/);
+  assert.match(domainSets, /OFFICIAL_DOMAIN_CHART_SETS_V1/);
+  for (const domain of ['revenue','finance','inventory','operations','customer','performance']) {
+    assert.match(domainSets, new RegExp(`\\b${domain}: \\{`));
+  }
+  assert.match(domainProfile, /selectionSource: officialPrior\.length > 0 \? 'official_domain_prior' : 'inferred_domain_advice'/);
+  assert.match(domainProfile, /candidateLibraryScope: 'canonical_30_patterns'/);
+  assert.match(planner, /deterministicSuitabilityFinal: true/);
+  assert.match(planner, /mbAuthority: 'advisory_only'/);
+  assert.match(investigationPlan, /resolveInvestigationVisualizationIntent/);
+  assert.match(planner, /if \(type === 'distribution'\) return 'distribution';/);
+  assert.match(investigationPlan, /analyticalIntent === 'distribution'/);
+});
+
+test('DPR-10 Gate D rich ECharts renderers, semantic palette, hover detail and 1+2 analysis composition are source contracts', async () => {
+  const registry = await read('apps/desktop/src/lib/visualization-renderer-registry.ts');
+  const renderer = await read('apps/desktop/src/components/dashboards/DashboardChartWidget.tsx');
+  const preview = await read('apps/desktop/src/components/analysis/ChartPreviewRenderer.tsx');
+  const chartLibrary = await read('apps/desktop/src/pages/Charts.tsx');
+  const investigation = await read('apps/desktop/src/pages/Investigation.tsx');
+  const palette = await read('apps/desktop/src/lib/visualization-palette.ts');
+  for (const family of ['area','grouped_bar','stacked_bar','normalized_stacked','combo_bar_line','waterfall','histogram','box_plot','bubble','heatmap','cohort_heatmap','funnel','pareto','bullet','diverging_bar','calendar_heatmap','sankey','timeline','control_chart','small_multiples','radar']) {
+    assert.match(registry, new RegExp(`${family}: cap\\('${family}'`));
+  }
+  assert.match(renderer, /const richAxisTooltip/);
+  assert.match(renderer, /marker[^\n]*seriesName/);
+  assert.match(renderer, /family === 'box_plot'/);
+  assert.match(renderer, /family === 'heatmap' \|\| family === 'cohort_heatmap'/);
+  assert.match(renderer, /family === 'sankey'/);
+  assert.match(preview, /generateDashboardChartOptions/);
+  assert.match(chartLibrary, /VISUALIZATION_CHART_TEMPLATE_LIBRARY_V1/);
+  assert.match(chartLibrary, /ChartTemplatePreview/);
+  assert.match(investigation, /\.slice\(0, 2\)/);
+  assert.match(investigation, /visualizationPlan=\{item\.decisionVisualizationPlan\?\.visualizationPlan \?\? null\}/);
+  assert.match(palette, /LIGHTBI_QUALITATIVE_PALETTE_V1/);
+  assert.doesNotMatch(palette, /^\s*'#4f46e5'/m);
+});
+
 test('DPR-10 history keeps durable retention separate from 6x5 navigation and restores multi-file state fail-closed', async () => {
   const history = await read('apps/desktop/src/components/home/HomeSessionHistoryPanel.tsx');
   const persistence = await read('apps/desktop/src/lib/home-workspace-persistence.ts');

@@ -7,6 +7,7 @@ import type {
   VisualizationAnalyticalIntentV1,
   VisualizationPatternIdV1,
 } from './visualization-ontology';
+import { officialDomainPatternOrder } from './domain-chart-sets';
 
 export const DOMAIN_VISUAL_PROFILE_VERSION = 'lightbi.domain-visual-profile.v1' as const;
 
@@ -14,6 +15,8 @@ export type DomainVisualProfileV1 = {
   schemaVersion: typeof DOMAIN_VISUAL_PROFILE_VERSION;
   domainId: string;
   authority: 'advisory_only';
+  selectionSource?: 'official_domain_prior' | 'inferred_domain_advice';
+  candidateLibraryScope?: 'canonical_30_patterns';
   analyticalIntents: VisualizationAnalyticalIntentV1[];
   preferredPatternIds: VisualizationPatternIdV1[];
   conceptIds: string[];
@@ -91,12 +94,18 @@ export function projectDomainVisualProfileFromAdvice(
   const families = unique(eligible.flatMap(candidate => candidate.presentation.chartFamilies ?? []));
   const mapped = families.flatMap(family => MB_CHART_FAMILY_TO_PATTERN_IDS_V1[family] ?? []);
   const unmapped = families.filter(family => !MB_CHART_FAMILY_TO_PATTERN_IDS_V1[family]);
+  const officialPrior = officialDomainPatternOrder(domainId);
   return {
     schemaVersion: DOMAIN_VISUAL_PROFILE_VERSION,
     domainId,
     authority: 'advisory_only',
+    selectionSource: officialPrior.length > 0 ? 'official_domain_prior' : 'inferred_domain_advice',
+    candidateLibraryScope: 'canonical_30_patterns',
     analyticalIntents: knownIntents(eligible.flatMap(candidate => candidate.presentation.analyticalIntents ?? [])),
-    preferredPatternIds: [...new Set(mapped)],
+    // Exact official-domain priors are presentation-only and are merged ahead of
+    // MB advice. Inferred/open-world domains never enter this list. Suitability
+    // and renderer capability remain the final gates.
+    preferredPatternIds: [...new Set([...officialPrior, ...mapped])],
     conceptIds: unique(eligible.map(candidate => candidate.hit.conceptId)),
     evidenceRequirements: unique(eligible.flatMap(candidate => candidate.presentation.evidenceRequirements ?? [])),
     constraints: unique(eligible.flatMap(candidate => candidate.presentation.constraints ?? [])),

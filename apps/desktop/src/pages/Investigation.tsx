@@ -118,6 +118,7 @@ export const Investigation: React.FC = () => {
   const [supportingCharts, setSupportingCharts] = useState<Array<InvestigationDrillOrigin & {
     actionId: string;
     label: string;
+    decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   }>>([]);
   const [isLoadingSupportingCharts, setIsLoadingSupportingCharts] = useState(false);
   // The overview is descriptive context beside a full-source governed result.
@@ -244,7 +245,7 @@ export const Investigation: React.FC = () => {
       // value exposure, etc.) and left Easy Mode with one trivial chart.
       .filter(item => item.analysisAction.id !== session.analysisAction.id)
       .filter(item => item.runtimePlanPreview.status !== 'blocked')
-      .slice(0, 3);
+      .slice(0, 2);
     if (candidates.length === 0) {
       setSupportingCharts([]);
       return;
@@ -253,7 +254,7 @@ export const Investigation: React.FC = () => {
     setIsLoadingSupportingCharts(true);
     setSupportingCharts([]);
     void (async () => {
-      const results: Array<InvestigationDrillOrigin & { actionId: string; label: string }> = [];
+      const results: Array<InvestigationDrillOrigin & { actionId: string; label: string; decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null }> = [];
       for (const item of candidates) {
         if (!supportingRuns.current.isCurrent(run)) return;
         const preparation = prepareGovernedDescriptiveAnalysis(item.runtimePlanPreview, session.rows || []);
@@ -273,10 +274,17 @@ export const Investigation: React.FC = () => {
             runtimePlan: preparation.runtimePlan,
             analysisLabel: item.analysisAction.opportunityName,
           });
-          if (model.status === 'ready') results.push({
-            actionId: item.analysisAction.id, label: item.analysisAction.opportunityName,
-            analysisAction: item.analysisAction, runtimePlan: preparation.runtimePlan, chartModel: model,
-          });
+          if (model.status === 'ready') {
+            const decisionVisualizationPlan = buildInvestigationDecisionVisualizationPlan({
+              chartModel: model, runtimeIntent: item.runtimeIntent, analysisAction: item.analysisAction,
+              primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+            });
+            results.push({
+              actionId: item.analysisAction.id, label: item.analysisAction.opportunityName,
+              analysisAction: item.analysisAction, runtimePlan: preparation.runtimePlan, chartModel: model,
+              decisionVisualizationPlan,
+            });
+          }
         } catch (error) {
           console.warn('Supporting analysis skipped', item.analysisAction.id, error);
         }
@@ -286,7 +294,7 @@ export const Investigation: React.FC = () => {
       if (supportingRuns.current.isCurrent(run)) setIsLoadingSupportingCharts(false);
     });
     return () => supportingRuns.current.cancel();
-  }, [session?.id]);
+  }, [session?.id, primaryAnalysisAuthority?.domain.primaryDomain]);
 
   if (!session) {
     return (
@@ -751,7 +759,7 @@ export const Investigation: React.FC = () => {
                   {chartModel && <details data-testid="focus-population-context" className="border-t border-[var(--lb-divider)] pt-3">
                     <summary className="cursor-pointer text-xs font-semibold text-slate-600">View full-population governed chart</summary>
                     <p className="mt-2 text-[11px] leading-5 text-slate-400">This chart remains the governed population evidence. It is supporting context; the focused benchmark above is the primary readout.</p>
-                    <div className="mt-4 rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>
+                    <div className="mt-4 rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>
                   </details>}
                 </div>
               ) : previewResult?.status === 'blocked' ? (
@@ -759,9 +767,9 @@ export const Investigation: React.FC = () => {
               ) : previewResult?.status === 'failed' ? (
                 <div className="flex h-64 w-full flex-col items-center justify-center border-y border-red-200 bg-red-50/50 p-6 text-center text-red-500"><AlertTriangle className="mb-2 h-8 w-8 text-red-400" /><span className="text-sm font-medium">Execution Failed</span><span className="mt-1 text-xs text-red-400">{previewResult.errorMessage || 'Preview could not be rendered.'}</span></div>
               ) : previewResult?.rows && previewResult.rows.length > 0 && runtimeIntent.expectedShape === 'table' ? (
-                <div className="space-y-5"><DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />{chartModel && chartModel.chartType !== 'table' && <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>}</div>
+                <div className="space-y-5"><DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />{chartModel && chartModel.chartType !== 'table' && <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>}</div>
               ) : chartModel && runtimeIntent.expectedShape !== 'table' ? (
-                <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>
+                <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>
               ) : (
                 <div className="flex h-64 w-full flex-col items-center justify-center border-y border-slate-200 bg-slate-50 text-slate-400"><Activity className={`mb-2 h-8 w-8 text-slate-300 ${isExecuting ? 'animate-pulse' : ''}`} /><span className="text-sm font-medium">{isExecuting ? 'Preparing preview...' : 'Ready to preview'}</span>{!isExecuting && <button onClick={handleRunPreview} disabled={!canExecute} title={!canExecute ? 'Resolve the runtime preflight blockers before running this analysis.' : undefined} className="mt-4 rounded-md border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-black/65 transition-colors hover:bg-black/[0.035]">Preview chart</button>}</div>
               )}
@@ -774,7 +782,7 @@ export const Investigation: React.FC = () => {
             {focusComparison.status !== 'ready' && (isLoadingSupportingCharts || supportingCharts.length > 0) && (
               <section data-testid="perspective-analysis-bundle" className="border-t border-[var(--lb-divider)] pt-4">
                 <div className="flex items-start justify-between gap-3"><div><h3 className="text-[14px] font-semibold text-[#202123]">{t('Supporting analyses for this perspective')}</h3><p className="mt-1 text-[12px] text-black/50">{t('LightBI checks the same governed source from complementary dimensions.')}</p></div><span className="text-[11px] font-semibold text-blue-700">{isLoadingSupportingCharts ? t('Preparing...') : `${supportingCharts.length} ${t('supporting charts')}`}</span></div>
-                {isLoadingSupportingCharts && supportingCharts.length === 0 ? <div className="mt-4 h-28 animate-pulse border-y border-blue-100 bg-white/70" /> : <div className="mt-4 grid gap-4 lg:grid-cols-2">{supportingCharts.map(item => <article key={item.actionId} data-testid="supporting-analysis-chart" className="rounded-xl border border-black/10 bg-white p-3"><h4 className="mb-2 text-[12px] font-semibold text-[#202123]">{item.label}</h4><ChartPreviewRenderer model={item.chartModel} onDrillThrough={(point) => { void runDrillThrough(point, item); }} /></article>)}</div>}
+                {isLoadingSupportingCharts && supportingCharts.length === 0 ? <div className="mt-4 h-28 animate-pulse border-y border-blue-100 bg-white/70" /> : <div className="mt-4 grid gap-4 lg:grid-cols-2">{supportingCharts.map(item => <article key={item.actionId} data-testid="supporting-analysis-chart" className="rounded-xl border border-black/10 bg-white p-3"><h4 className="mb-2 text-[12px] font-semibold text-[#202123]">{item.label}</h4><ChartPreviewRenderer model={item.chartModel} visualizationPlan={item.decisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, item); }} /></article>)}</div>}
               </section>
             )}
 

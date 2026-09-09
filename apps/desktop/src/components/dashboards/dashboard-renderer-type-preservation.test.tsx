@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 import { generateDashboardChartOptions } from './DashboardChartWidget';
-import { resolveDashboardRendererType } from '../../pages/DashboardBuilder';
+import { resolveDashboardRendererType, resolveDashboardVisualizationMetadata } from '../../pages/DashboardBuilder';
 
 const preferences = {
   locale: 'en-US', timezone: 'UTC', numberStyle: 'plain', currencyDisplay: 'symbol',
@@ -28,4 +28,19 @@ describe('DPR-6 dashboard renderer type preservation', () => {
     expect(options.series[0].type).toBe('scatter');
     expect(options.series[0].data).toEqual([[10, 100], [20, 180]]);
   });
+
+  it('restores a rich renderer family from governed metadata even when the persisted transport type is coarse', () => {
+    const chart = {
+      id: 'chart_hist', projectId: 'proj', datasetId: 'dataset', name: 'Distribution', type: 'Bar',
+      xAxis: [], yAxis: [], filters: {}, createdAt: '2026-09-09', updatedAt: '2026-09-09',
+      formatting: { lightbiData: { decisionVisualizationPlan: { visualizationPlan: {
+        patternId: 'distribution_histogram', rendererFamily: 'histogram',
+        patternRules: { colorSemantics: ['sequential','neutral'] },
+      } } } },
+    } as any;
+    expect(resolveDashboardVisualizationMetadata(chart)).toEqual({
+      rendererFamily: 'histogram', patternId: 'distribution_histogram', colorSemantics: ['sequential','neutral'],
+    });
+  });
+
 });
