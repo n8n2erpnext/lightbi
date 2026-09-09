@@ -14,6 +14,8 @@ const r1p13RcWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/wo
 const tauriConfig = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
 const tauriWindowsConfig = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/tauri.windows.conf.json'), 'utf8'));
 const tauriMainCapability = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/capabilities/main.json'), 'utf8'));
+const desktopMenuSource = readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/src/desktop_menu.rs'), 'utf8');
+const appLayoutSource = readFileSync(resolve(import.meta.dirname, '../apps/desktop/src/components/layout/AppLayout.tsx'), 'utf8');
 const nextEsignerWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/windows-next-esigner-signing.yml'), 'utf8');
 const esignerPrepareScript = readFileSync(resolve(import.meta.dirname, 'prepare-windows-esigner-cka.ps1'), 'utf8');
 const esignerCleanupScript = readFileSync(resolve(import.meta.dirname, 'cleanup-windows-esigner-cka.ps1'), 'utf8');
@@ -78,21 +80,32 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc/u);
   assert.match(nativeAcceptanceWorkflow, /production_authority = \$false/u);
   assert.match(nativeAcceptanceWorkflow, /installer_size = \[int64\]\$size/u);
+  assert.match(nativeAcceptanceWorkflow, /Start-Process -FilePath \$normalized -ArgumentList '\/S', "\/D=\$installDir"/u);
+  assert.match(nativeAcceptanceWorkflow, /runtime_identity_source = 'nsis_silent_install'/u);
+  assert.match(nativeAcceptanceWorkflow, /schema = 'lightbi\.native-runtime-acceptance\.v1'/u);
+  assert.match(nativeAcceptanceWorkflow, /runtime_release_id = "release:\$\(\$env:LIGHTBI_ACCEPTANCE_VERSION\):windows:x86_64:runtime"/u);
+  assert.match(nativeAcceptanceWorkflow, /trust_ready = \$false/u);
+  assert.match(nativeAcceptanceWorkflow, /native-runtime-acceptance\.json/u);
   assert.match(nativeAcceptanceWorkflow, /LIGHTBI_NATIVE_ACCEPTANCE=\$acceptanceJson/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
 });
 
-test('Windows custom title bar remains native-only and has only bounded self-window authority', () => {
+test('Windows packaged shell restores OS decorations and the real File/Edit/View/Help native menu', () => {
   const windowConfig = tauriWindowsConfig.app?.windows?.[0];
-  assert.equal(windowConfig?.decorations, false);
+  assert.equal(windowConfig?.decorations, true);
   assert.equal(windowConfig?.width, 1440);
   assert.equal(windowConfig?.height, 900);
+  for (const label of ['File', 'Edit', 'View', 'Help']) {
+    assert.match(desktopMenuSource, new RegExp(`Submenu::new\\(app, \"${label}\"`, 'u'));
+  }
+  assert.match(desktopMenuSource, /app\.set_menu\(menu\)/u);
+  assert.doesNotMatch(appLayoutSource, /NativeWindowTitleBar/u);
   for (const permission of [
     'core:window:allow-minimize',
     'core:window:allow-toggle-maximize',
     'core:window:allow-close',
     'core:window:allow-start-dragging',
-  ]) assert.ok(tauriMainCapability.permissions.includes(permission));
+  ]) assert.ok(!tauriMainCapability.permissions.includes(permission));
   assert.doesNotMatch(JSON.stringify(tauriMainCapability.permissions), /allow-create|allow-destroy|allow-set-position/u);
 });
 

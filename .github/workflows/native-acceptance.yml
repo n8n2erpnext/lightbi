@@ -43,9 +43,10 @@ jobs:
         run: |
           pnpm dlx @tauri-apps/cli@2.11.4 icon apps/desktop/public/branding/lightbi-app-icon.png --output crates/lightbi-tauri/icons
           node scripts/validate-native-icons.mjs
-      - name: Verify native updater and Windows publisher gates
+      - name: Verify native shell, updater and Windows publisher gates
         shell: pwsh
         run: |
+          node scripts/validate-native-capabilities.mjs
           cargo test -p lightbi-tauri updater_tests --target x86_64-pc-windows-msvc
           cargo test -p lightbi-tauri windows_publisher --target x86_64-pc-windows-msvc
       - name: Build Windows R1-P12 NEXT acceptance installer
@@ -79,23 +80,78 @@ jobs:
           $env:VITE_LIGHTBI_BUILD_TIMESTAMP = (Get-Date).ToUniversalTime().ToString("o")
           @{ version = $env:LIGHTBI_ACCEPTANCE_VERSION } | ConvertTo-Json | Set-Content tauri.acceptance.conf.json
           pnpm dlx @tauri-apps/cli@2.11.4 build --target x86_64-pc-windows-msvc --config tauri.windows.conf.json --config tauri.acceptance.conf.json
-      - name: Generate checksum, publisher evidence and provenance
+      - name: Generate canonical installed-runtime, publisher and provenance evidence
         shell: pwsh
         run: |
-          $installer = Get-ChildItem "target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" | Select-Object -First 1
+          $releaseRoot = (Resolve-Path 'target/x86_64-pc-windows-msvc/release').Path
+          $prebundleRuntime = Get-Item "$releaseRoot/LightBI.exe" -ErrorAction Stop
+          $installer = Get-ChildItem "$releaseRoot/bundle/nsis/*.exe" | Select-Object -First 1
           if (-not $installer) { throw "NSIS installer was not produced" }
           $name = "LightBI-NEXT-$env:LIGHTBI_ACCEPTANCE_VERSION-x64-setup.exe"
           $normalized = Join-Path $installer.Directory.FullName $name
           Move-Item $installer.FullName $normalized -Force
+
+          $installDir = Join-Path $env:RUNNER_TEMP "lightbi-dpr10-canonical-install"
+          if (Test-Path $installDir) { Remove-Item $installDir -Recurse -Force }
+          $install = Start-Process -FilePath $normalized -ArgumentList '/S', "/D=$installDir" -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "NSIS canonical install failed: exit=$($install.ExitCode)" }
+          Get-Process LightBI -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          $installed = @(Get-ChildItem $installDir -Recurse -Filter 'LightBI.exe' -File)
+          if ($installed.Count -ne 1) { throw "expected one installed LightBI.exe, found $($installed.Count)" }
+          $runtimeCopy = Join-Path $installer.Directory.FullName 'LightBI.exe'
+          Copy-Item $installed[0].FullName $runtimeCopy -Force
+
+          $runtimeHash = (Get-FileHash -Algorithm SHA256 $runtimeCopy).Hash.ToLowerInvariant()
+          $runtimeSize = (Get-Item $runtimeCopy).Length
           $hash = (Get-FileHash -Algorithm SHA256 $normalized).Hash.ToLowerInvariant()
           $size = (Get-Item $normalized).Length
+          $prebundleHash = (Get-FileHash -Algorithm SHA256 $prebundleRuntime.FullName).Hash.ToLowerInvariant()
+          $prebundleSize = $prebundleRuntime.Length
+          "$runtimeHash  LightBI.exe" | Set-Content -NoNewline "$runtimeCopy.sha256"
           "$hash  $name" | Set-Content -NoNewline "$normalized.sha256"
+
+          $runtimePublisher = "$runtimeCopy.publisher.json"
           $publisher = "$normalized.publisher.json"
+          ./scripts/collect-windows-publisher-evidence.ps1 -Installer $runtimeCopy -Output $runtimePublisher
           ./scripts/collect-windows-publisher-evidence.ps1 -Installer $normalized -Output $publisher
+          node scripts/validate-windows-publisher-evidence.mjs --evidence $runtimePublisher --mode beta --expected-sha256 $runtimeHash
           node scripts/validate-windows-publisher-evidence.mjs --evidence $publisher --mode beta --expected-sha256 $hash
           $publisherEvidence = Get-Content $publisher -Raw | ConvertFrom-Json
+
+          $runtimeAcceptance = [ordered]@{
+            schema = 'lightbi.native-runtime-acceptance.v1'
+            environment = 'next_internal_test_only'
+            stage = 'dpr10_native'
+            version = $env:LIGHTBI_ACCEPTANCE_VERSION
+            release_channel = 'beta'
+            generation_id = $env:LIGHTBI_ACCEPTANCE_GENERATION
+            source_sha = '${{ github.sha }}'
+            source_ref = '${{ github.ref_name }}'
+            control_plane_sha = 'bb50b0d53542da5cd908e2237cbca368f7f87073'
+            run_id = '${{ github.run_id }}'
+            run_attempt = '${{ github.run_attempt }}'
+            runtime_artifact = 'LightBI.exe'
+            runtime_release_id = "release:$($env:LIGHTBI_ACCEPTANCE_VERSION):windows:x86_64:runtime"
+            runtime_sha256 = $runtimeHash
+            runtime_size = [int64]$runtimeSize
+            runtime_identity_source = 'nsis_silent_install'
+            installer_payload_verified = $true
+            prebundle_runtime_sha256 = $prebundleHash
+            prebundle_runtime_size = [int64]$prebundleSize
+            installer = $name
+            sha256 = $hash
+            installer_size = [int64]$size
+            publisher_status = $publisherEvidence.signature_status
+            production_authority = $false
+            stable_publication_authority = $false
+            owner_uat_accepted = $false
+            trust_ready = $false
+            trust_publication_state = 'pending_external_runtime_rel'
+          }
+          $runtimeAcceptance | ConvertTo-Json -Depth 6 | Set-Content "$($installer.Directory.FullName)/native-runtime-acceptance.json"
+
           $evidence = [ordered]@{
-            schema = "lightbi.native-acceptance.v2"
+            schema = "lightbi.native-acceptance.v3"
             version = $env:LIGHTBI_ACCEPTANCE_VERSION
             generation_id = $env:LIGHTBI_ACCEPTANCE_GENERATION
             source_sha = "${{ github.sha }}"
@@ -106,12 +162,22 @@ jobs:
             installer = $name
             sha256 = $hash
             installer_size = [int64]$size
+            runtime_artifact = 'LightBI.exe'
+            runtime_release_id = "release:$($env:LIGHTBI_ACCEPTANCE_VERSION):windows:x86_64:runtime"
+            runtime_sha256 = $runtimeHash
+            runtime_size = [int64]$runtimeSize
+            runtime_identity_source = 'nsis_silent_install'
+            installer_payload_verified = $true
             publisher_status = $publisherEvidence.signature_status
+            trust_ready = $false
             production_authority = $false
           }
           $acceptanceJson = $evidence | ConvertTo-Json -Compress
           $acceptanceJson | Set-Content "$($installer.Directory.FullName)/native-acceptance.json"
           Write-Host "LIGHTBI_NATIVE_ACCEPTANCE=$acceptanceJson"
+          Write-Host "LIGHTBI_INSTALLED_RUNTIME_SHA=$runtimeHash"
+          Write-Host "LIGHTBI_INSTALLED_RUNTIME_SIZE=$runtimeSize"
+          Write-Host "LIGHTBI_RUNTIME_RELEASE_ID=release:$($env:LIGHTBI_ACCEPTANCE_VERSION):windows:x86_64:runtime"
       - uses: actions/upload-artifact@v4
         with:
           name: LightBI-Windows-R1P12-Native-Acceptance
@@ -121,4 +187,5 @@ jobs:
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.sha256
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.publisher.json
             target/x86_64-pc-windows-msvc/release/bundle/nsis/native-acceptance.json
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/native-runtime-acceptance.json
           if-no-files-found: error

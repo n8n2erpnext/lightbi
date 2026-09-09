@@ -5,8 +5,8 @@ const capabilityPath = path.resolve('crates/lightbi-tauri/capabilities/main.json
 const capability = JSON.parse(fs.readFileSync(capabilityPath, 'utf8'));
 const permissions = new Set(Array.isArray(capability.permissions) ? capability.permissions : []);
 const required = ['core:event:allow-listen', 'core:event:allow-unlisten', 'opener:allow-open-url', 'opener:allow-default-urls'];
-const requiredWindow = ['core:window:allow-minimize', 'core:window:allow-toggle-maximize', 'core:window:allow-close', 'core:window:allow-start-dragging'];
-for (const permission of [...required, ...requiredWindow]) {
+const retiredCustomWindow = ['core:window:allow-minimize', 'core:window:allow-toggle-maximize', 'core:window:allow-close', 'core:window:allow-start-dragging'];
+for (const permission of required) {
   if (!permissions.has(permission)) throw new Error(`Missing native capability: ${permission}`);
 }
 if (!Array.isArray(capability.windows) || !capability.windows.includes('main')) {
@@ -15,8 +15,8 @@ if (!Array.isArray(capability.windows) || !capability.windows.includes('main')) 
 if (permissions.has('core:event:default') || permissions.has('core:default')) {
   throw new Error('Native updater capability is broader than required.');
 }
-for (const forbidden of ['core:window:allow-create', 'core:window:allow-destroy', 'core:window:allow-set-position']) {
-  if (permissions.has(forbidden)) throw new Error(`Custom title-bar authority is broader than required: ${forbidden}`);
+for (const forbidden of [...retiredCustomWindow, 'core:window:allow-create', 'core:window:allow-destroy', 'core:window:allow-set-position']) {
+  if (permissions.has(forbidden)) throw new Error(`OS/native window chrome must not grant frontend window-mutation authority: ${forbidden}`);
 }
 if (permissions.has('opener:allow-open-path') || permissions.has('opener:default')) {
   throw new Error('External-link capability must remain URL-only and must not grant filesystem reveal/open authority.');
@@ -24,6 +24,14 @@ if (permissions.has('opener:allow-open-path') || permissions.has('opener:default
 if (!permissions.has('opener:allow-open-url') || !permissions.has('opener:allow-default-urls')) {
   throw new Error('System-browser links require both the opener command and the restricted default-URL scope.');
 }
+const windowsOverlay = JSON.parse(fs.readFileSync(path.resolve('crates/lightbi-tauri/tauri.windows.conf.json'), 'utf8'));
+if (windowsOverlay?.app?.windows?.[0]?.decorations !== true) throw new Error('Windows packaged shell must restore OS/native decorations and application menu chrome.');
+const desktopMenu = fs.readFileSync(path.resolve('crates/lightbi-tauri/src/desktop_menu.rs'), 'utf8');
+for (const label of ['File', 'Edit', 'View', 'Help']) {
+  if (!desktopMenu.includes(`Submenu::new(app, "${label}"`)) throw new Error(`Native desktop menu missing: ${label}`);
+}
+if (!desktopMenu.includes('app.set_menu(menu)')) throw new Error('Native desktop menu is not installed as the application menu.');
+
 const tauriConfig = JSON.parse(fs.readFileSync(path.resolve('crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
 const installMode = tauriConfig?.bundle?.windows?.nsis?.installMode;
 const installerHooks = tauriConfig?.bundle?.windows?.nsis?.installerHooks;
@@ -68,7 +76,7 @@ if (installMode === 'perMachine') {
   }
 }
 console.log(JSON.stringify({
-  schema: 'lightbi.native-capability-check.v1', capability: capability.identifier, permissions: [...required, ...requiredWindow],
+  schema: 'lightbi.native-capability-check.v1', capability: capability.identifier, permissions: [...required], windowsChrome: 'os_native_decorations_with_file_edit_view_help_menu',
   windowsInstallMode: installMode, elevatedInstallerLaunch: installMode === 'perMachine' ? 'shell_execute_runas' : 'not_required',
   windowsUpdateMode: installMode === 'perMachine' ? 'silent_update_restart' : 'platform_default',
   uninstallLifecycle: 'same_installation_pairing_identity_fail_open_update_excluded',
