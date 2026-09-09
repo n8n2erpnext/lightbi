@@ -32,6 +32,7 @@ import { buildGenerationManifest } from "../../lib/generation-manifest";
 import { DesktopCommandCenter, dispatchDesktopCommand } from "./DesktopCommandCenter";
 import { UpdateNotificationMenu } from "./UpdateNotificationMenu";
 import { MicroBrainConsentSplash } from "./MicroBrainConsentSplash";
+import { NativeWindowTitleBar } from "./NativeWindowTitleBar";
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -117,18 +118,23 @@ export const AppLayout: React.FC = () => {
   if (location.pathname === "/settings") {
     return (
       <UiTranslationBoundary>
-        <main className="flex h-screen w-screen overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
-          <Outlet />
-          <MicroBrainConsentSplash />
-          <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
-        </main>
+        <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
+          <NativeWindowTitleBar />
+          <main className="flex min-h-0 flex-1 overflow-hidden">
+            <Outlet />
+            <MicroBrainConsentSplash />
+            <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
+          </main>
+        </div>
       </UiTranslationBoundary>
     );
   }
 
   return (
     <UiTranslationBoundary>
-      <div className="flex h-screen w-screen overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
+      <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--lb-canvas)] text-[var(--lb-ink)]">
+        <NativeWindowTitleBar />
+        <div className="flex min-h-0 flex-1 overflow-hidden">
         <MicroBrainConsentSplash />
         {/* Sidebar */}
         <aside
@@ -322,6 +328,7 @@ export const AppLayout: React.FC = () => {
           </div>
         </main>
         <DesktopCommandCenter signedIn={Boolean(lightbiAccount.account)} accountLabel={lightbiAccount.account?.account.email} />
+        </div>
       </div>
     </UiTranslationBoundary>
   );

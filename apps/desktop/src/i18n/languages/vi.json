@@ -8,6 +8,11 @@
     "direction": "ltr"
   },
   "messages": {
+    "Close window": "Đóng cửa sổ",
+    "Maximize / Restore": "Phóng to / Khôi phục",
+    "Maximize or restore window": "Phóng to hoặc khôi phục cửa sổ",
+    "Minimize": "Thu nhỏ",
+    "Minimize window": "Thu nhỏ cửa sổ",
     "Activate": "Kích hoạt",
     "Anonymous installation pairing": "Ghép nối cài đặt ẩn danh",
     "Enter a Pro license key": "Nhập mã giấy phép Pro",

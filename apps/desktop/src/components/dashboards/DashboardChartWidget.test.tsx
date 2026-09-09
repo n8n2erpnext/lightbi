@@ -64,6 +64,19 @@ describe('DashboardChartWidget formatting', () => {
     expect(formattedValue).toBe('1,500,000');
   });
 
+  it('renders governed ranking rows horizontally with a quantitative x-axis', () => {
+    const options = generateDashboardChartOptions({
+      ...chartProps,
+      chartType: 'row',
+      title: 'Ranked groups',
+      data: [{ name: 'Long category A', value: 120 }, { name: 'B', value: 80 }],
+    }, mockPreferences, true) as any;
+    expect(options.xAxis.type).toBe('value');
+    expect(options.yAxis).toMatchObject({ type: 'category', inverse: true });
+    expect(options.yAxis.data).toEqual(['Long category A', 'B']);
+    expect(options.series[0]).toMatchObject({ type: 'bar', barMaxWidth: 28, data: [120, 80] });
+  });
+
   it('does not turn ordinary numeric categories into dates in 1970', () => {
     expect(formatDashboardCategory(1, 'reporting_period', 'vi-VN')).toBe('1');
     expect(formatDashboardCategory(51, 'month_bucket', 'vi-VN')).toBe('51');

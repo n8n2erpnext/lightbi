@@ -1,12 +1,18 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "lightbi-main-runtime",
-  "description": "Allows the main LightBI webview to observe native updater progress events without granting unrelated native capabilities.",
-  "windows": ["main"],
+  "description": "Allows the main LightBI webview to observe updater progress, open approved external URLs, and control only its own custom native window chrome.",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:event:allow-listen",
     "core:event:allow-unlisten",
     "opener:allow-open-url",
-    "opener:allow-default-urls"
+    "opener:allow-default-urls",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
   ]
 }

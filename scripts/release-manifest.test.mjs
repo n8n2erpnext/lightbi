@@ -12,6 +12,8 @@ const releaseWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/wo
 const nativeAcceptanceWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/native-acceptance.yml'), 'utf8');
 const r1p13RcWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/r1p13-rc-acceptance.yml'), 'utf8');
 const tauriConfig = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/tauri.conf.json'), 'utf8'));
+const tauriWindowsConfig = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/tauri.windows.conf.json'), 'utf8'));
+const tauriMainCapability = JSON.parse(readFileSync(resolve(import.meta.dirname, '../crates/lightbi-tauri/capabilities/main.json'), 'utf8'));
 const nextEsignerWorkflow = readFileSync(resolve(import.meta.dirname, '../.github/workflows/windows-next-esigner-signing.yml'), 'utf8');
 const esignerPrepareScript = readFileSync(resolve(import.meta.dirname, 'prepare-windows-esigner-cka.ps1'), 'utf8');
 const esignerCleanupScript = readFileSync(resolve(import.meta.dirname, 'cleanup-windows-esigner-cka.ps1'), 'utf8');
@@ -66,6 +68,7 @@ test('Beta workflow cannot promote itself to stable release authority', () => {
 test('Windows native acceptance artifact is isolated from Production publication authority', () => {
   assert.match(nativeAcceptanceWorkflow, /workflow_dispatch:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
+  assert.match(nativeAcceptanceWorkflow, /LIGHTBI_RUNTIME_CHANNEL: internal/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
@@ -77,6 +80,20 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /installer_size = \[int64\]\$size/u);
   assert.match(nativeAcceptanceWorkflow, /LIGHTBI_NATIVE_ACCEPTANCE=\$acceptanceJson/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /softprops\/action-gh-release|R2_ACCESS_KEY_ID|aws s3 cp/u);
+});
+
+test('Windows custom title bar remains native-only and has only bounded self-window authority', () => {
+  const windowConfig = tauriWindowsConfig.app?.windows?.[0];
+  assert.equal(windowConfig?.decorations, false);
+  assert.equal(windowConfig?.width, 1440);
+  assert.equal(windowConfig?.height, 900);
+  for (const permission of [
+    'core:window:allow-minimize',
+    'core:window:allow-toggle-maximize',
+    'core:window:allow-close',
+    'core:window:allow-start-dragging',
+  ]) assert.ok(tauriMainCapability.permissions.includes(permission));
+  assert.doesNotMatch(JSON.stringify(tauriMainCapability.permissions), /allow-create|allow-destroy|allow-set-position/u);
 });
 
 test('R1-P13 RC acceptance is prerelease-only artifact authority', () => {

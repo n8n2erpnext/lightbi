@@ -157,14 +157,14 @@ export const BuildIdentityPanel: React.FC = () => {
   );
 
   return (
-    <div data-testid="build-identity-panel" data-verification-state={identity.state} className="mb-5 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+    <div data-testid="build-identity-panel" data-verification-state={identity.state} className="mb-6 border-y border-amber-200 py-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-xs font-bold uppercase tracking-[0.18em] text-amber-700">Build identity</div>
           <div className="mt-1 font-semibold text-slate-900">{identity.title}</div>
           <div className="mt-1 max-w-2xl text-xs leading-5 text-slate-600">{identity.detail}</div>
         </div>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">{identity.badge}</span>
+        <span className="border-l-2 border-amber-400 pl-3 text-xs font-bold text-amber-900">{identity.badge}</span>
       </div>
       <div className="mt-4 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-5">
         <div><span className="text-slate-400">Release identity</span><div className="font-semibold text-slate-800">{generation.app_version} · {generation.channel}</div></div>

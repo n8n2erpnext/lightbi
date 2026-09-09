@@ -70,6 +70,49 @@ function emptyPage(pageNumber: number): AnalysisReportPageV1 {
   return { pageNumber, usedHeightUnits: 0, fragments: [] };
 }
 
+const MIN_TRAILING_PAGE_FILL_RATIO = 0.38;
+const MIN_PREVIOUS_PAGE_FILL_RATIO = 0.30;
+
+function recomputePageOffsets(page: AnalysisReportPageV1): void {
+  let offset = 0;
+  for (const fragment of page.fragments) {
+    fragment.pageOffsetUnits = offset;
+    offset += fragment.renderedHeightUnits;
+  }
+  page.usedHeightUnits = offset;
+}
+
+function rebalanceTrailingPage(
+  pages: AnalysisReportPageV1[],
+  sections: AnalysisReportSectionV1[],
+  pageHeightUnits: number,
+): void {
+  if (pages.length < 2) return;
+  const sectionById = new Map(sections.map(section => [section.id, section]));
+  const minTrailingFill = pageHeightUnits * MIN_TRAILING_PAGE_FILL_RATIO;
+  const minPreviousFill = pageHeightUnits * MIN_PREVIOUS_PAGE_FILL_RATIO;
+
+  while (pages.length >= 2) {
+    const trailing = pages.at(-1)!;
+    const previous = pages.at(-2)!;
+    if (trailing.usedHeightUnits >= minTrailingFill || previous.fragments.length <= 1) break;
+    const firstTrailing = trailing.fragments[0];
+    const candidate = previous.fragments.at(-1)!;
+    const trailingSection = sectionById.get(firstTrailing.sectionId);
+    const candidateSection = sectionById.get(candidate.sectionId);
+    if (!trailingSection || !candidateSection) break;
+    if (firstTrailing.continued || firstTrailing.sourceOffsetUnits > 0 || candidate.continued || candidate.sourceOffsetUnits > 0 || candidate.scaledToFit) break;
+    if (trailingSection.pageBreakBefore || candidateSection.pageBreakBefore || candidateSection.pageBreakAfter) break;
+    if (candidate.renderedHeightUnits + trailing.usedHeightUnits > pageHeightUnits) break;
+    if (previous.usedHeightUnits - candidate.renderedHeightUnits < minPreviousFill) break;
+
+    previous.fragments.pop();
+    trailing.fragments.unshift(candidate);
+    recomputePageOffsets(previous);
+    recomputePageOffsets(trailing);
+  }
+}
+
 export function createAnalysisReportPlan(input: CreateAnalysisReportPlanInputV1): AnalysisReportPlanV1 {
   assertValidInput(input);
   const pages: AnalysisReportPageV1[] = [emptyPage(1)];
@@ -133,6 +176,7 @@ export function createAnalysisReportPlan(input: CreateAnalysisReportPlanInputV1)
   });
 
   while (pages.length > 1 && pages.at(-1)?.fragments.length === 0) pages.pop();
+  rebalanceTrailingPage(pages, input.sections, input.pageHeightUnits);
   return {
     schemaVersion: ANALYSIS_REPORT_PLAN_VERSION,
     pageHeightUnits: input.pageHeightUnits,

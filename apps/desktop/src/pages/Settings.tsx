@@ -51,7 +51,7 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     await account.loginEmail(email, password);
   };
 
-  if (account.deviceLimit) return <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+  if (account.deviceLimit) return <div className="border-y border-amber-200 py-5">
     <div className="flex items-start gap-3"><Monitor className="mt-0.5 h-5 w-5 text-amber-700" /><div><div className="font-semibold text-slate-900">{t('Device limit reached')}</div><p className="mt-1 text-sm leading-6 text-slate-600">{t('Your plan has no free device slot. LightBI will never sign out another active device without your approval.')}</p></div></div>
     <div className="mt-4 rounded-lg border border-amber-200 bg-white/80 px-4 py-3 text-sm text-slate-700">{account.deviceLimit.maxDevices ? <>{t('This account allows')} {account.deviceLimit.maxDevices} {t('active device slots. Choose exactly which existing device to replace, or manage devices manually in the browser.')}</> : t('Choose exactly which existing device to replace, or manage devices manually in the browser.')}</div>
     <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={account.loading} onClick={() => void account.replaceDevice()} className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{account.loading ? t('Waiting for replacement…') : t('Replace a device')}</button><button type="button" disabled={account.loading} onClick={() => void account.manageDevices()} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">{t('Manage devices')}</button><button type="button" disabled={account.loading} onClick={() => void account.retryDeviceSlot()} className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 disabled:opacity-50">{t('Retry')}</button><button type="button" disabled={account.loading} onClick={() => account.cancelDeviceLimit()} className="px-2 py-2.5 text-sm font-semibold text-slate-500 disabled:opacity-50">{t('Back')}</button></div>
@@ -59,7 +59,7 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     {account.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{account.error}</div>}
   </div>;
 
-  if (account.mfaChallenge) return <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+  if (account.mfaChallenge) return <div className="border-y border-amber-200 py-5">
     <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 text-amber-700" /><div><div className="font-semibold text-slate-900">Strong authentication required</div><p className="mt-1 text-sm leading-6 text-slate-600">Your password is correct. Complete the enabled second factor before LightBI creates a native account session.</p></div></div>
     <div className="mt-4 flex rounded-lg bg-white/80 p-1 text-sm">
       {account.mfaChallenge.methods.includes('totp') && <button type="button" onClick={() => { setMfaMethod('totp'); setMfaCode(''); }} className={`flex-1 rounded-md px-3 py-2 font-semibold ${mfaMethod === 'totp' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>Authenticator code</button>}
@@ -73,7 +73,7 @@ const AccountAccess: React.FC<{ account: ReturnType<typeof useLightBIAccount> }>
     {account.error && <div className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{account.error}</div>}
   </div>;
 
-  return <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+  return <div className="border-y border-slate-200 py-5">
     <div className="flex items-start gap-3"><UserRound className="mt-0.5 h-5 w-5 text-blue-600" /><div><div className="font-semibold text-slate-900">Sign in to LightBI</div><p className="mt-1 text-sm leading-6 text-slate-500">Use Google or email and password to manage Pro access and devices. Files, SQL and analysis results stay local.</p></div></div>
     <button type="button" disabled={account.loading} onClick={() => void account.login()} className="mt-4 w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{account.loading ? 'Checking account…' : 'Continue with Google'}</button>
     <div className="my-4 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-400"><span className="h-px flex-1 bg-slate-200" />or use email<span className="h-px flex-1 bg-slate-200" /></div>
@@ -133,36 +133,36 @@ export const Settings: React.FC = () => {
   }, [validRequestedSection]);
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#fbfbfa]">
-      <aside className="flex w-[260px] shrink-0 flex-col border-r border-black/10 bg-[#f4f4f3] p-3">
-        <NavLink to="/" className="mb-4 flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-black/55 hover:bg-white/70 hover:text-black"><ArrowLeft className="h-4 w-4" />{t('Back to app')}</NavLink>
-        <label className="relative mb-5 block"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40"/><input value={settingsSearch} onChange={event=>setSettingsSearch(event.target.value)} placeholder={t('Search settings…')} className="h-11 w-full rounded-2xl border border-black/10 bg-white/80 pl-10 pr-3 text-sm outline-none focus:border-blue-400"/></label>
+    <div data-testid="settings-canvas" className="flex h-full w-full overflow-hidden bg-[var(--lb-canvas)]">
+      <aside className="flex w-[var(--lb-sidebar-width)] shrink-0 flex-col border-r border-[var(--lb-divider)] bg-[var(--lb-sidebar)] px-3 py-4">
+        <NavLink to="/" className="mb-4 flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium text-black/55 hover:bg-white/70 hover:text-black"><ArrowLeft className="h-4 w-4" />{t('Back to app')}</NavLink>
+        <label className="relative mb-5 block"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35"/><input value={settingsSearch} onChange={event=>setSettingsSearch(event.target.value)} placeholder={t('Search settings…')} className="h-10 w-full rounded-lg border border-black/10 bg-white/65 pl-10 pr-3 text-sm outline-none transition focus:border-black/25 focus:bg-white"/></label>
         <div className="px-3 pb-2 text-xs font-semibold text-black/35">{t('Personal')}</div>
-        <nav className="space-y-1">{settingsItems.map(item=><button key={item.id} type="button" onClick={()=>{setSettingsSection(item.id);if(item.id==='updates')updater.markNotificationRead();}} className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm ${settingsSection===item.id?'bg-black/[0.06] font-semibold text-black':'text-black/70 hover:bg-white/70'}`}><item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.id==='updates'&&updateNotificationCount>0&&<span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">{updateNotificationCount}</span>}</button>)}</nav>
-        {lightbiAccount.account&&<div className="mt-auto rounded-2xl border border-black/10 bg-white/80 p-3"><div className="truncate text-sm font-semibold">{lightbiAccount.account.account.display_name||lightbiAccount.account.account.email}</div><div className="truncate text-xs text-black/45">{lightbiAccount.account.account.email}</div></div>}
+        <nav className="space-y-0.5">{settingsItems.map(item=><button key={item.id} type="button" onClick={()=>{setSettingsSection(item.id);if(item.id==='updates')updater.markNotificationRead();}} className={`relative flex h-10 w-full items-center gap-3 rounded-lg px-3 text-left text-sm transition ${settingsSection===item.id?'bg-white font-semibold text-black shadow-[0_1px_0_rgba(15,23,42,0.04)]':'text-black/65 hover:bg-white/60 hover:text-black'}`}>{settingsSection===item.id&&<span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-slate-900"/>}<item.icon className="h-4 w-4"/><span className="flex-1">{item.label}</span>{item.id==='updates'&&updateNotificationCount>0&&<span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">{updateNotificationCount}</span>}</button>)}</nav>
+        {lightbiAccount.account&&<div className="mt-auto border-t border-black/8 px-3 pt-4"><div className="truncate text-sm font-semibold">{lightbiAccount.account.account.display_name||lightbiAccount.account.account.email}</div><div className="truncate text-xs text-black/45">{lightbiAccount.account.account.email}</div></div>}
       </aside>
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="border-b border-black/8 px-10 py-6"><h1 className="text-3xl font-semibold text-slate-900">{settingsItems.find(item=>item.id===settingsSection)?.label||t('Settings')}</h1><p className="mt-1 text-sm text-slate-500">{t('Your LightBI workspace, display, analysis defaults, and Beta access.')}</p></header>
-        <div className="flex-1 overflow-y-auto px-10 py-8">
-        <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {settingsSection === 'account' && <div className="p-6">
+        <header className="shrink-0 border-b border-[var(--lb-divider)] bg-[var(--lb-canvas)] px-10 py-6 xl:px-14"><div className="mx-auto max-w-5xl"><h1 className="text-[26px] font-semibold tracking-[-0.02em] text-slate-950">{settingsItems.find(item=>item.id===settingsSection)?.label||t('Settings')}</h1><p className="mt-1 text-sm text-slate-500">{t('Your LightBI workspace, display, analysis defaults, and Beta access.')}</p></div></header>
+        <div className="flex-1 overflow-y-auto px-10 py-2 xl:px-14">
+        <div data-testid="settings-document" className="mx-auto w-full max-w-5xl">
+        {settingsSection === 'account' && <div className="py-6">
           <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-lg font-medium text-slate-900">{t('Account')}</h2><p className="mt-1 text-sm text-slate-500">Your Google or verified email identity anchors entitlement and device slots. Business data stays local.</p></div>{lightbiAccount.account && <button type="button" onClick={() => void lightbiAccount.logout()} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><LogOut className="h-4 w-4" />{t('Log out')}</button>}</div>
-          {!lightbiAccount.account ? <AccountAccess account={lightbiAccount} /> : <div className="space-y-4"><div className="flex flex-col gap-4 rounded-xl border border-slate-200 p-5 sm:flex-row sm:items-center"><div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-amber-400 font-semibold text-slate-900">{lightbiAccount.account.account.avatar_url ? <img src={lightbiAccount.account.account.avatar_url} alt="" className="h-full w-full object-cover" /> : (lightbiAccount.account.account.display_name || lightbiAccount.account.account.email).slice(0,2).toUpperCase()}</div><div className="min-w-0 flex-1"><div className="truncate font-semibold text-slate-900">{lightbiAccount.account.account.display_name || lightbiAccount.account.account.email}</div><div className="truncate text-sm text-slate-500">{lightbiAccount.account.account.email}</div></div><div className="rounded-lg bg-slate-900 px-4 py-3 text-white"><div className="text-[10px] uppercase tracking-wider text-slate-400">Plan</div><div className="font-semibold uppercase">{lightbiAccount.account.entitlement.tier}</div><div className="text-xs text-slate-400">{lightbiAccount.account.entitlement.max_devices} device slots</div></div></div><div className="grid gap-4 lg:grid-cols-2"><div className="rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-2 font-semibold text-slate-900"><KeyRound className="h-4 w-4 text-violet-600" />Redeem Pro key</div><div className="mt-3 flex gap-2"><input type="password" value={accountLicenseKey} onChange={event=>setAccountLicenseKey(event.target.value)} placeholder="LBI-PRO-…" className="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"/><button type="button" onClick={async()=>{await lightbiAccount.redeem(accountLicenseKey);setAccountLicenseKey('');}} className="rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white">Redeem</button></div></div><div className="rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-2 font-semibold text-slate-900"><Monitor className="h-4 w-4 text-emerald-600" />Devices</div><div className="mt-2 space-y-2">{lightbiAccount.account.devices.length ? lightbiAccount.account.devices.map(device=><div key={device.id} className="flex items-center justify-between gap-2 rounded-md bg-slate-50 px-3 py-2 text-xs"><span className="min-w-0 truncate">{device.display_name || device.platform || 'LightBI device'} · {device.status}</span>{device.status==='active'&&<button type="button" onClick={()=>void lightbiAccount.revokeDevice(device.id)} className="font-semibold text-red-600">Revoke</button>}</div>) : <div className="text-sm text-slate-500">No native devices connected.</div>}</div></div></div></div>}
+          {!lightbiAccount.account ? <AccountAccess account={lightbiAccount} /> : <div className="space-y-4"><div className="flex flex-col gap-4 border-y border-slate-200 py-5 sm:flex-row sm:items-center"><div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-amber-400 font-semibold text-slate-900">{lightbiAccount.account.account.avatar_url ? <img src={lightbiAccount.account.account.avatar_url} alt="" className="h-full w-full object-cover" /> : (lightbiAccount.account.account.display_name || lightbiAccount.account.account.email).slice(0,2).toUpperCase()}</div><div className="min-w-0 flex-1"><div className="truncate font-semibold text-slate-900">{lightbiAccount.account.account.display_name || lightbiAccount.account.account.email}</div><div className="truncate text-sm text-slate-500">{lightbiAccount.account.account.email}</div></div><div className="border-l-2 border-slate-300 pl-4 text-slate-800"><div className="text-[10px] uppercase tracking-wider text-slate-400">Plan</div><div className="font-semibold uppercase">{lightbiAccount.account.entitlement.tier}</div><div className="text-xs text-slate-500">{lightbiAccount.account.entitlement.max_devices} device slots</div></div></div><div className="grid border-b border-slate-200 lg:grid-cols-2 lg:divide-x lg:divide-slate-200"><div className="py-4 pr-5"><div className="flex items-center gap-2 font-semibold text-slate-900"><KeyRound className="h-4 w-4 text-violet-600" />Redeem Pro key</div><div className="mt-3 flex gap-2"><input type="password" value={accountLicenseKey} onChange={event=>setAccountLicenseKey(event.target.value)} placeholder="LBI-PRO-…" className="min-w-0 flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"/><button type="button" onClick={async()=>{await lightbiAccount.redeem(accountLicenseKey);setAccountLicenseKey('');}} className="rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white">Redeem</button></div></div><div className="py-4 lg:pl-5"><div className="flex items-center gap-2 font-semibold text-slate-900"><Monitor className="h-4 w-4 text-emerald-600" />Devices</div><div className="mt-2 divide-y divide-slate-100 border-y border-slate-100">{lightbiAccount.account.devices.length ? lightbiAccount.account.devices.map(device=><div key={device.id} className="flex items-center justify-between gap-2 py-2 text-xs"><span className="min-w-0 truncate">{device.display_name || device.platform || 'LightBI device'} · {device.status}</span>{device.status==='active'&&<button type="button" onClick={()=>void lightbiAccount.revokeDevice(device.id)} className="font-semibold text-red-600">Revoke</button>}</div>) : <div className="text-sm text-slate-500">No native devices connected.</div>}</div></div></div></div>}
           {lightbiAccount.error && <div className="mt-3 flex items-start justify-between gap-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"><span className="min-w-0 flex-1">{lightbiAccount.error}</span>{lightbiAccount.connectionState === 'unavailable' && <button type="button" disabled={lightbiAccount.loading} onClick={() => void lightbiAccount.refresh()} className="shrink-0 font-semibold underline decoration-red-300 underline-offset-2 disabled:opacity-50">Retry connection</button>}</div>}
         </div>}
-        {settingsSection === 'general' && <div className="p-6">
+        {settingsSection === 'general' && <div className="py-6">
           <InternalGenerationPanel />
           <BuildIdentityPanel />
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Application')}</h2>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="flex items-start gap-3 rounded-lg border border-slate-200 p-4">
+          <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2 md:divide-x md:divide-[var(--lb-divider)]">
+            <div className="flex items-start gap-3 px-1 py-4 pr-5">
               <Laptop className="mt-0.5 h-5 w-5 text-blue-600" />
               <div>
                 <div className="font-medium text-slate-800">{nativeState?.runtime.native ? t('Windows native app') : t('Web QA harness')}</div>
                 <div className="mt-1 text-sm text-slate-500">{t('LightBI Beta · local-first analysis')}</div>
               </div>
             </div>
-            <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
+            <div className="flex items-start gap-3 px-1 py-4 md:pl-5">
               <ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-700" />
               <div>
                 <div className="font-medium text-emerald-900">{nativeState?.license.edition ?? 'Loading Beta status…'}</div>
@@ -170,8 +170,8 @@ export const Settings: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            <label className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 p-4">
+          <div className="grid border-b border-[var(--lb-divider)] md:grid-cols-2 md:divide-x md:divide-[var(--lb-divider)]">
+            <label className="flex items-start justify-between gap-4 px-1 py-4 pr-5">
               <span>
                 <span className="block font-medium text-slate-800">{t('Anonymous installation pairing')}</span>
                 <span className="mt-1 block text-sm text-slate-500">{t('Sends only a random installation ID, app version, platform, and license tier.')}</span>
@@ -186,7 +186,7 @@ export const Settings: React.FC = () => {
                 className="mt-1 h-4 w-4"
               />
             </label>
-            <div className="rounded-lg border border-slate-200 p-4">
+            <div className="px-1 py-4 md:pl-5">
               <div className="flex items-center justify-between gap-3">
                 <span className="font-medium text-slate-800">{t('License tier')}</span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase text-slate-700">{licenseTier}</span>
@@ -219,17 +219,17 @@ export const Settings: React.FC = () => {
           </div>
         </div>}
 
-        {settingsSection === 'connection' && <div className="p-6"><ConnectionSettingsPanel accountConnectionState={lightbiAccount.connectionState} /></div>}
+        {settingsSection === 'connection' && <div className="py-6"><ConnectionSettingsPanel accountConnectionState={lightbiAccount.connectionState} /></div>}
 
-        {settingsSection === 'appearance' && <div className="p-6">
+        {settingsSection === 'appearance' && <div className="py-6">
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Language and reporting defaults')}</h2>
           <p className="mb-4 text-sm leading-6 text-slate-500">
             {t(
               'Easy Mode uses these defaults automatically. LightBI asks again only when a source contains conflicting evidence.',
             )}
           </p>
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="flex items-start gap-3 rounded-lg border border-slate-200 p-4">
+          <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2 md:divide-x md:divide-[var(--lb-divider)]">
+            <label className="flex items-start gap-3 px-1 py-4 pr-5">
               <Globe2 className="mt-1 h-5 w-5 text-blue-600" />
               <span className="min-w-0 flex-1">
                 <span className="block font-medium text-slate-800">{t('Display language')}</span>
@@ -253,7 +253,7 @@ export const Settings: React.FC = () => {
                 </select>
               </span>
             </label>
-            <label className="flex items-start gap-3 rounded-lg border border-slate-200 p-4">
+            <label className="flex items-start gap-3 px-1 py-4 md:pl-5">
               <Coins className="mt-1 h-5 w-5 text-emerald-600" />
               <span className="min-w-0 flex-1">
                 <span className="block font-medium text-slate-800">{t('Reporting currency')}</span>
@@ -278,7 +278,7 @@ export const Settings: React.FC = () => {
               </span>
             </label>
           </div>
-          <div className="mt-3 flex items-center justify-between rounded-md border border-slate-200 p-4">
+          <div className="flex items-center justify-between border-b border-[var(--lb-divider)] px-1 py-4">
             <div>
               <div className="font-medium text-slate-800">{t('Theme')}</div>
               <div className="text-sm text-slate-500">{t('Light theme is optimized for the Beta workspace.')}</div>
@@ -287,10 +287,10 @@ export const Settings: React.FC = () => {
           </div>
         </div>}
 
-        {settingsSection === 'privacy' && <div className="p-6">
+        {settingsSection === 'privacy' && <div className="py-6">
           <h2 className="mb-4 text-lg font-medium text-slate-900">{t('Local data boundary')}</h2>
-          <div className="space-y-4">
-            <div className="flex items-start justify-between gap-4 rounded-md border border-slate-200 p-4">
+          <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
+            <div className="flex items-start justify-between gap-4 px-1 py-4">
               <div className="flex items-start gap-3">
                 <HardDrive className="mt-0.5 h-5 w-5 text-slate-500" />
                 <div>
@@ -305,7 +305,7 @@ export const Settings: React.FC = () => {
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
             </div>
             <MicroBrainPrivacyPanel />
-            <div className="flex items-center justify-between rounded-md border border-slate-200 p-4">
+            <div className="flex items-center justify-between px-1 py-4">
               <div>
                 <div className="font-medium text-slate-800">{t('Embedded analysis core')}</div>
                 <div className="text-sm text-slate-500">{t('Runs inside LightBI · no separate server application')}</div>

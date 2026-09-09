@@ -8,6 +8,11 @@
     "direction": "ltr"
   },
   "messages": {
+    "Close window": "Close window",
+    "Maximize / Restore": "Maximize / Restore",
+    "Maximize or restore window": "Maximize or restore window",
+    "Minimize": "Minimize",
+    "Minimize window": "Minimize window",
     "Phân tích hoạt động & hiệu suất": "Activity & performance analysis",
     "Phân tích dữ liệu theo góc nhìn đã chọn": "Selected-perspective data analysis",
     "Phân tích khách hàng": "Customer analysis",

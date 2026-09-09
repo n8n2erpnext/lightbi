@@ -52,6 +52,7 @@ jobs:
         working-directory: crates/lightbi-tauri
         shell: pwsh
         env:
+          LIGHTBI_RUNTIME_CHANNEL: internal
           VITE_LIGHTBI_GENERATION_ID: ${{ env.LIGHTBI_ACCEPTANCE_GENERATION }}
           VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030
           VITE_LIGHTBI_CHANNEL: internal

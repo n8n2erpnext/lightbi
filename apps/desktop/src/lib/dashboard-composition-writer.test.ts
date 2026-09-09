@@ -32,7 +32,7 @@ describe('Dashboard composition writer support', () => {
     expect(plan.visualizationPlan.analyticalIntent).toBe('ranking');
     expect(plan.visualizationPlan.patternId).toBe('ranking_bar');
     const capability = rendererCapabilityForPattern(plan.visualizationPlan.patternId);
-    expect(capability.persistedChartType).toBeTruthy();
+    expect(capability.persistedChartType).toBe('Row');
     expect(capability.surfaces.persistence).toBe(true);
     expect(capability.surfaces.dashboard).toBe(true);
   });

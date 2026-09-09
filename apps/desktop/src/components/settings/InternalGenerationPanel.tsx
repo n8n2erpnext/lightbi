@@ -28,18 +28,18 @@ export const InternalGenerationPanel: React.FC = () => {
   if (generation.channel !== 'internal') return null;
   const safe = blockers.length === 0;
   return (
-    <div data-testid="internal-generation-panel" className={`mb-5 rounded-xl border p-4 ${safe ? 'border-violet-200 bg-violet-50/70' : 'border-red-200 bg-red-50/80'}`}>
+    <div data-testid="internal-generation-panel" className={`mb-6 border-y py-4 ${safe ? 'border-violet-200' : 'border-red-200'}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-xs font-bold uppercase tracking-[0.18em] text-violet-700">LightBI NEXT · Internal</div>
           <div className="mt-1 font-semibold text-slate-900">{generation.generation_id}</div>
           <div className="mt-1 text-xs text-slate-500">Parent: {generation.parent_generation_id ?? 'missing'}</div>
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-bold ${safe ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+        <span className={`border-l-2 pl-3 text-xs font-bold ${safe ? 'border-emerald-400 text-emerald-800' : 'border-red-400 text-red-800'}`}>
           {safe ? 'Isolation OK' : 'BLOCKED'}
         </span>
       </div>
-      {!safe && <div className="mt-3 rounded-lg bg-white/80 p-3 text-xs text-red-700">{blockers.join(' · ')}</div>}
+      {!safe && <div className="mt-3 border-l-2 border-red-300 pl-3 text-xs text-red-700">{blockers.join(' · ')}</div>}
       <div className="mt-4 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
         <div><span className="text-slate-400">Core</span><div className="font-mono font-semibold text-slate-800">{shortSha(generation.core_commit)}</div></div>
         <div><span className="text-slate-400">Control plane</span><div className="font-mono font-semibold text-slate-800">{shortSha(generation.control_plane_commit)}</div></div>

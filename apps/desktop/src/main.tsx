@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { getOrCreateInstallationId, pairLightBIInstallation } from './lib/distribution-pairing';
-import { ensureNativeInstallationTrust, isNativeLightBI } from './lib/native-runtime';
+import { isNativeLightBI, startNativeInstallationTrustRecovery } from './lib/native-runtime';
 import { startAppUsageTelemetry } from './lib/app-usage-telemetry';
 import { startMicroBrainContributionLoop } from './lib/micro-brain-learning-contribution';
 import { installNativeExternalLinkGuard } from './lib/native-capabilities';
@@ -17,9 +17,7 @@ async function startLightBI() {
     await useIntelligencePackStore.getState().bootstrap();
     const installationId = getOrCreateInstallationId();
     void pairLightBIInstallation();
-    if (import.meta.env.VITE_LIGHTBI_CHANNEL === 'internal') {
-      void ensureNativeInstallationTrust(installationId);
-    }
+    startNativeInstallationTrustRecovery(installationId);
     startAppUsageTelemetry();
     startMicroBrainContributionLoop();
     installNativeExternalLinkGuard();

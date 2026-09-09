@@ -41,6 +41,36 @@ describe('AnalysisReportPlan', () => {
       ['summary'], ['answer'], ['evidence'],
     ]);
   });
+  it('backtracks one adjacent whole section instead of leaving an editorial orphan on the final page', () => {
+    const plan = createAnalysisReportPlan({
+      pageHeightUnits: 100,
+      sections: [
+        section({ id: 'answer', role: 'answer_overview', heightUnits: 45 }),
+        section({ id: 'drivers', role: 'drivers_components', heightUnits: 45 }),
+        section({ id: 'limitations', role: 'recommendations_risks', heightUnits: 20 }),
+      ],
+    });
+    expect(plan.pages.map(page => page.fragments.map(fragment => fragment.sectionId))).toEqual([
+      ['answer'], ['drivers', 'limitations'],
+    ]);
+    expect(plan.pages.map(page => page.usedHeightUnits)).toEqual([45, 65]);
+    expect(plan.pages[1].fragments.map(fragment => fragment.pageOffsetUnits)).toEqual([0, 45]);
+  });
+
+  it('never rebalances across an explicit semantic page break', () => {
+    const plan = createAnalysisReportPlan({
+      pageHeightUnits: 100,
+      sections: [
+        section({ id: 'answer', role: 'answer_overview', heightUnits: 45 }),
+        section({ id: 'drivers', role: 'drivers_components', heightUnits: 45 }),
+        section({ id: 'evidence', role: 'evidence_appendix', heightUnits: 20, pageBreakBefore: true }),
+      ],
+    });
+    expect(plan.pages.map(page => page.fragments.map(fragment => fragment.sectionId))).toEqual([
+      ['answer', 'drivers'], ['evidence'],
+    ]);
+  });
+
   it('splits only explicitly splittable evidence across bounded pages', () => {
     const plan = createAnalysisReportPlan({
       pageHeightUnits: 100,

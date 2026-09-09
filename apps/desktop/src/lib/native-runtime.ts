@@ -131,6 +131,16 @@ type InstallationTrustFlight = {
 let installationTrustFlight: InstallationTrustFlight | null = null;
 let installationTrustReady: NativeInstallationTrustResult | null = null;
 
+type InstallationTrustRecovery = {
+  installationId: string;
+  attempt: number;
+  timer: ReturnType<typeof setTimeout> | null;
+  stopped: boolean;
+};
+
+const INSTALLATION_TRUST_RETRY_DELAYS_MS = [5_000, 10_000, 20_000, 30_000] as const;
+let installationTrustRecovery: InstallationTrustRecovery | null = null;
+
 function nativeTrustFailureMessage(cause: unknown): string {
   if (cause instanceof Error && cause.message.trim()) return cause.message.trim();
   if (typeof cause === 'string' && cause.trim()) return cause.trim();
@@ -168,6 +178,56 @@ function installationTrustPromise(installationId: string): Promise<NativeInstall
 export function invalidateNativeInstallationTrust(): void {
   installationTrustReady = null;
   installationTrustFlight = null;
+}
+
+export function stopNativeInstallationTrustRecovery(): void {
+  const recovery = installationTrustRecovery;
+  if (!recovery) return;
+  recovery.stopped = true;
+  if (recovery.timer !== null) clearTimeout(recovery.timer);
+  installationTrustRecovery = null;
+}
+
+export function startNativeInstallationTrustRecovery(installationId: string): void {
+  if (!isNativeLightBI() || import.meta.env.VITE_LIGHTBI_CHANNEL !== 'internal') return;
+  if (installationTrustRecovery?.installationId === installationId && !installationTrustRecovery.stopped) return;
+  stopNativeInstallationTrustRecovery();
+
+  const recovery: InstallationTrustRecovery = { installationId, attempt: 0, timer: null, stopped: false };
+  installationTrustRecovery = recovery;
+
+  const schedule = () => {
+    if (recovery.stopped) return;
+    const delay = INSTALLATION_TRUST_RETRY_DELAYS_MS[Math.min(recovery.attempt, INSTALLATION_TRUST_RETRY_DELAYS_MS.length - 1)];
+    recovery.attempt += 1;
+    recovery.timer = setTimeout(() => {
+      recovery.timer = null;
+      void attempt();
+    }, delay);
+  };
+
+  const attempt = async () => {
+    if (recovery.stopped) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      schedule();
+      return;
+    }
+    try {
+      await installationTrustPromise(installationId);
+      if (recovery.stopped) return;
+      recovery.stopped = true;
+      recovery.timer = null;
+      if (installationTrustRecovery === recovery) installationTrustRecovery = null;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('lightbi-installation-trust-ready'));
+        window.dispatchEvent(new CustomEvent('lightbi-account-changed'));
+      }
+    } catch {
+      schedule();
+    }
+  };
+
+  void attempt();
 }
 
 export async function requireNativeInstallationTrust(installationId: string): Promise<NativeInstallationTrustResult | null> {

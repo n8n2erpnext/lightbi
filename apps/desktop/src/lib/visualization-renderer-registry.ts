@@ -5,7 +5,7 @@ export const VISUALIZATION_RENDERER_REGISTRY_VERSION = 'lightbi.visualization-re
 
 export type VisualizationRendererSurfaceV1 = 'preview' | 'persistence' | 'dashboard';
 export type VisualizationRendererFamilyV1 =
-  | 'number' | 'sparkline' | 'line' | 'area' | 'column' | 'bar'
+  | 'number' | 'sparkline' | 'line' | 'area' | 'column' | 'bar' | 'row'
   | 'grouped_bar' | 'stacked_bar' | 'normalized_stacked' | 'combo_bar_line'
   | 'donut' | 'waterfall' | 'histogram' | 'box_plot' | 'scatter' | 'bubble'
   | 'heatmap' | 'cohort_heatmap' | 'funnel' | 'pareto' | 'bullet'
@@ -32,6 +32,7 @@ export const VISUALIZATION_RENDERER_CAPABILITIES_V1: Readonly<Record<Visualizati
   area: cap('area', null, false, false, false),
   column: cap('column', 'Bar', true, true, true),
   bar: cap('bar', 'Bar', true, true, true),
+  row: cap('row', 'Row', true, true, true),
   grouped_bar: cap('grouped_bar', null, false, false, false),
   stacked_bar: cap('stacked_bar', null, false, false, false),
   normalized_stacked: cap('normalized_stacked', null, false, false, false),
@@ -60,7 +61,7 @@ export const VISUALIZATION_RENDERER_CAPABILITIES_V1: Readonly<Record<Visualizati
 
 export const VISUALIZATION_PATTERN_RENDERER_FAMILY_V1: Readonly<Record<VisualizationPatternIdV1, VisualizationRendererFamilyV1>> = {
   kpi_summary: 'number', sparkline: 'sparkline', trend_line: 'line', trend_area: 'area',
-  category_compare: 'bar', ranking_bar: 'bar', grouped_compare: 'grouped_bar',
+  category_compare: 'bar', ranking_bar: 'row', grouped_compare: 'grouped_bar',
   composition_stack: 'stacked_bar', composition_100: 'normalized_stacked', target_combo: 'combo_bar_line',
   composition_donut: 'donut', variance_waterfall: 'waterfall', distribution_histogram: 'histogram',
   distribution_box: 'box_plot', relationship_scatter: 'scatter', relationship_bubble: 'bubble',

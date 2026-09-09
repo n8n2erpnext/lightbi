@@ -5,7 +5,7 @@ import { formatValue } from '../../lib/display-formatter';
 
 export interface DashboardChartWidgetProps {
   title: string;
-  chartType: 'bar' | 'line' | 'donut' | 'scatter';
+  chartType: 'bar' | 'row' | 'line' | 'donut' | 'scatter';
   data: any[];
   xAxisKey?: string;
   seriesKey?: string;
@@ -105,7 +105,27 @@ export const generateDashboardChartOptions = (
     };
   }
 
-  // Bar or Line chart
+  if (chartType === 'row') {
+    return {
+      tooltip: { trigger: 'axis', valueFormatter: tooltipFormatter },
+      grid: { left: '3%', right: '5%', top: '3%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'value', axisLabel: { formatter: axisFormatter } },
+      yAxis: {
+        type: 'category',
+        inverse: true,
+        data: data.map(d => formatDashboardCategory(d[xAxisKey], xAxisKey, preferences.locale)),
+        axisLabel: { width: isCompact ? 110 : 180, overflow: 'truncate' },
+      },
+      series: [{
+        name: title,
+        type: 'bar',
+        barMaxWidth: 28,
+        data: data.map(d => d[seriesKey]),
+      }],
+    };
+  }
+
+  // Vertical comparison or ordered line chart.
   return {
     tooltip: {
       trigger: 'axis',
@@ -123,20 +143,13 @@ export const generateDashboardChartOptions = (
     },
     yAxis: {
       type: 'value',
-      axisLabel: {
-        formatter: axisFormatter
-      }
+      axisLabel: { formatter: axisFormatter }
     },
-    series: [
-      {
-        name: title,
-        type: chartType,
-        data: data.map(d => d[seriesKey]),
-        itemStyle: {
-          color: '#4F46E5' // Indigo 600
-        }
-      }
-    ]
+    series: [{
+      name: title,
+      type: chartType,
+      data: data.map(d => d[seriesKey]),
+    }]
   };
 };
 

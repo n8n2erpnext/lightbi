@@ -272,7 +272,7 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(charts[0]?.type).toBe('Number');
     expect(charts.some(chart => chart.formatting?.lightbiData?.source === 'multifile_perspective_dashboard')).toBe(true);
     const breakdown = charts.find(chart => chart.formatting?.lightbiData?.source === 'multifile_selected_scope_ba_breakdown');
-    expect(breakdown?.type).toBe('Bar');
+    expect(breakdown?.type).toBe('Row');
     expect(breakdown?.formatting?.lightbiData?.decisionVisualizationPlan?.visualizationPlan?.patternId).toBe('ranking_bar');
     expect(breakdown?.formatting?.lightbiData?.sourceName).toBe('current-period.xlsx');
   });

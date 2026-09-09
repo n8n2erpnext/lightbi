@@ -78,7 +78,7 @@ function previewTypeForRendererFamily(family: GovernedVisualizationPlanV1['rende
   if (family === 'line') return 'line';
   if (family === 'scatter') return 'scatter';
   if (family === 'table') return 'table';
-  if (family === 'bar' || family === 'column') return 'bar';
+  if (family === 'bar' || family === 'column' || family === 'row') return 'bar';
   throw new Error(`DECISION_VISUALIZATION_RENDERER_UNSUPPORTED:${family ?? 'none'}`);
 }
 

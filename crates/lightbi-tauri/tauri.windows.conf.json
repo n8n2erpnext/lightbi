@@ -1,4 +1,16 @@
 {
+  "app": {
+    "windows": [
+      {
+        "title": "LightBI",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1180,
+        "minHeight": 720,
+        "decorations": false
+      }
+    ]
+  },
   "bundle": {
     "resources": []
   }

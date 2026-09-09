@@ -28,10 +28,11 @@ type SavedChartPayload = {
   valueKind?: 'money' | 'number' | 'percent';
 };
 
-export const resolveDashboardRendererType = (chartType: Chart['type']): 'bar' | 'line' | 'donut' | 'scatter' => {
+export const resolveDashboardRendererType = (chartType: Chart['type']): 'bar' | 'row' | 'line' | 'donut' | 'scatter' => {
   if (chartType === 'Line') return 'line';
   if (chartType === 'Scatter') return 'scatter';
   if (chartType === 'Donut' || chartType === 'Pie') return 'donut';
+  if (chartType === 'Row') return 'row';
   return 'bar';
 };
 

@@ -5,7 +5,8 @@ const capabilityPath = path.resolve('crates/lightbi-tauri/capabilities/main.json
 const capability = JSON.parse(fs.readFileSync(capabilityPath, 'utf8'));
 const permissions = new Set(Array.isArray(capability.permissions) ? capability.permissions : []);
 const required = ['core:event:allow-listen', 'core:event:allow-unlisten', 'opener:allow-open-url', 'opener:allow-default-urls'];
-for (const permission of required) {
+const requiredWindow = ['core:window:allow-minimize', 'core:window:allow-toggle-maximize', 'core:window:allow-close', 'core:window:allow-start-dragging'];
+for (const permission of [...required, ...requiredWindow]) {
   if (!permissions.has(permission)) throw new Error(`Missing native capability: ${permission}`);
 }
 if (!Array.isArray(capability.windows) || !capability.windows.includes('main')) {
@@ -13,6 +14,9 @@ if (!Array.isArray(capability.windows) || !capability.windows.includes('main')) 
 }
 if (permissions.has('core:event:default') || permissions.has('core:default')) {
   throw new Error('Native updater capability is broader than required.');
+}
+for (const forbidden of ['core:window:allow-create', 'core:window:allow-destroy', 'core:window:allow-set-position']) {
+  if (permissions.has(forbidden)) throw new Error(`Custom title-bar authority is broader than required: ${forbidden}`);
 }
 if (permissions.has('opener:allow-open-path') || permissions.has('opener:default')) {
   throw new Error('External-link capability must remain URL-only and must not grant filesystem reveal/open authority.');
@@ -64,7 +68,7 @@ if (installMode === 'perMachine') {
   }
 }
 console.log(JSON.stringify({
-  schema: 'lightbi.native-capability-check.v1', capability: capability.identifier, permissions: required,
+  schema: 'lightbi.native-capability-check.v1', capability: capability.identifier, permissions: [...required, ...requiredWindow],
   windowsInstallMode: installMode, elevatedInstallerLaunch: installMode === 'perMachine' ? 'shell_execute_runas' : 'not_required',
   windowsUpdateMode: installMode === 'perMachine' ? 'silent_update_restart' : 'platform_default',
   uninstallLifecycle: 'same_installation_pairing_identity_fail_open_update_excluded',
