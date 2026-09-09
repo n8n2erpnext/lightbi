@@ -1013,6 +1013,19 @@ Owner native screenshots from the DPR-10 Windows lane exposed a bounded final co
 
 Acceptance for this batch: focused component tests + DPR-0 i18n/debt guards + DPR-8/DPR-9/DPR-10 contracts + full release-authoritative suite PASS; Web Live Demo `/app` proves shared layout/gutter/question behavior without fake native chrome; Windows exact-SHA package proves brand/native titlebar/Bell/sidebar/docked BA behavior. Production/51xx remains untouched and stable promotion remains owner-gated. DPR-10 stays ACTIVE until this exact native visual UAT passes.
 
+
+### 23B. DPR-10 native-UAT convergence execution checkpoint — 2026-09-09
+
+The §23A batch is now implemented and exact-SHA packaged at Product `4848c0cc5d22ef6b14236e823ab4ef497cb75e0f` (`fix(dpr10): converge native UAT presentation`). This checkpoint records implementation evidence only; it does **not** close DPR-10 or grant stable/Production authority.
+
+- Owner-selected pre-optimized branding is restored across Desktop SVG/favicon authority, regenerated Tauri icons and NSIS installer artwork. The canonical SVG SHA-256 is `47220c4ae55ec2fc9abb6d621cb1c2c3f638c956620144ceb5a922de5b8889a5`; installer header/sidebar SHA-256 values are `512c50e26bfd756f4c79f2869005f76ef4b4cf774c559abf39766721ea1f5142` and `18a54a7a07bebe4d3218d68f793e20bea36492dd9952205043c0646d03c0ae05`.
+- Residual Settings/Connection/Updates/privacy chrome, Bell/header placement, sidebar account/footer treatment, balanced reading gutters and two-column secondary-question density are source-converged. Single-file and multi-file Deep BA / BA Step 2 use the same wide-desktop right-docked reading model with independent scrolling; narrow layouts retain the bounded fallback.
+- Verification PASSed: native icon/capability validation; DPR-10 convergence `5/5`; DPR-8 `8/8`; DPR-9 `3/3`; DPR-10 cross-domain `52/52`; MB deterministic `1/1`; focused component+i18n `15/15`; source-size `548`; production build `3828`; governed regression `11 files / 45 tests`; final marker `release_1_0_suite=passed`.
+- Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr10-4848c0c` is live only on gateway 5273. Gateway rotated `1461645 -> 3057143`; Core 5272 PID `3376963`, Control Plane 5274 PID `2346997` and all four Trust container identities stayed unchanged. Direct/public `/app` return HTTP 200. Production/51xx were not touched.
+- Windows Native Acceptance run `34319524815` / run #12 completed SUCCESS on exact `4848c0c...`. Artifact id `10091606449`, artifact ZIP SHA-256 `aa3a645f6fd701a81204cd22ca685a8a76e88244a8994775e68a5645e8e94990`; installer `LightBI-NEXT-0.9.2-next.r1p12.12-x64-setup.exe` is `32,670,062` bytes with independently rechecked SHA-256 `78af8a79495e2c160321cd532182ff23cc7b2f7ce3cd3438aa91ecae0327b128`. Provenance is `publisher_status=NotSigned`, `production_authority=false`, generation `g-actions-r1p12-34319524815-1`.
+
+Remaining gate: owner native visual UAT on this exact installer. Validate installer/app branding, Bell/header, sidebar/footer, Settings convergence, gutters, question density, single/multi docked Deep BA + Step 2, report pagination and Account trust hot-recovery. A reproducible `installation_issuer_release_not_allowed` on this exact artifact is a real Trust defect and must not be hidden. DPR-10 remains **ACTIVE** until owner acceptance; stable promotion and any Production/51xx action remain separately owner-gated.
+
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.
