@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-9 CLOSED — SEMANTIC REPORT PAGINATION SOURCE/LIVE-ACCEPTED ON NEXT; DPR-10 CROSS-DOMAIN ACCEPTANCE + RELEASE REGRESSION ACTIVE**
+Status: **DPR-9 CLOSED; DPR-10 NATIVE UAT #12 FAILED — WHOLE-PRODUCT COHERENCE + NATIVE SHELL RESTORATION ACTIVE**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -20,9 +20,10 @@ Amended: 2026-09-08 — DPR-7 source/live-closed at Product `324eceb...`: determ
 Amended: 2026-09-08 — DPR-8 foundation chunk source/live-closed at Product `e030e4d...`: shared canvas-first primitives and density classes now exist in `@lightbi/ui`, the owner-approved shell consumes LightBI geometry/color tokens including the 224px desktop sidebar, Tailwind shared-source scanning no longer recurses through package `node_modules`, and an executable DPR-8 contract is enforced by the release-authoritative suite. DPR-8 remains active; Understanding canvas migration is next.
 Amended: 2026-09-08 — DPR-8 Understanding chunk source/live-closed at Product `900d7aa...`: the first live candidate `524747c...` passed functional browser checks but failed the explicit section-17 above-fold CTA acceptance, so closure was withheld; the bounded density follow-up keeps the primary Analyze CTA inside a 1440x900 desktop viewport while preserving semantic/evidence authority. DPR-8 remains active; Home / New Brief is the first remaining unmigrated bounded target in section 17.
 Amended: 2026-09-08 — DPR-8 Home / New Brief chunk source/live-closed at Product `eeaf446...`: the question prompt remains the command surface, quick suggestions remain compact actions/pills, source-entry and session-history card stacks are flattened into calm rows/list structure, and live desktop/compact browser acceptance preserves responsive behavior. DPR-8 remains active; Decision Workspace is the next bounded target in section 17.
+Amended: 2026-09-09 — owner UAT of exact Windows run #12 / Product `4848c0c...` rejected DPR-10 closure and re-baselined the remaining work as one whole-product coherence program: restore native File/Edit/View/Help shell, close signed installation-trust release orchestration, restore multi-file history visibility, make Deep BA/Step 2 side docking explicit-user-only, eliminate residual legacy card/rounding language across all routes/dialogs, expand the existing governed chart ontology into real ECharts renderer/palette/template coverage, and make Dashboard visualization composition semantically varied rather than uniformly Bar/Row.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `eeaf4464da4d28306edf4f4daa095655a94c0a21`, descendant of optimized-li brand source `fde259a5441b36825f211914cbd0c82fc595f27f`; Control Plane brand source remains `b6bc2735bcf99218443ae5c427701e5b1a7c938f`. DPR-0 is closed at baseline evidence `14c2d99...`; DPR-1 provenance is source/live-closed at `d027bb3...`; DPR-2 Question/Perspective Intelligence is source/live-closed at `a876fb9...`; DPR-3 Analysis Narrative Planner is source/live-closed at `804fb2f...`; DPR-4 Selected-subject Investigation is source/live-closed at `9d1d4a6...`; DPR-5 Visualization Ontology is source/live-closed at `d3770e7...`; DPR-6 Visualization Planner/type preservation is source/live-closed at `18e267a...`; DPR-7 Dashboard Composition Planner is source/live-closed at `324eceb...`; DPR-8 is the active implementation phase.
+Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `4848c0cc5d22ef6b14236e823ab4ef497cb75e0f`. DPR-0 through DPR-9 are closed; DPR-10 remains active because exact Windows run #12 failed owner native UAT. The current §23B audit re-read the native menu/titlebar configuration, installation-trust identity path, session-history restore path, Deep BA/Step 2 dock state, route/dialog legacy-surface inventory, ECharts renderer registry and visualization ontology from this exact Product head before re-baselining closure work.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -997,7 +998,7 @@ LightBI should guide the user from **what the data means** to **what question ma
 This document remains the refactor plan. The 2026-09-06 MB presentation-advisory foundation is source-closed separately at product commit `4be593ae57b4b1385a833675dd4ea2349900d378`; DPR-2 through DPR-7 now consume or project bounded MB presentation advice while deterministic governed authority remains upstream. DPR-5 established canonical semantic pattern eligibility, DPR-6 established deterministic renderer/type resolution, and DPR-7 established deterministic Dashboard membership/story composition; none grants MB direct renderer, metric, formula, join or runtime-execution authority. Production promotion remains owner-gated.
 
 DPR-0 through DPR-9 are CLOSED. The active implementation phase is DPR-10 Cross-domain acceptance and release regression. DPR-10 must validate the already-closed semantic, evidence, narrative, visualization, Dashboard, shared-surface and report-pagination contracts across tracked domains and environments without granting new metric/formula/join/causal authority. Production promotion remains owner-gated, Web Live Demo `/app` and Desktop/shared-source parity remains mandatory, and documentation work continues to follow `docs/project-book/LIBRARY_RULES.md`.
-## 23A. DPR-10 owner native-UAT convergence batch — 2026-09-09
+## 23A. DPR-10 owner native-UAT convergence batch — 2026-09-09 — INTERMEDIATE / SUPERSEDED FOR CLOSURE
 
 Owner native screenshots from the DPR-10 Windows lane exposed a bounded final convergence batch. These are **acceptance defects / presentation convergence**, not permission to reopen upstream metric, formula, join, causal, MB-authority, DPR-8 semantic-presentation, or DPR-9 report-authority contracts. Implement them together, then cut one new exact-SHA native artifact for retest.
 
@@ -1014,7 +1015,7 @@ Owner native screenshots from the DPR-10 Windows lane exposed a bounded final co
 Acceptance for this batch: focused component tests + DPR-0 i18n/debt guards + DPR-8/DPR-9/DPR-10 contracts + full release-authoritative suite PASS; Web Live Demo `/app` proves shared layout/gutter/question behavior without fake native chrome; Windows exact-SHA package proves brand/native titlebar/Bell/sidebar/docked BA behavior. Production/51xx remains untouched and stable promotion remains owner-gated. DPR-10 stays ACTIVE until this exact native visual UAT passes.
 
 
-### 23B. DPR-10 native-UAT convergence execution checkpoint — 2026-09-09
+### 23A.1 DPR-10 native-UAT convergence execution checkpoint — 2026-09-09
 
 The §23A batch is now implemented and exact-SHA packaged at Product `4848c0cc5d22ef6b14236e823ab4ef497cb75e0f` (`fix(dpr10): converge native UAT presentation`). This checkpoint records implementation evidence only; it does **not** close DPR-10 or grant stable/Production authority.
 
@@ -1024,7 +1025,224 @@ The §23A batch is now implemented and exact-SHA packaged at Product `4848c0cc5d
 - Immutable NEXT `/home/ubuntu/services/lightbi-next-web/dpr10-4848c0c` is live only on gateway 5273. Gateway rotated `1461645 -> 3057143`; Core 5272 PID `3376963`, Control Plane 5274 PID `2346997` and all four Trust container identities stayed unchanged. Direct/public `/app` return HTTP 200. Production/51xx were not touched.
 - Windows Native Acceptance run `34319524815` / run #12 completed SUCCESS on exact `4848c0c...`. Artifact id `10091606449`, artifact ZIP SHA-256 `aa3a645f6fd701a81204cd22ca685a8a76e88244a8994775e68a5645e8e94990`; installer `LightBI-NEXT-0.9.2-next.r1p12.12-x64-setup.exe` is `32,670,062` bytes with independently rechecked SHA-256 `78af8a79495e2c160321cd532182ff23cc7b2f7ce3cd3438aa91ecae0327b128`. Provenance is `publisher_status=NotSigned`, `production_authority=false`, generation `g-actions-r1p12-34319524815-1`.
 
-Remaining gate: owner native visual UAT on this exact installer. Validate installer/app branding, Bell/header, sidebar/footer, Settings convergence, gutters, question density, single/multi docked Deep BA + Step 2, report pagination and Account trust hot-recovery. A reproducible `installation_issuer_release_not_allowed` on this exact artifact is a real Trust defect and must not be hidden. DPR-10 remains **ACTIVE** until owner acceptance; stable promotion and any Production/51xx action remain separately owner-gated.
+Historical gate at this checkpoint: owner native visual UAT on this exact installer. That UAT subsequently **FAILED**: `installation_issuer_release_not_allowed` reproduced, native menu disappeared, automatic docking and residual whole-product UI/chart/history defects were rejected. §23B supersedes this checkpoint for closure. DPR-10 remains **ACTIVE**; stable promotion and any Production/51xx action remain separately owner-gated.
+
+
+## 23B. DPR-10 whole-product coherence + native shell restoration program — 2026-09-09
+
+### 23B.0 Re-baseline decision
+
+Exact Windows Native Acceptance run `34319524815` / run #12 was successfully packaged from Product `4848c0cc5d22ef6b14236e823ab4ef497cb75e0f`, but **owner native visual UAT FAILED**. Packaging success, unit/release-green status and an exact artifact are evidence that the build was reproducible; they are not evidence that DPR-10 presentation/native behavior is accepted.
+
+Section 23A therefore remains historical implementation evidence only. It is **superseded as the DPR-10 closure plan** by this section. The next successor must not repair only the screenshot currently visible and cut another package. The remaining work is one bounded whole-product convergence program with explicit source inventory, shared primitives, route/dialog coverage and packaged-native acceptance.
+
+The analytical authority boundary does not change. This program may change shell behavior, presentation, layout, renderer capability, palette policy, chart-template metadata, history presentation/recovery and NEXT TEST release orchestration. It may not invent metrics, formulas, joins, causality, evidence, official domain support or MB confidence. Production/51xx and stable promotion remain owner-gated.
+
+### 23B.1 Native UAT #12 defect register — closure blockers
+
+| ID | Owner UAT finding | Required closure behavior |
+| --- | --- | --- |
+| UAT12-01 | Account still returns `installation_issuer_release_not_allowed`. | Treat as a real signed-installation-trust release-orchestration defect on exact run #12. Do not hide the error and do not weaken issuer allowlisting. |
+| UAT12-02 | Multi-file history is no longer visible/loadable as expected. | Restore multi-file session visibility and source-aware recovery while preserving fail-closed governed relationship reconstruction before execution. |
+| UAT12-03 | Deep BA / BA Step 2 automatically occupy a right dock. | Default to the existing primary/full analysis surface. Move analysis into the right side panel only after an explicit user toggle; closing the panel restores the primary surface without losing analysis state. |
+| UAT12-04 | Multi-file follow-up questions are visually weak; Deep/Step 2 density wastes available width. | Increase question hierarchy without adding cards; use balanced split geometry and independent panel scrolling only in explicit side-panel mode. |
+| UAT12-05 | Several pages still hug inner edges while unused outer whitespace remains. | One shared content-frame/gutter contract across product routes; text reading width and chart working width are distinct but aligned. |
+| UAT12-06 | Charts look predominantly indigo/purple and renderer variety does not reflect the existing chart-intelligence layer. | Keep ECharts; connect the existing visualization ontology/MB advice to materially supported renderer families, semantic palette rules and reusable non-authoritative chart templates. |
+| UAT12-07 | Dashboard changed from visually all vertical Bar to visually all horizontal Row. | Dashboard composition must select semantically appropriate renderer families from the same governed visualization plan; no chart-diversity quota and no uniform Bar/Row fallback when a better supported pattern is proven. |
+| UAT12-08 | Legacy card/rounded/shadow UI remains across Charts, Datasets, intake, clean-data handoff and other surfaces. | Complete a codebase-wide legacy-surface migration, not screenshot-local patches. |
+| UAT12-09 | Session History needs bounded navigation. | Display six sessions per page, at most five navigable pages (newest 30 shown); do not silently delete older durable session/source records merely to satisfy the display budget. |
+| UAT12-10 | Online-data, database, dataset/open-session and clean-data surfaces still use the old visual language. | Migrate dialogs/intake/data handoff to the same canvas/divider/editor grammar as the accepted product direction. |
+| UAT12-11 | Windows native `File / Edit / View / Help` menu disappeared. | Restore the real Tauri/OS native menu and Windows decorations. Do not replace it with a fake HTML menu. |
+
+### 23B.2 Native shell contract — restore the real menu
+
+Source audit on Product `4848c0c...` proves `crates/lightbi-tauri/src/desktop_menu.rs` still constructs and installs the real Tauri `File`, `Edit`, `View` and `Help` menu, and `main.rs` still routes native menu events. The regression is in the shell: `crates/lightbi-tauri/tauri.windows.conf.json` currently forces `decorations:false`, while `apps/desktop/src/components/layout/NativeWindowTitleBar.tsx` supplies a custom webview title bar. Existing release tests also encode this now-rejected custom-shell contract.
+
+Required implementation:
+
+1. Restore Windows OS/native decorations required for the real Tauri application menu to be visible and usable.
+2. Retire `NativeWindowTitleBar` from the Windows packaged path when native decorations are active; do not retain duplicate minimize/maximize/close controls.
+3. Preserve `desktop_menu.rs` command registry, keyboard behavior, docs/help routing and native event dispatch.
+4. Update tests that currently assert `decorations === false`; replace them with a packaged-native shell/menu contract.
+5. Web Live Demo `/app` must not fake Windows menu/title-bar chrome.
+6. Packaged Windows UAT must visibly prove `File / Edit / View / Help`, minimize/maximize/close behavior, DPI/resizing and no duplicate title bar.
+
+### 23B.3 Installation Trust — package, TEST REL and issuer must be one acceptance transaction
+
+The exact run #12 error is no longer a stale-build exception. Current native code derives installation `release_identity` from runtime channel + packaged version, while the NEXT installation issuer rejects identities outside its approved signed release catalog. Historical Trust evidence already defines the correct failure states: unknown identity -> `installation_issuer_release_not_allowed`; allowlisted but unsigned identity -> `installation_issuer_release_not_signed`.
+
+The fix is **orchestration, not bypass**. Before any future owner native artifact is handed off:
+
+1. Freeze the exact Product SHA and exact internal package version/release identity.
+2. Build the Windows acceptance artifact from that identity.
+3. Publish a fresh immutable **TEST REL** that binds the same version/identity and installer digest.
+4. Sign and verify the TEST REL through the existing Trust authority path; never place Root authority into the app or weaken issuer validation.
+5. Refresh/reload the NEXT installation issuer through the already-approved governed mechanism so the new signed REL becomes authoritative. If the issuer supports hot catalog reload, prove it; otherwise document the bounded NEXT-only reload required by its contract.
+6. Run challenge -> issue -> native trust probe using the exact packaged release identity before owner handoff.
+7. Prove the installed app can recover when trust becomes available without requiring a manual app restart where the existing hot-recovery contract promises that behavior.
+8. Preserve explicit errors when verification fails. A retry button is recovery UI, not an authorization bypass.
+
+Production Trust/REL authority remains untouched unless separately owner-approved.
+
+### 23B.4 Session History contract — visibility, recovery and pagination are separate concerns
+
+Current persistence is capable of storing canonical multi-source session state, while governed multi-source execution intentionally fails closed until relationship identity/source material can be reconstructed exactly. The UAT defect must not be “fixed” by weakening that identity gate.
+
+History is split into four contracts:
+
+- **Visibility:** saved single-file and multi-file sessions appear in chronological history when their persisted metadata is valid.
+- **Recovery:** opening a multi-file history item restores every safely restorable presentation/source descriptor and clearly identifies any exact source reselection/rebuild requirement.
+- **Execution:** no governed multi-source analysis executes until required source identity/role/period/relationship truth is rebuilt exactly.
+- **Pagination:** six visible items per page; maximum five navigable pages; newest-first; deterministic page count/next/previous state. Older persisted records are not automatically deleted by this display rule.
+
+Add regression fixtures for single-file, canonical multi-file, Focus multi-file, missing-source/reselection and corrupted/unsupported session snapshots. “History visible but execution blocked pending exact reconstruction” is a valid state; “multi-file silently missing from history” is not.
+
+### 23B.5 Deep BA / BA Step 2 — explicit ChatGPT-like side-panel mode, never automatic
+
+Analysis state and presentation mode must be independent. Replace the current implicit `analysisView => data-docked=true` behavior with a separate presentation state such as `primary | side_panel`.
+
+Contract:
+
+1. Clicking **Analyze deeper**, entering full Deep BA, or entering selected-subject Step 2 opens the existing primary/full analysis experience by default.
+2. A discoverable side-panel toggle lets the user explicitly move the already-open analysis into a right panel on sufficiently wide desktop viewports.
+3. The right panel has its own collapse/return toggle; closing it returns the same Deep BA/Step 2 state to primary mode without recomputation or losing scroll/detail/evidence state where technically feasible.
+4. Main workspace and side panel remain simultaneously useful; do not reserve a hard-coded 48% blank strip with absolute positioning. Use a responsive grid/split contract with minimum useful widths and independent scrolling.
+5. Single-file `Deep BA`, single-file Step 2, multi-file `deep_perspective` and multi-file `deep_selected` use the same presentation-state model.
+6. Narrow widths fall back to primary mode; side-panel toggle is disabled/hidden when minimum widths cannot be satisfied.
+7. Back/close semantics remain source/state correct. Side-panel presentation may not rewrite analytical state or authority.
+
+Tests that currently require automatic `data-docked="true"` must be rewritten because they encode the rejected behavior.
+
+### 23B.6 Whole-product information architecture and legacy-surface register
+
+An automated static inventory across all `apps/desktop/src/**/*.tsx`, followed by targeted source reads of owner-reported surfaces, confirms that the residual style problem is systemic rather than isolated. High-density legacy indicators remain in `HomeWorkspaceView.tsx`, `Settings.tsx`, `DashboardBuilder.tsx`, `Charts.tsx`, `UnderstandingNextCard.tsx`, `Datasets.tsx`, `CanonicalMultiSourceReview.tsx`, `DatasetUnderstandingCard.tsx`, `InvestigationDrillThroughPanel.tsx`, `DatabaseStep.tsx`, `DisplayPreferencesModal.tsx`, `BusinessFusionOverviewCard.tsx` and other route/dialog components.
+
+This is an inventory signal, not an instruction to delete every border or radius. Every visible component must first be classified as one of:
+
+1. **Shell/navigation** — flat structural surfaces, stable geometry, native/window rules separate from product canvas.
+2. **Document/section/list** — typography + whitespace + hairline dividers; card by exception only.
+3. **Command/editor/form** — clear control containment, generally squarer and denser; Advanced is the internal product reference for this grammar.
+4. **Semantic alert/inset/evidence** — bounded color only when meaning requires it; no decorative status pills.
+5. **Chart/dashboard/widget** — visual container only when plot/widget boundaries need it.
+6. **True interactive containment** — dialogs, selectable tiles or drag/drop targets may retain bounded containers, but radius/shadow must follow shared tokens rather than legacy one-off values.
+
+The migration sweep must cover all primary routes and their route-owned overlays: `Home`, `Investigation`, `Charts`, `Dashboards`, `DashboardBuilder`, `Datasets`, `DataSources`, `Settings`, `Advanced`, `Notifications`, plus source/intake dialogs, `HomePlanningDialogs`, `DataIntakeDrawer`, `DatabaseStep`, online-sheet flow, `DisplayPreferencesModal`, relationship/evidence drawers and clean-data handoff. RouteError is reviewed for shell consistency but is not forced into dense application composition if error semantics require a bounded state.
+
+Frappe Books remains the external density/divider reference. Advanced remains the internal reference for squarer, dense editor/control composition. The target is one LightBI grammar, not a “Books skin” and not universal square boxes.
+
+### 23B.7 Global geometry contract — fix gutters once
+
+Create/reuse shared layout primitives/tokens instead of route-local `max-w-*` and arbitrary `px-*` combinations:
+
+- **App working canvas:** aligned shared left/right gutters at each breakpoint.
+- **Reading column:** bounded line length for narrative/BA/evidence text.
+- **Visualization width:** may expand beyond reading width while preserving the same outer gutter.
+- **Split workspace:** responsive grid with explicit minimum primary/panel widths; no absolute 48% padding reservation.
+- **Dialogs/intake:** bounded work area centered inside the viewport without a giant rounded sheet consuming the screen edge-to-edge.
+- **Tables/editors:** dense usable width; horizontal scroll only when real columns require it.
+
+Acceptance measures at least 1440x900, 1600x900 and the existing compact minimum. No shared route may visually hug the content frame while large unused outer whitespace is simultaneously preserved by an inconsistent nested max-width.
+
+### 23B.8 Chart Intelligence -> real ECharts capability
+
+LightBI already has ECharts and an existing visualization ontology/MB presentation layer. The defect is that ontology knowledge substantially exceeds materialized renderer capability and single-series presentation repeatedly falls onto the first indigo palette entry.
+
+This program therefore extends the existing system rather than adding a second chart library:
+
+1. Keep the canonical visualization ontology as the semantic source of chart eligibility and negative/fallback rules.
+2. Keep MB chart/domain knowledge advisory-only; MB may rank eligible patterns but cannot authorize a metric, transform, join, formula, baseline or renderer by itself.
+3. Build a **renderer capability matrix** for every current canonical pattern: implemented preview, persistence, Dashboard, export, fallback and blocking data-shape requirements.
+4. Prioritize real ECharts implementations for patterns exercised by the tracked corpus and common LightBI domains: line/area trend, vertical/horizontal ranking, grouped/stacked/100% composition, donut/share, target/combo, scatter/bubble relationship, waterfall/diverging variance, histogram/distribution, box/range, heatmap, funnel, pareto, bullet/target, small multiples and radar only where its multivariate semantics are valid. Unsupported patterns continue to fail closed to the approved fallback/table.
+5. Add a reusable **chart-template/sample library** mapped to canonical pattern IDs. Templates contain intent, required field roles, cardinality/rule notes, renderer capability and visual defaults; they do not ship fake business conclusions and do not become analytical authority.
+6. Replace “first palette color for everything” with a pattern-aware visual palette contract. Categorical series may use a controlled qualitative palette; sequential/diverging palettes require corresponding semantics; red/green desirability is prohibited unless good/bad direction is explicit. A single series may vary visual identity by approved pattern/domain presentation profile, but never imply unsupported status meaning.
+7. Chart labels, tooltips, axes, gridlines, data density and empty/fallback states are part of renderer acceptance, not cosmetic post-processing.
+
+The owner-supplied colorful dashboard image is a **visual-density/palette inspiration source**, not a data/metric contract and not permission to maximize color count.
+
+### 23B.9 Dashboard composition — semantic variety without a diversity quota
+
+DPR-7 Dashboard membership/story authority remains closed. The fix is materialization capability and candidate planning, not “force every dashboard to contain five chart types.”
+
+- Dashboard writers consume the same `VisualizationPlan` + renderer capability matrix as Decision Workspace.
+- KPI/number, trend, ranking, composition/share, relationship, variance/target and table/evidence roles materialize into their suitable supported family when upstream shape/authority proves the role.
+- A ranking may legitimately remain Row/Bar; a time trend should not collapse to ranking merely to match available code; a share-of-total view may use Donut only when composition prerequisites pass.
+- Dashboard dedup/relevance/information-budget rules remain authoritative before materialization.
+- No candidate is admitted only to create visual diversity.
+- Regression must prove that representative mixed-shape fixtures can produce mixed suitable renderers while identical analytical shapes remain consistently rendered.
+
+### 23B.10 Secondary questions, navigation and quiet hierarchy
+
+Multi-file follow-up questions must become more legible without returning to cards. Preserve deterministic question order/authority, but use stronger typography, row/column rhythm, central dividers and clear action affordances. The existing two-column direction remains valid where width permits; ensure the hierarchy remains readable in one-column fallback.
+
+Bell/notification access remains separate from brand chrome. Restored native menu, sidebar navigation, app notifications and in-canvas actions must have non-overlapping keyboard/click targets and consistent focus states.
+
+### 23B.11 Execution sequence — one program, staged gates
+
+Do not cut an owner installer after each sub-step. Implement in this order so later presentation work is tested on the correct shell/runtime contract:
+
+**Gate A — Native shell + Trust foundation**
+- restore native Windows decorations/menu;
+- remove Windows custom-titlebar dependency;
+- couple exact package identity to signed TEST REL + issuer acceptance/probe;
+- focused native shell/trust tests.
+
+**Gate B — History + deep-analysis interaction model**
+- multi-file history visibility/recovery;
+- 6-per-page × max-5-page presentation;
+- `primary | side_panel` analysis presentation state for single/multi Deep BA + Step 2;
+- focused state/back/restore/responsive tests.
+
+**Gate C — Shared UI primitives + whole-codebase migration**
+- shared geometry/tokens;
+- route and overlay register migrated systematically;
+- Charts/Datasets/DataSources/Settings/Home/Investigation/Dashboard surfaces and dialogs cleaned;
+- source-level legacy-pattern guard updated to reject reintroduction, with explicit allowed containment exceptions rather than brittle “zero rounded classes” rules.
+
+**Gate D — Chart renderer/template/palette + Dashboard materialization**
+- capability matrix and ECharts implementations;
+- template library wired to existing ontology/MB advisory planning;
+- semantic palette policy;
+- Dashboard mixed-shape composition acceptance.
+
+**Gate E — Web + native release acceptance**
+- full release-authoritative suite from the exact Product SHA;
+- immutable NEXT `/app` deploy and tracked browser acceptance;
+- exact Windows package;
+- exact signed TEST REL + installation issuer probe;
+- owner package only after all machine gates pass.
+
+### 23B.12 Acceptance matrix — DPR-10 cannot close without all rows
+
+**Functional/trust**
+- Account installation trust succeeds for the exact packaged internal release identity or reports a truthful signed-trust failure; `release_not_allowed` cannot be accepted for the handed-off package.
+- Multi-file history is visible, paginated and safely recoverable; execution remains fail-closed until governed source identity is exact.
+- Native File/Edit/View/Help menu is visible and commands work in the packaged Windows build.
+
+**Deep analysis interaction**
+- Deep BA and Step 2 open primary/full by default for single and multi.
+- Explicit side-panel toggle moves the same analysis right; close/return preserves analysis state and usable primary workspace.
+- Wide split and compact fallback have no horizontal page overflow or unusable blank region.
+
+**Whole-product UI**
+- every primary route and route-owned overlay in the 23B.6 register is visually reviewed on the exact candidate;
+- no unexplained legacy card-stack/giant-rounded-sheet islands remain;
+- shared gutters align across routes;
+- Advanced remains coherent rather than being rounded merely for consistency.
+
+**Charts/Dashboard**
+- renderer capability is explicit for every canonical pattern;
+- tracked trend/ranking/share/relationship/variance/distribution fixtures resolve only to suitable supported renderers or explicit fallback;
+- no single default indigo/purple appearance dominates unrelated chart families without semantic/design reason;
+- representative Dashboard fixture proves legitimate mixed renderer families without a diversity quota;
+- governed numeric/evidence parity remains exact.
+
+**Regression/release**
+- DPR-8, DPR-9, DPR-10, MB advisory/non-escalation, i18n, source-size, native capability/menu/trust, history restore, export/PDF pagination and governed regression all PASS;
+- `git diff --check` and exact-SHA production build PASS;
+- Web Live Demo `/app` and packaged Windows share product UI behavior except explicitly documented native shell/menu capabilities;
+- Production/51xx remains untouched.
+
+DPR-10 remains **ACTIVE** until owner accepts a packaged Windows artifact produced after this whole-program gate. Run #12 is retained as reproducible failed-UAT evidence and must not be relabeled as accepted.
 
 ## 24. Source bookmarks
 
