@@ -44,7 +44,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
         onSourceInspected={handleOnlineSourceInspected}
       />
 
-      <div className="mx-auto flex w-full max-w-[1240px] flex-col px-6 py-8 md:px-8 lg:px-10 xl:px-12" onClick={e => e.stopPropagation()}>
+      <div className="lb-page-gutter flex flex-col" onClick={e => e.stopPropagation()}>
         {!result && !isAsking && !selectedTopic && pendingLocalBatch && currentDataset?.status !== 'ready'
           && !(pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0) && (
           <HomeSourceUnderstandingSummary
@@ -174,10 +174,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
               {/* Data Status Card – only rendered when currentDataset.status === "ready" */}
               {currentDataset?.status === 'ready' && (
-                <div className="w-full rounded-[18px] border border-black/10 bg-white p-5 shadow-sm">
+                <div className="w-full border-y border-[var(--lb-divider)] bg-white py-5">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex min-w-0 items-start gap-3">
-                      <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-black/[0.04] shadow-sm">
+                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--lb-radius-default)] bg-black/[0.035]">
                         <Database className="h-5 w-5 text-black/65" strokeWidth={1.7} />
                       </div>
                       <div className="min-w-0">
@@ -218,15 +218,15 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                     <button
                       onClick={handleSaveWorkspaceSession}
                       disabled={isSavingSession}
-                      className="flex items-center gap-1.5 rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex items-center gap-1.5 rounded-[var(--lb-radius-default)] border border-[var(--lb-divider)] bg-white px-3 py-2 text-[12px] font-medium text-black/65 transition-colors hover:bg-black/[0.035] disabled:cursor-not-allowed disabled:opacity-60"
                       title={t('Save current session')}
                     >
                       {isSavingSession ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
                       {t('Save session')}
                     </button>
-                    <button onClick={() => setIsDataPreviewOpen(true)} className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('View data')}</button>
+                    <button onClick={() => setIsDataPreviewOpen(true)} className="rounded-[var(--lb-radius-default)] border border-[var(--lb-divider)] bg-white px-3 py-2 text-[12px] font-medium text-black/65 transition-colors hover:bg-black/[0.035]">{t('View data')}</button>
                     {currentDataset.sourceType !== 'virtual_business_view' && currentDataset.file_reference && (
-                      <button onClick={openCurrentDatasetInAdvanced} className="flex items-center gap-1.5 rounded-[10px] bg-[#202123] px-3 py-2 text-[12px] font-medium text-white shadow-sm transition-colors hover:bg-black"><Code className="h-3.5 w-3.5" /> {t('Open Advanced')}</button>
+                      <button onClick={openCurrentDatasetInAdvanced} className="lb-action-primary gap-1.5 text-[12px]"><Code className="h-3.5 w-3.5" /> {t('Open Advanced')}</button>
                     )}
                     {lastInspectedFamilies && lastInspectedFamilies.length > 1 && (
                       <button
@@ -241,31 +241,31 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                             step: "family_selection"
                           });
                         }}
-                        className="rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]"
+                        className="rounded-[var(--lb-radius-default)] border border-[var(--lb-divider)] bg-white px-3 py-2 text-[12px] font-medium text-black/65 transition-colors hover:bg-black/[0.035]"
                       >
                         {t('Change group')}
                       </button>
                     )}
                     <div className="relative">
-                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle rounded-[10px] border border-black/10 bg-white px-3 py-2 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Replace data')}</button>
+                      <button onClick={() => setIsReplaceMenuOpen(!isReplaceMenuOpen)} className="source-picker-toggle rounded-[var(--lb-radius-default)] border border-[var(--lb-divider)] bg-white px-3 py-2 text-[12px] font-medium text-black/65 transition-colors hover:bg-black/[0.035]">{t('Replace data')}</button>
                       {renderSourcePickerMenu(isReplaceMenuOpen, "top-10 right-0")}
                     </div>
                     </div>
                   </div>
-                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-black/5 pt-4 md:grid-cols-4">
-                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                  <div className="mt-5 grid grid-cols-2 border-y border-[var(--lb-divider)] md:grid-cols-4 md:divide-x md:divide-[var(--lb-divider)]">
+                    <div className="px-2 py-3 md:px-4">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Sources') : t('Rows')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? currentDataset.sourceFiles?.length ?? 0 : currentDataset.rows_count, 'number', preferences)}</div>
                     </div>
-                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                    <div className="px-2 py-3 md:px-4">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Business roles') : t('Columns')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{formatValue(isPerspectiveCollection ? collectionRoleCount : Array.isArray(currentDataset.columns) ? currentDataset.columns.length : 0, 'number', preferences)}</div>
                     </div>
-                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                    <div className="px-2 py-3 md:px-4">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{isPerspectiveCollection ? t('Periods') : t('Canonical state')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? collectionPeriodCount : canonicalDatasetState.label}</div>
                     </div>
-                    <div className="rounded-[14px] bg-[#f7f7f6] px-4 py-3">
+                    <div className="px-2 py-3 md:px-4">
                       <div className="text-[11px] font-medium uppercase tracking-wide text-black/40">{t('Runtime')}</div>
                       <div className="mt-1 text-[20px] font-semibold text-[#202123]">{isPerspectiveCollection ? t('Governed') : runtimeSourceContinuity?.available ? t('Full source') : t('Reselect')}</div>
                     </div>
@@ -322,13 +322,13 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         />
                       )}
                       {currentDataset?.canonicalMultiSourceDataset && (
-                        <section data-testid="active-canonical-multisource" className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+                        <section data-testid="active-canonical-multisource" className="border-y border-[var(--lb-divider)] bg-white py-4">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <div><h3 className="text-[14px] font-semibold text-[#202123]">{t('Governed multi-source relationship')}</h3><p className="mt-1 text-[12px] text-black/55">{t(`${currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.length} independently profiled sources participate.`)}</p></div>
-                            <span className="rounded-md border border-black/10 bg-gray-50 px-2 py-1 text-[11px] font-semibold">{canonicalMultiSourcePresentation?.state ?? 'relationship_ambiguous'}</span>
+                            <span className="border-l-2 border-[var(--lb-divider)] pl-2 text-[11px] font-semibold text-black/55">{canonicalMultiSourcePresentation?.state ?? 'relationship_ambiguous'}</span>
                           </div>
-                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                            {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="rounded-lg border border-black/5 bg-[#fbfbfa] p-2"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} {t('rows')}</p></div>)}
+                          <div className="mt-3 grid border-y border-[var(--lb-divider)] sm:grid-cols-2 sm:divide-x sm:divide-[var(--lb-divider)]">
+                            {currentDataset.canonicalMultiSourceDataset.orderedSourceMemberships.map((member: any) => <div key={member.sourceId} className="px-1 py-2 sm:px-3"><p className="truncate text-[12px] font-semibold">{member.boundary.datasetId}</p><p className="mt-1 text-[11px] text-black/50">{member.sourceRole} · {member.boundary.sourceRowCount.toLocaleString()} {t('rows')}</p></div>)}
                           </div>
                           {(canonicalMultiSourcePresentation?.blockers.length ?? 0) > 0 && <p className="mt-3 break-words text-[12px] text-amber-700">{canonicalMultiSourcePresentation.blockers.join(', ')}</p>}
                           {(canonicalMultiSourcePresentation?.restrictions.length ?? 0) > 0 && <p className="mt-2 break-words text-[12px] text-black/55">{t('Restrictions')}: {canonicalMultiSourcePresentation.restrictions.join(', ')}</p>}
@@ -340,15 +340,15 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   {/* Global Perspective Selector */}
                   {!datasetUnderstandingNext && canonicalArtifact && (
                   <>
-                  <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-500 mt-2">
+                  <section data-testid="legacy-perspective-selector" className="mt-2 flex w-full flex-col gap-4 border-y border-[var(--lb-divider)] bg-white py-5 animate-in fade-in zoom-in-95 duration-500">
                     <div>
                       <h3 className="text-[16px] font-semibold text-gray-900 mb-1">Optional: Choose a deeper business perspective</h3>
                       <p className="text-[13px] text-gray-500">LightBI already understands the dataset. Choose a perspective only if you want advanced guided analysis.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2 xl:grid-cols-3">
                       {!guidedInvestigationResult?.perspectives || guidedInvestigationResult.perspectives.length === 0 ? (
-                        <div className="col-span-2 md:col-span-3 p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                        <div className="col-span-full flex items-center justify-center bg-slate-50 px-4 py-5">
                           <p className="text-sm text-gray-500">No reliable business perspectives found for this data yet.</p>
                         </div>
                       ) : (
@@ -359,10 +359,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                               setSelectedPerspective(p.id);
                               setSelectedBusinessView(null);
                             }}
-                            className={`p-4 rounded-xl border text-left transition-all flex flex-col ${
+                            className={`flex min-w-0 flex-col border-b border-[var(--lb-divider)] px-3 py-3 text-left transition-colors ${
                               selectedPerspective === p.id
-                                ? 'bg-blue-50 border-blue-500 shadow-sm ring-1 ring-blue-500'
-                                : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-slate-50'
+                                ? 'border-l-2 border-l-blue-600 bg-blue-50/50'
+                                : 'bg-white hover:bg-black/[0.025]'
                             }`}
                           >
                             <div className={`font-semibold text-[14px] mb-1 ${selectedPerspective === p.id ? 'text-blue-900' : 'text-gray-800'}`}>
@@ -378,19 +378,19 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         ))
                       )}
                     </div>
-                  </div>
+                  </section>
 
                   {/* Business View Selector (Dynamic based on Perspective) */}
                   {selectedPerspective && activeBusinessViews.length > 0 && (
-                    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500 mt-2">
+                    <section data-testid="legacy-business-view-selector" className="mt-2 flex w-full flex-col gap-4 border-y border-[var(--lb-divider)] bg-white py-5 animate-in fade-in slide-in-from-top-4 duration-500">
                       <div>
                         <h3 className="text-[16px] font-semibold text-gray-900 mb-1">Business Views</h3>
                         <p className="text-[13px] text-gray-500">How should LightBI interpret this business process?</p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2">
                         {!activeBusinessViews || activeBusinessViews.length === 0 ? (
-                          <div className="col-span-1 md:col-span-2 p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                          <div className="col-span-full flex items-center justify-center bg-slate-50 px-4 py-5">
                             <p className="text-sm text-gray-500">No reliable business views found for this perspective.</p>
                           </div>
                         ) : (
@@ -398,10 +398,10 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                             <button
                               key={v.id}
                               onClick={() => setSelectedBusinessView(v.id)}
-                              className={`p-4 rounded-xl border text-left transition-all ${
+                              className={`border-b border-[var(--lb-divider)] px-3 py-3 text-left transition-colors ${
                                 selectedBusinessView === v.id
-                                  ? 'bg-indigo-50 border-indigo-500 shadow-sm ring-1 ring-indigo-500'
-                                  : 'bg-white border-gray-200 hover:border-indigo-300 hover:bg-slate-50'
+                                  ? 'border-l-2 border-l-indigo-600 bg-indigo-50/50'
+                                  : 'bg-white hover:bg-black/[0.025]'
                               }`}
                             >
                               <div className={`font-semibold text-[14px] mb-1 ${selectedBusinessView === v.id ? 'text-indigo-900' : 'text-gray-800'}`}>
@@ -417,7 +417,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           ))
                         )}
                       </div>
-                    </div>
+                    </section>
                   )}
                   </>
                   )}
@@ -430,7 +430,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                 <div className={`relative flex w-full flex-col gap-4 overflow-hidden animate-in fade-in zoom-in-95 ${
                   pendingLocalBatch.status === 'ready' && multiSourceReviewSources.length > 0
                     ? 'rounded-none border-0 bg-transparent p-0 shadow-none'
-                    : 'rounded-xl border border-black/10 bg-white p-4 shadow-sm'
+                    : 'border-y border-[var(--lb-divider)] bg-white py-4'
                 }`}>
                   {pendingLocalBatch.status === "reading" && (
                     <div className="absolute top-0 left-0 h-1 bg-blue-500 w-full animate-pulse" />
@@ -467,13 +467,13 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   </div>}
 
                   {pendingLocalBatch.status === "reading" && (
-                    <div className="text-[13px] text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div className="border-l-2 border-slate-300 bg-slate-50 px-3 py-3 text-[13px] text-gray-600">
                       <p>{t('Large files may take a moment. You can cancel and keep your current dataset.')}</p>
                     </div>
                   )}
 
                   {pendingLocalBatch.status === "error" && (
-                    <div className="text-[13px] text-red-600 bg-red-50 p-3 rounded-lg border border-red-100 flex justify-between items-center gap-4">
+                    <div className="flex items-center justify-between gap-4 border-l-2 border-red-400 bg-red-50 px-3 py-3 text-[13px] text-red-600">
                       <div>
                         <p className="font-medium">{t('Failed to read the selected files.')}</p>
                         {pendingLocalBatch.results.filter((item: any) => item && item.status !== "accessible").map((item: any, index: number) => (
@@ -482,12 +482,12 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           </p>
                         ))}
                       </div>
-                      <button onClick={handleCancelInspection} className="px-3 py-1.5 bg-white text-red-700 border border-red-200 rounded-md shadow-sm font-medium hover:bg-red-50 transition-colors">{t('Dismiss')}</button>
+                      <button onClick={handleCancelInspection} className="px-3 py-1.5 font-medium text-red-700 transition-colors hover:bg-red-100">{t('Dismiss')}</button>
                     </div>
                   )}
 
                   {pendingLocalBatch.status === "ready" && pendingLocalBatch.results.some((item: any) => item?.status !== "accessible") && (
-                    <div className="text-[13px] text-amber-800 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                    <div className="border-l-2 border-amber-400 bg-amber-50 px-3 py-3 text-[13px] text-amber-800">
                       <p className="font-medium">{t('Some files were skipped; valid files remain available.')}</p>
                       {pendingLocalBatch.results.map((item: any, index: number) => item?.status === "accessible" ? null : (
                         <p key={`${item?.label ?? pendingLocalBatch.files[index]?.name ?? "file"}-${index}`} className="mt-1 break-words">
@@ -538,22 +538,22 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         </label>
 
                         {pendingLocalBatch.families.length > 1 && !pendingLocalBatch.isRestored && (
-                          <div className="text-[13px] text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200 mb-2">
+                          <div className="mb-2 border-l-2 border-amber-400 bg-amber-50 px-3 py-3 text-[13px] text-amber-700">
                             {t('Files use different schemas and will be analyzed separately. Please select a dataset group to use.')}
                           </div>
                         )}
                         {pendingLocalBatch.isRestored && (
-                          <div className="text-[13px] text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-200 mb-2">
+                          <div className="mb-2 border-l-2 border-blue-400 bg-blue-50 px-3 py-3 text-[13px] text-blue-700">
                             {t('These groups come from your last inspected files. No files will be re-read.')}
                           </div>
                         )}
 
-                        <div className="flex flex-col gap-2">
+                        <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
                           {pendingLocalBatch.families.map((fam: any) => (
                             <div
                               key={fam.id}
                               onClick={() => setPendingLocalBatch({ ...pendingLocalBatch, selectedFamilyId: fam.id })}
-                              className={`cursor-pointer rounded-lg border p-3 transition-colors ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                              className={`cursor-pointer px-2 py-3 transition-colors ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-l-2 border-l-blue-500 bg-blue-50/50' : 'bg-white hover:bg-black/[0.025]'}`}
                             >
                               <div className="flex items-center gap-3">
                                 <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${pendingLocalBatch.selectedFamilyId === fam.id ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'}`}>
@@ -607,7 +607,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                             const selected = pendingLocalBatch.families.find((family: any) => family.id === (pendingLocalBatch.selectedFamilyId ?? (pendingLocalBatch.families.length === 1 ? pendingLocalBatch.families[0].id : null)));
                             return !selected || selected.files.length !== 1;
                           })()}
-                          className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="lb-action-primary gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {pendingLocalBatch.families.length === 1 ? t('Use this dataset') : t('Use selected dataset')} <ChevronRight className="w-4 h-4" />
                         </button>
@@ -623,22 +623,22 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
               {!datasetUnderstandingNext && canonicalArtifact && currentDataset?.status === 'ready' && currentDataset.columns && currentDataset.columns.length > 0 ? (
                 <>
                   <div className="flex flex-col gap-4">
-                    <div className="flex bg-gray-100 p-1 rounded-lg self-start">
+                    <div data-layout="analysis-mode-tabs" className="flex self-start border-b border-[var(--lb-divider)]">
                       <button
                         onClick={() => setAnalysisMode("explore")}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === "explore" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${analysisMode === "explore" ? "border-slate-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
                       >
                         Explore
                       </button>
                       <button
                         onClick={() => setAnalysisMode("investigate")}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === "investigate" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${analysisMode === "investigate" ? "border-slate-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
                       >
                         Investigate
                       </button>
                       <button
                         onClick={() => setAnalysisMode("ask")}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === "ask" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${analysisMode === "ask" ? "border-slate-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-700"}`}
                       >
                         Ask
                       </button>
@@ -661,7 +661,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                   {analysisMode === "explore" && (
                     (!selectedPerspective && currentDataset?.sourceType !== "virtual_business_view") ? (
-                      <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4">
+                      <div className="mt-4 flex w-full items-center justify-center border-y border-[var(--lb-divider)] bg-slate-50 px-4 py-7 text-center">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -671,7 +671,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         </div>
                       </div>
                     ) : !selectedViewData ? (
-                      <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4 animate-in fade-in zoom-in-95">
+                      <div className="mt-4 flex w-full items-center justify-center border-y border-[var(--lb-divider)] bg-slate-50 px-4 py-7 text-center animate-in fade-in zoom-in-95">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
                             <Layers className="w-6 h-6" />
@@ -679,7 +679,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           <h3 className="text-sm font-semibold text-gray-900">Advanced guided views unavailable</h3>
                           <p className="text-xs text-gray-500 max-w-sm mt-1">LightBI understands this dataset and can suggest basic analysis, but no advanced Business View is available yet because required signals are missing.</p>
                           {datasetUnderstanding && datasetUnderstanding.unavailableAnalysis.length > 0 && (
-                            <div className="mt-4 text-left w-full bg-red-50/50 p-3 rounded-md border border-red-100/60">
+                            <div className="mt-4 w-full border-l-2 border-red-300 bg-red-50/50 px-3 py-3 text-left">
                               <p className="text-[11px] font-semibold text-red-800 mb-1.5 uppercase tracking-wider">Missing required signals</p>
                               <div className="flex flex-wrap gap-1.5">
                                 {(Array.from(new Set(datasetUnderstanding.unavailableAnalysis.flatMap((ua: any) => ua.missingSignals))) as string[]).map(sig => (
@@ -703,7 +703,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                             />
                           )}
 
-                          <div className="w-full p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl shadow-sm flex flex-col gap-5">
+                          <div className="flex w-full flex-col gap-5 border-y border-blue-100 bg-blue-50/35 py-5">
                             <div>
                               <h3 className="text-[15px] font-semibold text-blue-900 mb-1 flex items-center">
                                 <Code className="w-4 h-4 mr-2 text-blue-600" />
@@ -716,9 +716,9 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                           <div className="flex flex-col gap-3">
                             <h4 className="text-[13px] font-bold text-slate-700 uppercase tracking-wider">{selectedViewData?.label || selectedViewData?.title || selectedPerspective} Questions</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2">
                               {visibleQuestionSuggestions.map((suggestion: any, idx: number) => (
-                                <div key={idx} className="bg-white border border-blue-200 rounded-lg p-4 hover:bg-blue-50 transition-colors flex flex-col justify-between shadow-sm">
+                                <div key={idx} className="flex flex-col justify-between border-b border-[var(--lb-divider)] bg-white px-3 py-3 transition-colors hover:bg-blue-50/40">
                                   {currentDataset?.sourceType === "virtual_business_view" ? (
                                     <div className="mb-3 w-full text-left">
                                       <span className="text-[14px] text-blue-900 font-medium leading-snug">{suggestion.text}</span>
@@ -758,7 +758,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className="w-full p-5 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center mt-4">
+                      <div className="mt-4 flex w-full items-center justify-center border-y border-[var(--lb-divider)] bg-slate-50 px-4 py-5">
                         <p className="text-sm text-gray-500">No reliable questions found for this Business View.</p>
                       </div>
                     )
@@ -766,7 +766,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                   {analysisMode === "investigate" && (
                     !selectedViewData ? (
-                      <div className="w-full p-8 bg-slate-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center text-center mt-4">
+                      <div className="mt-4 flex w-full items-center justify-center border-y border-[var(--lb-divider)] bg-slate-50 px-4 py-7 text-center">
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
                             <Layers className="w-6 h-6" />
@@ -776,7 +776,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         </div>
                       </div>
                     ) : (
-                      <div className="w-full p-5 bg-white border border-gray-200 rounded-xl shadow-sm space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <div className="w-full space-y-5 border-y border-[var(--lb-divider)] bg-white py-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
                             <Layers className="w-5 h-5 text-indigo-500" />
@@ -787,7 +787,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                           </div>
                         </div>
 
-                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-4">
+                        <div className="space-y-4 border-y border-[var(--lb-divider)] bg-slate-50 py-4">
                           <div>
                             <h4 className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Purpose</h4>
                             <p className="text-[14px] text-slate-800">{selectedViewData.description}</p>
@@ -812,7 +812,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                   )}
 
                   {analysisMode === "ask" && (
-                    <div className="w-full p-5 bg-white border border-gray-200 rounded-xl shadow-sm space-y-4">
+                    <div className="w-full space-y-4 border-y border-[var(--lb-divider)] bg-white py-5">
                       {selectedPerspective && (
                         <div className="flex gap-2 mb-2">
                           <span className="text-[10px] px-2 py-1 bg-purple-100 text-purple-800 font-semibold uppercase tracking-wider rounded">Detected Perspective: {selectedPerspective}</span>
@@ -832,7 +832,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
                       <div className="relative">
                         <textarea
-                          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm min-h-[100px] resize-none"
+                          className="lb-control min-h-[100px] w-full resize-none px-3 py-3 text-sm focus:border-purple-500"
                           placeholder="e.g. Can you show me the delivery status trend over time grouped by route?"
                         />
                       </div>
@@ -841,7 +841,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                         <button className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors">
                           Clear
                         </button>
-                        <button className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-purple-700 transition-colors flex items-center gap-2">
+                        <button className="lb-action-primary gap-2">
                           <Sparkles className="w-4 h-4" />
                           Generate plan
                         </button>
@@ -852,7 +852,7 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
                 </>
               ) : (
                 currentDataset?.status === 'ready' && !datasetUnderstandingNext && canonicalArtifact && (
-                  <div className="w-full p-4 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+                  <div className="w-full border-l-2 border-amber-400 bg-amber-50 px-4 py-3">
                     <p className="text-sm text-amber-800 flex items-center">
                       <Search className="w-4 h-4 mr-2" />
                       No columns detected. Cannot suggest analysis capabilities.
@@ -864,16 +864,16 @@ export const HomeWorkspaceView: React.FC<{ model: any }> = ({ model }) => {
 
               {currentDataset?.status !== 'ready' && (
                 currentDataset?.status === 'stale' ? (
-                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-5" role="status" data-testid="runtime-source-reselection-required">
+                  <div className="border-l-2 border-amber-400 bg-amber-50 px-4 py-4" role="status" data-testid="runtime-source-reselection-required">
                     <h3 className="text-[14px] font-semibold text-amber-900">Understood — source reselection required</h3>
                     <p className="mt-1 text-[13px] text-amber-800">The saved representative sample is available for review, but it cannot execute an analysis.</p>
-                    <button type="button" onClick={openLocalFilePicker} className="mt-3 rounded-lg border border-amber-300 bg-white px-3 py-2 text-[12px] font-semibold text-amber-900">Reselect source</button>
+                    <button type="button" onClick={openLocalFilePicker} className="mt-3 border-l-2 border-amber-500 px-3 py-2 text-[12px] font-semibold text-amber-900 transition-colors hover:bg-amber-100">Reselect source</button>
                   </div>
                 ) : (
                 <div className="hidden">
                   {/* Legacy suggested actions kept dormant until wired to real saved work. */}
                     <h3 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-4">{homeGuidance.sections.suggestedActions}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2">
                       {homeGuidance.homeStates.noData.actions.map(a => ({ id: "", label: a })).map((action, idx) => (
                         <button
                           key={idx}

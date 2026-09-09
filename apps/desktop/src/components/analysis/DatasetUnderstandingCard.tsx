@@ -74,7 +74,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
   ];
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex w-full flex-col gap-5 border-y border-[var(--lb-divider)] bg-white py-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="flex flex-col gap-2">
@@ -97,7 +97,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
           <div className="flex items-center gap-2">
             <button 
               onClick={() => void handleExportHandoff()}
-              className="flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
+              className="lb-control flex items-center px-2.5 py-1 text-[12px] font-medium text-gray-700 hover:bg-gray-50"
               title="Export Advanced Handoff JSON for dbt/Python"
             >
               <Download className="w-3.5 h-3.5 mr-1.5 text-gray-500" />
@@ -114,7 +114,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
 
       {/* Readiness Banner */}
       {readinessConfig && understanding.readiness && (
-        <div className={`flex items-start p-3 rounded-lg border ${readinessConfig.bg} ${readinessConfig.border} ${readinessConfig.color}`}>
+        <div className={`flex items-start border-l-2 px-3 py-3 ${readinessConfig.bg} ${readinessConfig.border} ${readinessConfig.color}`}>
           <ReadinessIcon className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-[13px] font-semibold">{readinessConfig.text}</span>
@@ -125,7 +125,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
 
       {/* Caveats Collapsible */}
       {allCaveats.length > 0 && (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="overflow-hidden border-y border-[var(--lb-divider)]">
           <button 
             onClick={() => setShowCaveats(!showCaveats)}
             className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 transition-colors text-[12px] font-medium text-gray-700"
@@ -160,7 +160,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
             <div className="flex flex-wrap gap-2">
               {understanding.inferredEntities.length > 0 ? (
                 understanding.inferredEntities.map((entity, i) => (
-                  <div key={i} className="px-2.5 py-1 bg-gray-50 border border-gray-200 rounded-md text-[12px] font-medium text-gray-700 flex flex-col shadow-sm">
+                  <div key={i} className="flex flex-col border border-gray-200 bg-gray-50 px-2.5 py-1 text-[12px] font-medium text-gray-700">
                     {typeof entity === 'string' ? entity : (entity as any).label || entity}
                   </div>
                 ))
@@ -174,7 +174,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
                </div>
             )}
             {graph.nodes.length >= 2 && (
-              <div className="semantic-graph-section mt-4 border border-gray-100 rounded-lg overflow-hidden">
+              <div className="semantic-graph-section mt-4 overflow-hidden border-y border-[var(--lb-divider)]">
                 <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 bg-gray-50 px-3 py-2 border-b border-gray-100">Concept Map</h4>
                 <SemanticGraphView graph={graph} />
               </div>
@@ -188,9 +188,9 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
               <div className="flex items-center flex-wrap gap-1.5 text-[12px] text-gray-700 bg-gray-50 px-3 py-2 rounded-md border border-gray-100">
                 {understanding.workflowHints.map((hint, i) => (
                   <React.Fragment key={i}>
-                    <span className="font-medium bg-white px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">{hint.fromSignal}</span>
+                    <span className="border border-gray-200 bg-white px-1.5 py-0.5 font-medium">{hint.fromSignal}</span>
                     <ChevronRight className="w-3 h-3 text-gray-400" />
-                    {hint.toSignal && <span className="font-medium bg-white px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">{hint.toSignal}</span>}
+                    {hint.toSignal && <span className="border border-gray-200 bg-white px-1.5 py-0.5 font-medium">{hint.toSignal}</span>}
                   </React.Fragment>
                 ))}
               </div>
@@ -239,7 +239,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
           <h4 className="text-[13px] font-bold text-gray-900 mb-3">Truth & Mapping Review</h4>
           <div className="space-y-3">
             {understanding.mappingReview.items.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div key={idx} className="flex items-center justify-between border-b border-[var(--lb-divider)] bg-gray-50 px-2 py-3">
                 <span className="text-[13px] font-medium text-gray-700">{item.physicalColumn}</span>
                 <div className="flex items-center gap-2">
                   {item.issueType === 'ambiguous' && (
@@ -291,7 +291,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
 
       {/* Readiness Toast / Alert */}
       {understanding.readiness && understanding.readiness.score > 40 && understanding.opportunities.length > 0 && (
-        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-[13px] flex items-center">
+        <div className="mt-4 flex items-center border-l-2 border-emerald-400 bg-emerald-50 px-3 py-3 text-[13px] text-emerald-800">
           <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
           Readiness improved: 40 -&gt; {understanding.readiness.score}. Unlocked opportunities: 0 -&gt; {understanding.opportunities.length}.
         </div>
@@ -299,7 +299,7 @@ export const DatasetUnderstandingCard: React.FC<DatasetUnderstandingCardProps> =
 
       {/* UX copy for zero questions/views improvement */}
       {understanding.summary.businessViewCount === 0 && understanding.summary.questionCount === 0 && understanding.status !== 'insufficient' && (
-        <div className="mt-1 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-md text-[12px] text-blue-800 flex items-start shadow-sm">
+        <div className="mt-1 flex items-start border-l-2 border-blue-400 bg-blue-50 px-3 py-2.5 text-[12px] text-blue-800">
            <Info className="w-4 h-4 mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
            <span>LightBI can understand this dataset, but some advanced analysis is unavailable because required signals were not detected.</span>
         </div>

@@ -19,7 +19,7 @@ export const BusinessViewReviewCard: React.FC<BusinessViewReviewCardProps> = ({
   const isIgnored = view.status === 'ignored';
 
   return (
-    <div className={`p-5 rounded-xl border mb-4 transition-all ${isConfirmed ? 'bg-emerald-50 border-emerald-200' : isIgnored ? 'bg-gray-50 border-gray-200 opacity-60' : 'bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300'}`}>
+    <div className={`mb-4 border-y px-1 py-5 transition-all ${isConfirmed ? 'border-emerald-200 bg-emerald-50/60' : isIgnored ? 'border-gray-200 bg-gray-50 opacity-60' : 'border-[var(--lb-divider)] bg-white'}`}>
       <div className="flex justify-between items-start mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -46,7 +46,7 @@ export const BusinessViewReviewCard: React.FC<BusinessViewReviewCardProps> = ({
         </span>
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100">
+      <div className="mb-4 border-l-2 border-slate-300 bg-gray-50 px-3 py-3">
         <h5 className="text-[12px] font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1">
           <HelpCircle className="w-3.5 h-3.5" /> Suggested analysis
         </h5>
@@ -71,7 +71,7 @@ export const BusinessViewReviewCard: React.FC<BusinessViewReviewCardProps> = ({
           {!isIgnored && (
             <button 
               onClick={() => onIgnoreView(view)}
-              className="px-3 py-1.5 text-[12px] font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+              className="lb-control px-3 py-1.5 text-[12px] font-medium text-gray-600"
             >
               Ignore
             </button>
@@ -79,7 +79,7 @@ export const BusinessViewReviewCard: React.FC<BusinessViewReviewCardProps> = ({
           {!isConfirmed && (
             <button 
               onClick={() => onUseView(view)}
-              className="px-4 py-1.5 bg-gray-900 text-white hover:bg-gray-800 rounded-md text-[13px] font-medium shadow-sm transition-colors flex items-center gap-1"
+              className="lb-action-primary flex items-center gap-1 px-4 py-1.5 text-[13px]"
             >
               <CheckCircle2 className="w-4 h-4" /> Use this view
             </button>

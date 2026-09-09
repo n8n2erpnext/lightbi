@@ -24,7 +24,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
   const measures = contract.columns.filter(c => c.role === 'measure');
 
   return (
-    <div className="w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden flex flex-col text-slate-300">
+    <div className="w-full overflow-hidden border-y border-slate-700 bg-slate-900 flex flex-col text-slate-300">
       <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900">
         <div className="flex items-center gap-3">
           <Table className="w-5 h-5 text-indigo-400" />
@@ -49,7 +49,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
       </div>
 
       <div className="p-5 flex flex-col gap-6">
-        <div className="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50">
+        <div className="border-l-2 border-slate-600 bg-slate-800/30 px-4 py-4">
           <p className="text-[13px] text-slate-300">{summarizePreviewResultContract(contract)}</p>
           <p className="text-[11px] text-slate-500 mt-2 italic">
             "This is the expected result structure before runtime execution."
@@ -57,7 +57,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
         </div>
 
         {!validation.valid && (
-           <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200">
+           <div className="border-l-2 border-red-500/40 bg-red-500/10 px-4 py-4 text-red-200">
              <div className="flex items-center gap-2 font-semibold text-[13px] mb-2">
                <ShieldAlert className="w-4 h-4" /> Validation Errors
              </div>
@@ -70,7 +70,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
         )}
 
         {contract.warnings.length > 0 && (
-          <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200">
+          <div className="border-l-2 border-amber-500/40 bg-amber-500/10 px-4 py-4 text-amber-200">
             <div className="flex items-center gap-2 font-semibold text-[13px] mb-2">
               <AlertTriangle className="w-4 h-4" /> Contract Warnings
             </div>
@@ -84,7 +84,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
 
         {!isBlocked && (
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
+            <div className="border-y border-slate-800 bg-slate-950 px-4 py-4">
               <div className="flex items-center gap-2 text-slate-400 mb-3">
                 <Columns className="w-4 h-4 text-blue-400" />
                 <span className="text-[12px] font-semibold uppercase tracking-wider">Dimensions</span>
@@ -102,7 +102,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
               </div>
             </div>
 
-            <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
+            <div className="border-y border-slate-800 bg-slate-950 px-4 py-4">
               <div className="flex items-center gap-2 text-slate-400 mb-3">
                 <Target className="w-4 h-4 text-rose-400" />
                 <span className="text-[12px] font-semibold uppercase tracking-wider">Measures</span>
@@ -123,7 +123,7 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
         )}
 
         {!isBlocked && (
-           <div className="bg-slate-950 p-8 rounded-lg border border-slate-800 border-dashed flex items-center justify-center">
+           <div className="border-y border-dashed border-slate-800 bg-slate-950 px-8 py-8 flex items-center justify-center">
               <span className="text-[13px] text-slate-500 font-medium">No rows yet. Runtime has not executed.</span>
            </div>
         )}
@@ -132,14 +132,14 @@ export const PreviewResultContractCard: React.FC<PreviewResultContractCardProps>
       <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-end gap-3">
         <button
           onClick={onClose}
-          className="px-4 py-2 text-[13px] font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg shadow-sm transition-colors border border-slate-700"
+          className="border border-slate-700 bg-slate-800 px-4 py-2 text-[13px] font-medium text-slate-300 transition-colors hover:bg-slate-700"
         >
           Cancel
         </button>
         {!isBlocked && validation.valid && (
           <button
              onClick={onContinue}
-             className="px-4 py-2 text-[13px] font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm transition-colors"
+             className="bg-indigo-600 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-indigo-500"
           >
              Execute Query
           </button>

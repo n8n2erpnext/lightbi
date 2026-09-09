@@ -18,9 +18,9 @@ export const Dashboards: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa] px-5 py-8 text-[#202123] md:px-8 lg:px-10">
-      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-5">
-        <header className="flex flex-col gap-4 border-b border-black/10 pb-5 md:flex-row md:items-end md:justify-between">
+    <div className="lb-page-scroll">
+      <div className="lb-page-gutter flex flex-col gap-5">
+        <header className="lb-page-header">
           <div>
             <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> {t('Dashboards')}</div>
             <h1 className="text-[28px] font-semibold tracking-normal">{t('Decision dashboards')}</h1>

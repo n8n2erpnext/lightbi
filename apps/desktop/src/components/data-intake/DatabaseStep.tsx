@@ -168,7 +168,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
     : 0;
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto py-8">
+    <div className="space-y-6 py-6">
       <div className="text-center space-y-2 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900">{config.title}</h2>
         {config.description && (
@@ -177,12 +177,12 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       </div>
 
       {!driver && config.options && (
-        <div className="grid grid-cols-1 gap-3 rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 border-y border-[var(--lb-divider)] bg-white py-5 sm:grid-cols-2">
           {config.options.map(option => (
             <button
               key={option.id}
               onClick={() => handleSelectDriver(option.id)}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:border-gray-300 hover:bg-white"
+              className="flex items-center gap-3 rounded-[var(--lb-radius-default)] border border-[var(--lb-divider)] bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-white"
             >
               <Database className="h-5 w-5 text-gray-500" />
               <div>
@@ -195,7 +195,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       )}
 
       {driver && (
-      <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+      <div className="space-y-4 border-y border-[var(--lb-divider)] bg-white py-5">
         {!config.driver && (
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <div>
@@ -204,7 +204,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
             </div>
             <button
               onClick={() => handleSelectDriver(null)}
-              className="rounded-md border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+              className="lb-control px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
             >
               Change type
             </button>
@@ -218,7 +218,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
               value={connectionUrl}
               onChange={(event) => setConnectionUrl(event.target.value)}
               placeholder={activeConfig.uriPlaceholder}
-              className="block w-full rounded-lg border border-gray-300 py-2 pl-3 pr-11 font-mono text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+              className="lb-control block w-full py-2 pl-3 pr-11 font-mono text-sm focus:border-gray-900"
             />
             <button
               type="button"
@@ -242,7 +242,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                   value={schemaName}
                   onChange={(event) => setSchemaName(event.target.value)}
                   placeholder={activeConfig.schemaPlaceholder}
-                  className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                  className="lb-control mt-2 block w-full px-3 py-2 text-sm focus:border-gray-900"
                 />
               </label>
             )}
@@ -253,7 +253,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 value={tableName}
                 onChange={(event) => setTableName(event.target.value)}
                 placeholder={activeConfig.tablePlaceholder}
-                className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                className="lb-control mt-2 block w-full px-3 py-2 text-sm focus:border-gray-900"
               />
             </label>
           </div>
@@ -268,7 +268,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 value={databaseName}
                 onChange={(event) => setDatabaseName(event.target.value)}
                 placeholder={activeConfig.databasePlaceholder}
-                className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                className="lb-control mt-2 block w-full px-3 py-2 text-sm focus:border-gray-900"
               />
             </label>
             <label className="block">
@@ -278,7 +278,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
                 value={collectionName}
                 onChange={(event) => setCollectionName(event.target.value)}
                 placeholder={activeConfig.collectionPlaceholder}
-                className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                className="lb-control mt-2 block w-full px-3 py-2 text-sm focus:border-gray-900"
               />
             </label>
           </div>
@@ -292,21 +292,21 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
             max={1000}
             value={sampleLimit}
             onChange={(event) => setSampleLimit(Number(event.target.value) || 1000)}
-            className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+            className="lb-control mt-2 block w-full px-3 py-2 text-sm focus:border-gray-900"
           />
         </label>
       </div>
       )}
 
       {isInspecting && (
-        <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+        <div className="flex items-center gap-2 border-l-2 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-blue-700">
           <Loader2 className="h-4 w-4 animate-spin" />
           Inspecting schema and sampling rows...
         </div>
       )}
 
       {inspectionResult && inspectionResult.status !== 'accessible' && (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="flex items-start gap-3 border-l-2 border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">{inspectionResult.status.replace(/_/g, ' ')}</p>
@@ -316,17 +316,17 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
       )}
 
       {inspectionResult?.status === 'accessible' && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="border-l-2 border-emerald-500 bg-emerald-50 px-4 py-4">
           <div className="mb-3 flex items-center gap-2 text-emerald-800">
             <Check className="h-4 w-4" />
             <span className="text-sm font-semibold">Database source inspected</span>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-white p-3">
+          <div className="grid grid-cols-2 border-y border-emerald-200 text-sm divide-x divide-emerald-200">
+            <div className="bg-white/70 px-3 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Rows</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedRows.toLocaleString()}</p>
             </div>
-            <div className="rounded-lg bg-white p-3">
+            <div className="bg-white/70 px-3 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">Columns</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedColumns.toLocaleString()}</p>
             </div>
@@ -343,7 +343,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
         {inspectionResult?.status === 'accessible' ? (
           <button
             onClick={handleUseDataset}
-            className="px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
+            className="lb-action-primary w-full px-6 py-3 text-base sm:w-auto"
           >
             Use this dataset
           </button>
@@ -351,7 +351,7 @@ export function DatabaseStep({ config, onClose, onSourceInspected }: DatabaseSte
           <button
             onClick={handleInspect}
             disabled={!canInspect || isInspecting}
-            className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
+            className="lb-action-primary w-full px-6 py-3 text-base sm:w-auto"
           >
             {isInspecting ? 'Inspecting...' : activeConfig.buttonText || 'Inspect'}
           </button>

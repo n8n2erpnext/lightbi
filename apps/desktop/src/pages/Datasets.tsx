@@ -73,96 +73,98 @@ export const Datasets: React.FC = () => {
 
   if (!sources.length) {
     return (
-      <div className="flex-1 overflow-auto bg-[#fafafa] p-8">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white p-12 text-center shadow-sm">
-          <Database className="mx-auto mb-4 h-10 w-10 text-gray-400" />
-          <h1 className="text-2xl font-semibold text-gray-900">{t('No project data yet')}</h1>
-          <p className="mt-2 text-gray-500">{t('Import a file from New brief. LightBI will preserve the raw source and prepare a clean handoff here.')}</p>
+      <div className="lb-page-scroll">
+        <div className="lb-page-gutter">
+          <section className="lb-reading-column lb-document-section py-12 text-center">
+            <Database className="mx-auto mb-4 h-9 w-9 text-black/25" />
+            <h1 className="text-[24px] font-semibold text-[var(--lb-ink)]">{t('No project data yet')}</h1>
+            <p className="mt-2 text-[14px] leading-6 text-black/50">{t('Import a file from New brief. LightBI will preserve the raw source and prepare a clean handoff here.')}</p>
+          </section>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-auto bg-[#fafafa] p-6 lg:p-8">
-      <div className="mx-auto max-w-[1240px] space-y-6">
-        <section className="rounded-3xl bg-[#071022] p-7 text-white shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="max-w-3xl">
-              <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky-300"><Sparkles className="h-4 w-4" />{t('Clean data handoff')}</div>
-              <h1 className="text-3xl font-semibold">{t('Prepare data for Power BI and analysts')}</h1>
-              <p className="mt-3 text-sm leading-6 text-slate-300">{t('LightBI creates a new, traceable copy. The imported source is never changed.')}</p>
-            </div>
-            <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-5 py-4 text-sm text-emerald-200"><ShieldCheck className="mr-2 inline h-5 w-5" />{t('Non-destructive by design')}</div>
+    <div className="lb-page-scroll">
+      <div className="lb-page-gutter flex flex-col gap-5">
+        <header className="lb-page-header">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><Sparkles className="h-4 w-4" strokeWidth={1.7} />{t('Clean data handoff')}</div>
+            <h1 className="text-[28px] font-semibold tracking-normal">{t('Prepare data for Power BI and analysts')}</h1>
+            <p className="mt-2 max-w-3xl text-[14px] leading-6 text-black/50">{t('LightBI creates a new, traceable copy. The imported source is never changed.')}</p>
           </div>
-        </section>
+          <div className="flex items-center gap-2 text-[12px] font-semibold text-emerald-700"><ShieldCheck className="h-4 w-4" />{t('Non-destructive by design')}</div>
+        </header>
 
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-            <label className="text-sm font-medium text-gray-700">{t('Source')}
-              <select value={source?.id} onChange={event => setSourceId(event.target.value)} className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900">
+        <section className="lb-document-section !pt-0">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+            <label className="text-[12px] font-semibold text-black/60">{t('Source')}
+              <select value={source?.id} onChange={event => setSourceId(event.target.value)} className="lb-control mt-2 w-full px-3 py-2 text-[var(--lb-ink)]">
                 {sources.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
               </select>
             </label>
-            <label className="text-sm font-medium text-gray-700">{t('Table or sheet')}
-              <select value={table?.id} onChange={event => { setTableId(event.target.value); setResult(null); }} className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900">
-            {source?.tables.map(item => <option key={item.id} value={item.id}>{item.name} · {item.rowCount.toLocaleString(preferences.locale)}</option>)}
+            <label className="text-[12px] font-semibold text-black/60">{t('Table or sheet')}
+              <select value={table?.id} onChange={event => { setTableId(event.target.value); setResult(null); }} className="lb-control mt-2 w-full px-3 py-2 text-[var(--lb-ink)]">
+                {source?.tables.map(item => <option key={item.id} value={item.id}>{item.name} · {item.rowCount.toLocaleString(preferences.locale)}</option>)}
               </select>
             </label>
-            <button data-testid="prepare-clean-handoff" disabled={!table || isBuilding} onClick={() => void prepare()} className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300">
+            <button data-testid="prepare-clean-handoff" disabled={!table || isBuilding} onClick={() => void prepare()} className="lb-action-primary md:min-w-44">
               {isBuilding ? t('Preparing…') : t('Prepare clean copy')}
             </button>
           </div>
-          {table && <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-gray-50 p-4"><div className="text-xs uppercase text-gray-400">{t('Rows')}</div><div className="mt-1 text-2xl font-semibold">{table.rowCount.toLocaleString(preferences.locale)}</div></div>
-            <div className="rounded-2xl bg-gray-50 p-4"><div className="text-xs uppercase text-gray-400">{t('Columns')}</div><div className="mt-1 text-2xl font-semibold">{table.columns.length}</div></div>
-            <div className="rounded-2xl bg-gray-50 p-4"><div className="text-xs uppercase text-gray-400">{t('Understanding')}</div><div className="mt-1 text-lg font-semibold">{source?.canonicalSourceBoundary ? t('Canonical evidence attached') : t('Physical profile available')}</div></div>
+
+          {table && <div className="lb-divider-grid mt-5 grid-cols-1 sm:grid-cols-3 sm:divide-x sm:divide-[var(--lb-divider)]">
+            <div className="px-1 py-4 sm:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Rows')}</div><div className="mt-1 text-2xl font-semibold">{table.rowCount.toLocaleString(preferences.locale)}</div></div>
+            <div className="px-1 py-4 sm:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Columns')}</div><div className="mt-1 text-2xl font-semibold">{table.columns.length}</div></div>
+            <div className="px-1 py-4 sm:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Understanding')}</div><div className="mt-1 text-[15px] font-semibold">{source?.canonicalSourceBoundary ? t('Canonical evidence attached') : t('Physical profile available')}</div></div>
           </div>}
-          {error && <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+          {error && <div role="alert" className="mt-4 border-l-2 border-red-500 bg-red-50 px-4 py-3 text-[13px] text-red-700">{error}</div>}
         </section>
 
-        {result && <section data-testid="clean-handoff-result" className="space-y-5 rounded-3xl border border-emerald-200 bg-emerald-50/40 p-6 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        {result && <section data-testid="clean-handoff-result" className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 border-y border-emerald-200 py-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-emerald-700"><CheckCircle2 className="h-5 w-5" />{t('Clean handoff ready')}</div>
-            <h2 className="mt-2 text-2xl font-semibold text-gray-950">{result.artifact.output.rowCount.toLocaleString(preferences.locale)} {t('rows prepared without changing the source')}</h2>
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-700"><CheckCircle2 className="h-4 w-4" />{t('Clean handoff ready')}</div>
+              <h2 className="mt-2 text-[22px] font-semibold text-[var(--lb-ink)]">{result.artifact.output.rowCount.toLocaleString(preferences.locale)} {t('rows prepared without changing the source')}</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button data-testid="download-powerbi-package" onClick={() => void savePackage()} className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"><Download className="mr-2 inline h-4 w-4" />{t('Save Power BI package as…')}</button>
-              {analysisPlan && <button data-testid="download-excel-analysis-package" onClick={() => void saveAnalysisPackage()} className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"><FileSpreadsheet className="mr-2 inline h-4 w-4" />{t('Save Excel analysis / Pivot as…')}</button>}
+              <button data-testid="download-powerbi-package" onClick={() => void savePackage()} className="lb-action-primary"><Download className="mr-2 h-4 w-4" />{t('Save Power BI package as…')}</button>
+              {analysisPlan && <button data-testid="download-excel-analysis-package" onClick={() => void saveAnalysisPackage()} className="lb-action-primary"><FileSpreadsheet className="mr-2 h-4 w-4" />{t('Save Excel analysis / Pivot as…')}</button>}
             </div>
           </div>
-          {saveNotice && <div role="status" data-testid="clean-handoff-save-notice" className="rounded-xl border border-emerald-200 bg-white p-4 text-sm font-medium text-emerald-800">{saveNotice}</div>}
-          {analysisSaveNotice && <div role="status" data-testid="analysis-workbook-save-notice" className="rounded-xl border border-blue-200 bg-white p-4 text-sm font-medium text-blue-800">{analysisSaveNotice}</div>}
 
-          <div className="grid gap-4 md:grid-cols-4">
-              <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Clean rows')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.output.rowCount.toLocaleString(preferences.locale)}</div></div>
-            <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Data dictionary')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.lineage.length} {t('fields')}</div></div>
-              <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Safe changes')}</div><div className="mt-1 text-2xl font-semibold">{transformationCount.toLocaleString(preferences.locale)}</div></div>
-            <div className="rounded-2xl bg-white p-4"><div className="text-xs uppercase text-gray-400">{t('Source state')}</div><div className="mt-1 text-lg font-semibold text-emerald-700">{t('Preserved')}</div></div>
+          {saveNotice && <div role="status" data-testid="clean-handoff-save-notice" className="border-l-2 border-emerald-500 bg-emerald-50 px-4 py-3 text-[13px] font-medium text-emerald-800">{saveNotice}</div>}
+          {analysisSaveNotice && <div role="status" data-testid="analysis-workbook-save-notice" className="border-l-2 border-blue-500 bg-blue-50 px-4 py-3 text-[13px] font-medium text-blue-800">{analysisSaveNotice}</div>}
+
+          <div className="lb-divider-grid grid-cols-2 md:grid-cols-4 md:divide-x md:divide-[var(--lb-divider)]">
+            <div className="px-1 py-4 md:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Clean rows')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.output.rowCount.toLocaleString(preferences.locale)}</div></div>
+            <div className="px-1 py-4 md:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Data dictionary')}</div><div className="mt-1 text-2xl font-semibold">{result.artifact.lineage.length} {t('fields')}</div></div>
+            <div className="px-1 py-4 md:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Safe changes')}</div><div className="mt-1 text-2xl font-semibold">{transformationCount.toLocaleString(preferences.locale)}</div></div>
+            <div className="px-1 py-4 md:px-5"><div className="text-[11px] uppercase tracking-wide text-black/35">{t('Source state')}</div><div className="mt-1 text-[15px] font-semibold text-emerald-700">{t('Preserved')}</div></div>
           </div>
 
-          <div className={`grid gap-4 ${analysisPlan ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
-              <h3 className="font-semibold"><FileSpreadsheet className="mr-2 inline h-5 w-5 text-blue-600" />{t('Power BI workbook contents')}</h3>
-              <ul className="mt-3 space-y-2 text-sm text-gray-600"><li>• Clean Data</li><li>• Data Dictionary</li><li>• Transformation Audit</li><li>• Handoff Manifest</li></ul>
+          <div className={`grid border-y border-[var(--lb-divider)] ${analysisPlan ? 'lg:grid-cols-3 lg:divide-x lg:divide-[var(--lb-divider)]' : 'lg:grid-cols-2 lg:divide-x lg:divide-[var(--lb-divider)]'}`}>
+            <div className="px-1 py-5 lg:px-5">
+              <h3 className="font-semibold"><FileSpreadsheet className="mr-2 inline h-4 w-4 text-blue-600" />{t('Power BI workbook contents')}</h3>
+              <ul className="mt-3 space-y-2 text-[13px] text-black/55"><li>• Clean Data</li><li>• Data Dictionary</li><li>• Transformation Audit</li><li>• Handoff Manifest</li></ul>
             </div>
-            {analysisPlan && <div data-testid="excel-analysis-context" className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5">
-              <h3 className="font-semibold text-blue-950"><FileSpreadsheet className="mr-2 inline h-5 w-5 text-blue-600" />{t('Excel Analysis / Pivot workbook')}</h3>
-              <p className="mt-2 text-sm text-blue-900/70">{analysisPlan.title} · {analysisPlan.perspectiveId}</p>
-              <ul className="mt-3 space-y-2 text-sm text-blue-900/80"><li>• Pivot View (formula-driven from governed summary)</li><li>• Analysis Summary + source-bound evidence</li><li>• Clean Data + Data Dictionary</li><li>• Transformation Audit + Decision Notes</li></ul>
+            {analysisPlan && <div data-testid="excel-analysis-context" className="bg-blue-50/30 px-1 py-5 lg:px-5">
+              <h3 className="font-semibold text-blue-950"><FileSpreadsheet className="mr-2 inline h-4 w-4 text-blue-600" />{t('Excel Analysis / Pivot workbook')}</h3>
+              <p className="mt-2 text-[13px] text-blue-900/70">{analysisPlan.title} · {analysisPlan.perspectiveId}</p>
+              <ul className="mt-3 space-y-2 text-[13px] text-blue-900/80"><li>• Pivot View (formula-driven from governed summary)</li><li>• Analysis Summary + source-bound evidence</li><li>• Clean Data + Data Dictionary</li><li>• Transformation Audit + Decision Notes</li></ul>
             </div>}
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+            <div className="px-1 py-5 lg:px-5">
               <h3 className="font-semibold">{t('Inferred grain and keys')}</h3>
-              <dl className="mt-3 grid grid-cols-2 gap-3 text-sm"><dt className="text-gray-500">{t('Row form')}</dt><dd>{result.artifact.grain.structuralForm}</dd><dt className="text-gray-500">{t('Time basis')}</dt><dd>{result.artifact.grain.temporalMode}</dd><dt className="text-gray-500">{t('Candidate keys')}</dt><dd>{result.artifact.candidateKeys.join(', ') || t('Not confirmed')}</dd></dl>
+              <dl className="mt-3 grid grid-cols-2 gap-x-5 gap-y-3 text-[13px]"><dt className="text-black/45">{t('Row form')}</dt><dd>{result.artifact.grain.structuralForm}</dd><dt className="text-black/45">{t('Time basis')}</dt><dd>{result.artifact.grain.temporalMode}</dd><dt className="text-black/45">{t('Candidate keys')}</dt><dd>{result.artifact.candidateKeys.join(', ') || t('Not confirmed')}</dd></dl>
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-            <div className="border-b border-gray-200 px-5 py-4 font-semibold">{t('Raw-to-canonical data dictionary')}</div>
+          <div className="border-y border-[var(--lb-divider)] bg-white">
+            <div className="border-b border-[var(--lb-divider)] px-1 py-4 text-[14px] font-semibold">{t('Raw-to-canonical data dictionary')}</div>
             <div className="max-h-[420px] overflow-auto">
-              <table className="w-full text-left text-sm"><thead className="sticky top-0 bg-gray-50 text-gray-500"><tr><th className="px-5 py-3">{t('Raw field')}</th><th className="px-5 py-3">{t('Clean field')}</th><th className="px-5 py-3">{t('Meaning')}</th><th className="px-5 py-3">{t('Quality')}</th></tr></thead><tbody>
-                {result.artifact.lineage.map(item => <tr key={`${item.sourceColumn}:${item.outputColumn}`} className="border-t border-gray-100"><td className="px-5 py-3 font-medium text-gray-900">{item.sourceColumn}</td><td className="px-5 py-3 text-blue-700">{item.outputColumn}</td><td className="px-5 py-3">{item.semanticConcept ?? t('Not confirmed')} · {item.semanticState}</td><td className="px-5 py-3">{item.qualityIssues.join(', ') || t('No material issue')}</td></tr>)}
+              <table className="w-full text-left text-[13px]"><thead className="sticky top-0 bg-[var(--lb-surface-subtle)] text-black/45"><tr><th className="px-4 py-3">{t('Raw field')}</th><th className="px-4 py-3">{t('Clean field')}</th><th className="px-4 py-3">{t('Meaning')}</th><th className="px-4 py-3">{t('Quality')}</th></tr></thead><tbody>
+                {result.artifact.lineage.map(item => <tr key={`${item.sourceColumn}:${item.outputColumn}`} className="border-t border-[var(--lb-divider)]"><td className="px-4 py-3 font-medium text-[var(--lb-ink)]">{item.sourceColumn}</td><td className="px-4 py-3 text-blue-700">{item.outputColumn}</td><td className="px-4 py-3">{item.semanticConcept ?? t('Not confirmed')} · {item.semanticState}</td><td className="px-4 py-3">{item.qualityIssues.join(', ') || t('No material issue')}</td></tr>)}
               </tbody></table>
             </div>
           </div>

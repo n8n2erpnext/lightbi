@@ -14,7 +14,7 @@ export function Canvas({ density = 'working', className, ...props }: CanvasProps
     data-lightbi-canvas="true"
     data-density={density}
     className={classes(
-      'flex w-full flex-col bg-[var(--lb-canvas)] px-[var(--lb-space-4)] sm:px-[var(--lb-space-6)] lg:px-[var(--lb-space-8)]',
+      'flex w-full flex-col bg-[var(--lb-canvas)] px-[var(--lb-page-gutter-inline)]',
       lightbiDensityClasses[density].canvasGap,
       className,
     )}

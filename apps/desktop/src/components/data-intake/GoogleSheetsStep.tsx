@@ -57,7 +57,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto py-8">
+    <div className="mx-auto w-full py-6">
       <div className="text-center space-y-2 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900">{t(config.title)}</h2>
         {config.description && (
@@ -65,7 +65,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
         )}
       </div>
 
-      <div className="space-y-3 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+      <div className="space-y-3 border-y border-[var(--lb-divider)] bg-white py-5">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <LinkIcon className="h-5 w-5 text-gray-400" />
@@ -74,7 +74,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
             type="url"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
+            className="lb-control w-full pl-12 pr-4 py-3 text-base"
             placeholder="https://"
           />
         </div>
@@ -84,14 +84,14 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
       </div>
 
       {isInspecting && (
-        <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+        <div className="flex items-center gap-2 border-l-2 border-blue-400 bg-blue-50 px-4 py-3 text-sm text-blue-700">
           <Loader2 className="h-4 w-4 animate-spin" />
           {t("Inspecting source and sampling rows...")}
         </div>
       )}
 
       {inspectionResult && inspectionResult.status !== "accessible" && (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="flex items-start gap-3 border-l-2 border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">
@@ -103,17 +103,17 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
       )}
 
       {inspectionResult?.status === "accessible" && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="border-y border-emerald-200 bg-emerald-50/60 py-4">
           <div className="mb-3 flex items-center gap-2 text-emerald-800">
             <Check className="h-4 w-4" />
             <span className="text-sm font-semibold">{t("Source inspected")}</span>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-white p-3">
+          <div className="grid grid-cols-2 divide-x divide-emerald-200 border-y border-emerald-200 text-sm">
+            <div className="bg-white/70 px-3 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Rows")}</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedRowCount.toLocaleString()}</p>
             </div>
-            <div className="rounded-lg bg-white p-3">
+            <div className="bg-white/70 px-3 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t("Columns")}</p>
               <p className="mt-1 text-lg font-semibold text-gray-900">{inspectedColumnCount.toLocaleString()}</p>
             </div>
@@ -124,14 +124,14 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
         </div>
       )}
 
-      {useError && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{useError}</div>}
+      {useError && <div className="border-l-2 border-red-400 bg-red-50 px-4 py-3 text-sm text-red-700">{useError}</div>}
 
       <div className="pt-4 flex justify-end">
         {inspectionResult?.status === "accessible" ? (
           <button
             onClick={handleUseDataset}
             disabled={isUsingDataset}
-            className="px-6 py-3 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
+            className="lb-action-primary w-full px-6 py-3 text-base sm:w-auto"
           >
             {isUsingDataset ? t("Saving source...") : t("Use this dataset")}
           </button>
@@ -139,7 +139,7 @@ export function GoogleSheetsStep({ config, onClose, initialUrl, onSourceInspecte
           <button
           onClick={handleContinue}
           disabled={!inputValue || isInspecting}
-          className="px-6 py-3 bg-gray-900 text-white text-base font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
+          className="lb-action-primary w-full px-6 py-3 text-base disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
             {isInspecting ? t("Inspecting...") : t(config.buttonText || "Continue")}
           </button>

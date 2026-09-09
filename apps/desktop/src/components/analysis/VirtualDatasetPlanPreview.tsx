@@ -19,7 +19,7 @@ export const VirtualDatasetPlanPreview: React.FC<VirtualDatasetPlanPreviewProps>
   const summary = summarizeVirtualDatasetPlan(plan);
   
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="w-full overflow-hidden border-y border-[var(--lb-divider)] bg-white flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
         <div className="flex items-center gap-3">
           <ListTree className="w-5 h-5 text-indigo-500" />
@@ -72,7 +72,7 @@ export const VirtualDatasetPlanPreview: React.FC<VirtualDatasetPlanPreviewProps>
         </div>
 
         {plan.warnings.length > 0 && (
-          <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 flex flex-col gap-2">
+          <div className="border-l-2 border-amber-400 bg-amber-50 px-3 py-3 flex flex-col gap-2">
             <div className="flex items-center gap-2 text-amber-800 font-medium text-[13px]">
               <AlertTriangle className="w-4 h-4" /> Attention Needed
             </div>
@@ -121,7 +121,7 @@ export const VirtualDatasetPlanPreview: React.FC<VirtualDatasetPlanPreviewProps>
         <button
           onClick={onPrepare}
           disabled={plan.status === 'blocked'}
-          className={`px-4 py-2 text-[13px] font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 text-[13px] font-medium transition-colors flex items-center gap-2 ${
             plan.status === 'blocked' 
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
               : 'bg-indigo-600 text-white hover:bg-indigo-700'

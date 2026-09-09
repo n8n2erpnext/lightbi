@@ -19,7 +19,7 @@ function formatPercent(value: number | null): string {
 function MetricCard({ metric }: { metric: FusionMetricDelta }) {
   const positive = metric.delta >= 0;
   return (
-    <div className="min-w-0 rounded-lg border border-black/10 bg-white p-3 shadow-sm">
+    <div className="min-w-0 px-3 py-3">
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-black/45" title={metric.label}>{metric.label}</p>
@@ -46,7 +46,7 @@ function DriverList({ title, drivers, tone }: { title: string; drivers: FusionDr
       ? 'text-red-700'
       : 'text-violet-700';
   return (
-    <div className="rounded-lg border border-black/10 bg-white p-3 shadow-sm">
+    <div className="border-y border-[var(--lb-divider)] px-1 py-3">
       <p className="text-[12px] font-semibold uppercase tracking-wide text-black/50">{title}</p>
       {drivers.length === 0 ? (
         <p className="mt-3 text-[12px] text-black/45">No reliable drivers found.</p>
@@ -80,7 +80,7 @@ function NarrativeCard({ section }: { section: FusionNarrativeSection }) {
         : 'border-black/10 bg-gray-50 text-[#202123]';
 
   return (
-    <div className={`rounded-lg border p-3 ${toneClass}`}>
+    <div className={`border-l-2 px-3 py-3 ${toneClass}`}>
       <p className="text-[13px] font-semibold">{section.title}</p>
       <p className="mt-1 text-[12px] leading-5 opacity-80">{section.summary}</p>
       {section.bullets.length > 0 && (
@@ -96,14 +96,14 @@ function RiskSignalList({ signals }: { signals: FusionRiskSignal[] }) {
   if (signals.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-red-100 bg-red-50 p-3">
+    <div className="border-l-2 border-red-300 bg-red-50 px-3 py-3">
       <div className="flex items-center gap-2">
         <ShieldAlert className="h-4 w-4 text-red-700" />
         <p className="text-[12px] font-semibold uppercase tracking-wide text-red-800">Decision risk signals</p>
       </div>
       <div className="mt-3 grid gap-2 lg:grid-cols-2">
         {signals.slice(0, 6).map(signal => (
-          <div key={signal.id} className="rounded-md border border-red-100 bg-white/70 p-2">
+          <div key={signal.id} className="border-t border-red-100 bg-white/70 py-2 first:border-t-0">
             <div className="flex items-start justify-between gap-2">
               <p className="text-[12px] font-semibold text-red-950">{signal.title}</p>
               <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-red-700">{signal.severity}</span>
@@ -129,7 +129,7 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
       : 'border-red-200 bg-red-50 text-red-900';
 
   return (
-    <section className="rounded-xl border border-black/10 bg-white shadow-sm">
+    <section className="border-y border-[var(--lb-divider)] bg-white">
       <div className="flex flex-col gap-4 border-b border-black/10 p-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -139,21 +139,21 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
           <h3 className="mt-1 text-lg font-semibold text-[#202123]">{overview.title}</h3>
           <p className="mt-1 max-w-3xl text-[13px] leading-5 text-black/60">{overview.executiveSummary}</p>
         </div>
-        <div className={`rounded-lg border px-4 py-3 text-center ${statusTone}`}>
+        <div className={`border-l-2 px-4 py-2 text-center ${statusTone}`}>
           <p className="text-2xl font-semibold">{overview.readinessScore}</p>
           <p className="text-[10px] font-semibold uppercase tracking-wide">ready</p>
         </div>
       </div>
 
       <div className="space-y-4 p-4">
-        <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
+        <div className="grid border-y border-[var(--lb-divider)] [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))] [&>*+*]:border-l [&>*+*]:border-[var(--lb-divider)]">
           {overview.metrics.map(metric => (
             <MetricCard key={metric.metricId} metric={metric} />
           ))}
         </div>
 
         {overview.narrativeSections.length > 0 && (
-          <div className="rounded-lg border border-violet-100 bg-violet-50/50 p-3">
+          <div className="border-l-2 border-violet-300 bg-violet-50/50 px-3 py-3">
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-violet-700" />
               <p className="text-[12px] font-semibold uppercase tracking-wide text-violet-800">Executive BA readout</p>
@@ -169,7 +169,7 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
         <RiskSignalList signals={overview.riskSignals} />
 
         <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
-          <div className="rounded-lg border border-black/10 bg-white p-3">
+          <div className="border-y border-[var(--lb-divider)] px-1 py-3">
             <div className="flex items-center gap-2">
               <Link2 className="h-4 w-4 text-blue-600" />
               <p className="text-[12px] font-semibold uppercase tracking-wide text-black/50">Shared business object keys</p>
@@ -185,14 +185,14 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
             </div>
           </div>
 
-          <div className="rounded-lg border border-black/10 bg-white p-3">
+          <div className="border-y border-[var(--lb-divider)] px-1 py-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
               <p className="text-[12px] font-semibold uppercase tracking-wide text-black/50">Detected sources</p>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {overview.sources.map(source => (
-                <div key={source.familyId} className="rounded-md bg-gray-50 p-2">
+                <div key={source.familyId} className="border-t border-[var(--lb-divider)] bg-gray-50 px-2 py-2 first:border-t-0">
                   <p className="truncate text-[12px] font-semibold text-[#202123]">{source.familyName}</p>
                   <p className="text-[11px] text-black/45">{source.role} · {formatNumber(source.rows)} rows · {source.files.length} file{source.files.length === 1 ? '' : 's'}</p>
                 </div>
@@ -210,7 +210,7 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
         {(overview.crossChecks.length > 0 || overview.caveats.length > 0) && (
           <div className="grid gap-3 lg:grid-cols-2">
             {overview.crossChecks.length > 0 && (
-              <div className="rounded-lg border border-emerald-100 bg-emerald-50 p-3">
+              <div className="border-l-2 border-emerald-300 bg-emerald-50 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-700" />
                   <p className="text-[12px] font-semibold uppercase tracking-wide text-emerald-800">Cross-checks</p>
@@ -221,7 +221,7 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
               </div>
             )}
             {overview.caveats.length > 0 && (
-              <div className="rounded-lg border border-amber-100 bg-amber-50 p-3">
+              <div className="border-l-2 border-amber-300 bg-amber-50 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-amber-700" />
                   <p className="text-[12px] font-semibold uppercase tracking-wide text-amber-800">Caveats</p>
@@ -235,14 +235,14 @@ export const BusinessFusionOverviewCard: React.FC<BusinessFusionOverviewCardProp
         )}
 
         {onUseFusedDataset && (
-          <div className="flex flex-col gap-2 rounded-lg border border-violet-100 bg-violet-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 border-y border-violet-200 bg-violet-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[13px] font-semibold text-violet-950">Use fused business dataset</p>
               <p className="text-[12px] leading-5 text-violet-900/70">Create one analysis surface from shared business keys so charts and exports can use Sales, Accounting, and Logistics together.</p>
             </div>
             <button
               onClick={onUseFusedDataset}
-              className="shrink-0 rounded-lg bg-violet-600 px-4 py-2 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-violet-700"
+              className="lb-action-primary shrink-0 px-4 py-2 text-[12px]"
             >
               Use fused dataset
             </button>

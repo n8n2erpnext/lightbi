@@ -398,7 +398,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
       {understanding.quality.dirtySignals.length > 0 && (() => {
         const blocking = understanding.quality.dirtySignals.filter(signal => signal.severity === 'blocking');
         const warnings = understanding.quality.dirtySignals.filter(signal => signal.severity !== 'blocking');
-        return <details className={`rounded-xl border ${blocking.length ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50/70'}`}>
+        return <details className={`border-l-2 ${blocking.length ? 'border-red-400 bg-red-50' : 'border-amber-400 bg-amber-50/70'}`}>
           <summary className={`cursor-pointer px-4 py-3 text-[12px] font-semibold ${blocking.length ? 'text-red-800' : 'text-amber-800'}`}>
             <span className="inline-flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{t(
               `${understanding.quality.dirtySignals.length} data-quality finding${understanding.quality.dirtySignals.length === 1 ? '' : 's'} retained`,
@@ -456,7 +456,7 @@ export const UnderstandingNextCard: React.FC<UnderstandingNextCardProps> = ({
         </details>
         {canonicalPresentation && <CanonicalUnderstandingSummary presentation={canonicalPresentation} />}
       {/* Technical source facts stay available without leading the Easy Mode journey. */}
-      <details className="rounded-xl border border-slate-200 bg-slate-50/60">
+      <details data-testid="understanding-technical-evidence" className="border-y border-[var(--lb-divider)] bg-slate-50/50">
         <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-semibold text-slate-700">
           {t('Review technical evidence')}
         </summary>
@@ -638,11 +638,11 @@ const CanonicalAnalysisStates: React.FC<{
       {questionIntelligence.domainContext.primaryDomain && <span data-testid="question-intelligence-domain-context" className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] text-violet-700">Domain: {humanize(questionIntelligence.domainContext.primaryDomain)}</span>}
     </div>}
 
-    {!analysisPerspectiveId && !focusSubject && <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
+    {!analysisPerspectiveId && !focusSubject && <div className="mt-3 border-l-2 border-indigo-400 bg-indigo-50 px-3 py-3 text-[12px] text-indigo-800" data-testid="canonical-select-perspective-prompt">
       {t('Choose a business perspective, a focus, or both. LightBI will select the best supported analysis for that context.')}
     </div>}
 
-    {focusSubject && !analysisPerspectiveId && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-focus-no-governed-lens">
+    {focusSubject && !analysisPerspectiveId && <div className="mt-3 border-l-2 border-amber-400 bg-amber-50 px-3 py-3 text-[12px] text-amber-800" data-testid="canonical-focus-no-governed-lens">
       {t('This focus is recognized, but no governed analysis lens is executable for it yet. No chart will be fabricated.')}
     </div>}
 
@@ -659,7 +659,7 @@ const CanonicalAnalysisStates: React.FC<{
           {primaryQuestion.actionAuthority === 'descriptive_existing' && <p className="mt-2 text-[11px] text-slate-500">{t('Safe descriptive analysis from detected business signals; no causal claim is made.')}</p>}
           {primaryGovernedAnalysis && (primaryGovernedAnalysis.evidence.length > 0 || primaryGovernedAnalysis.limitations.length > 0 || primaryGovernedAnalysis.decisionUseRestrictions.length > 0) && <details
             data-testid={`question-intelligence-primary-evidence-${primaryGovernedAnalysis.itemId}`}
-            className="mt-3 rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-[11px] text-slate-500"
+            className="mt-3 border-y border-[var(--lb-divider)] bg-white/70 px-1 py-2 text-[11px] text-slate-500"
           >
             <summary className="cursor-pointer font-medium text-slate-600">{t('Evidence and limitations')}</summary>
             {primaryGovernedAnalysis.limitations.map((code, index) => <p key={`${code}:${index}`} className="mt-1">{t('Limitation')}: {humanize(code)}</p>)}
@@ -671,7 +671,7 @@ const CanonicalAnalysisStates: React.FC<{
           type="button"
           data-testid={primaryQuestion.actionAuthority === 'governed' ? 'canonical-analyze-perspective' : 'universal-analyze-perspective'}
           onClick={() => onSelectAction?.(adaptNextActionsToLegacy([primaryQuestionAction])[0])}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-[13px] font-semibold text-white shadow-sm transition hover:bg-blue-800"
+          className="lb-action-primary min-h-11 shrink-0 gap-2 px-5 py-3 text-[13px]"
         >
           <Sparkles className="h-4 w-4" />
           {t(primaryButtonLabel)}
@@ -725,18 +725,18 @@ const CanonicalAnalysisStates: React.FC<{
       </div>
     </details>}
 
-    {analysisPerspectiveId && !primaryQuestionAction && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
+    {analysisPerspectiveId && !primaryQuestionAction && <div className="mt-3 border-l-2 border-amber-400 bg-amber-50 px-3 py-3 text-[12px] text-amber-800" data-testid="canonical-perspective-recognized-only">
       {t('LightBI recognizes this perspective, but no governed or safe descriptive action is executable for it yet. No chart will be fabricated.')}
     </div>}
 
-    {presentation.datasetBlockers.length > 0 && <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-red-800" role="alert" data-testid="canonical-dataset-blocker">
+    {presentation.datasetBlockers.length > 0 && <div className="mt-3 border-l-2 border-red-400 bg-red-50 px-3 py-3 text-red-800" role="alert" data-testid="canonical-dataset-blocker">
       <div className="flex items-center gap-2 text-[13px] font-semibold"><XCircle className="h-4 w-4" /> Dataset unavailable</div>
       {presentation.datasetBlockers.map(blocker => <p key={blocker.code} className="mt-1 text-[12px]">{blocker.message}</p>)}
     </div>}
 
-    {analysisPerspectiveId && (groups.length > 0 || domainContextQuestions.length > 0) && <details className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60">
+    {analysisPerspectiveId && (groups.length > 0 || domainContextQuestions.length > 0) && <details data-testid="canonical-review-nonexecutable" className="mt-4 border-y border-[var(--lb-divider)] bg-slate-50/50">
       <summary className="cursor-pointer px-4 py-3 text-[12px] font-semibold text-slate-700">{t('Review questions that need evidence or are blocked')}</summary>
-      <div className="space-y-4 border-t border-slate-200 p-4">
+      <div className="space-y-4 border-t border-[var(--lb-divider)] px-1 py-4">
         {domainContextQuestions.length > 0 && <section data-testid="question-intelligence-domain-context-questions">
           <div className="mb-2">
             <h5 className="text-[12px] font-semibold text-slate-700">{t('Questions suggested by domain context')} <span className="font-normal text-slate-400">({domainContextQuestions.length})</span></h5>

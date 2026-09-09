@@ -42,16 +42,114 @@ test('DPR-10 residual settings surfaces use flat document dividers', async () =>
   assert.doesNotMatch(privacy, /rounded-xl border border-violet-200/);
 });
 
-test('DPR-10 question density and balanced reading gutters are shared-source contracts', async () => {
+test('DPR-10 question density and shared whole-product gutters are source contracts', async () => {
   const understanding = await read('apps/desktop/src/components/analysis/UnderstandingNextCard.tsx');
   const home = await read('apps/desktop/src/components/home/HomeWorkspaceView.tsx');
   const charts = await read('apps/desktop/src/pages/Charts.tsx');
+  const dashboards = await read('apps/desktop/src/pages/Dashboards.tsx');
+  const datasets = await read('apps/desktop/src/pages/Datasets.tsx');
+  const sources = await read('apps/desktop/src/pages/DataSources.tsx');
   const investigation = await read('apps/desktop/src/pages/Investigation.tsx');
+  const settings = await read('apps/desktop/src/pages/Settings.tsx');
+  const tokens = await read('packages/ui/tokens.css');
+  const styles = await read('apps/desktop/src/index.css');
   assert.match(understanding, /data-layout="ranked-question-grid"/);
   assert.match(understanding, /lg:grid-cols-2/);
-  assert.match(home, /max-w-\[1240px\][^\n]*px-6[^\n]*xl:px-12/);
-  assert.match(charts, /max-w-\[1240px\][^\n]*px-6[^\n]*xl:px-12/);
-  assert.match(investigation, /max-w-\[1180px\][^\n]*px-6[^\n]*lg:px-10/);
+  assert.match(tokens, /--lb-page-gutter-inline: clamp\(20px, 3vw, 48px\)/);
+  assert.match(styles, /\.lb-page-gutter \{/);
+  for (const source of [home, charts, dashboards, datasets, sources, investigation]) {
+    assert.match(source, /lb-page-gutter/);
+  }
+  assert.match(settings, /lb-inline-gutter/);
+  assert.match(settings, /lb-reading-column/);
+  assert.doesNotMatch(home, /max-w-\[1240px\][^\n]*(?:px-6|xl:px-12)/);
+  assert.doesNotMatch(charts, /max-w-\[1240px\]/);
+  assert.doesNotMatch(investigation, /max-w-\[1180px\]/);
+});
+
+test('DPR-10 Gate C flattens source/data handoff chrome and bounds intake containment', async () => {
+  const datasets = await read('apps/desktop/src/pages/Datasets.tsx');
+  const sources = await read('apps/desktop/src/pages/DataSources.tsx');
+  const intake = await read('apps/desktop/src/components/data-intake/DataIntakeDrawer.tsx');
+  assert.match(datasets, /lb-divider-grid/);
+  assert.doesNotMatch(datasets, /rounded-3xl|rounded-2xl|shadow-sm/);
+  assert.match(sources, /data-testid="data-source-register"/);
+  assert.match(sources, /lb-flat-list/);
+  assert.doesNotMatch(sources, /shadow-md|rounded-full/);
+  assert.match(intake, /max-w-\[var\(--lb-dialog-width\)\]/);
+  assert.doesNotMatch(intake, /w-full bg-white shadow-2xl rounded-b-3xl/);
+});
+
+test('DPR-10 Gate C keeps active Home results and utility dialogs on the shared document grammar', async () => {
+  const sourceUnderstanding = await read('apps/desktop/src/components/home/HomeSourceUnderstandingSummary.tsx');
+  const homeResult = await read('apps/desktop/src/components/home/HomeResultView.tsx');
+  const dataPreview = await read('apps/desktop/src/components/home/HomeDataPreviewDialog.tsx');
+  const planning = await read('apps/desktop/src/components/home/HomePlanningDialogs.tsx');
+  const preferences = await read('apps/desktop/src/components/settings/DisplayPreferencesModal.tsx');
+  assert.match(sourceUnderstanding, /data-testid="source-understanding-workspace"/);
+  assert.doesNotMatch(sourceUnderstanding, /rounded-2xl|shadow-\[/);
+  assert.match(homeResult, /data-testid="home-execution-pipeline"/);
+  assert.doesNotMatch(homeResult, /rounded-|shadow-/);
+  for (const dialog of [dataPreview, planning, preferences]) {
+    assert.match(dialog, /max-w-\[var\(--lb-dialog-width\)\]/);
+  }
+  assert.match(preferences, /lb-control/);
+  assert.doesNotMatch(preferences, /rounded-md border-gray-300 shadow-sm/);
+  const home = await read('apps/desktop/src/components/home/HomeWorkspaceView.tsx');
+  const understanding = await read('apps/desktop/src/components/analysis/UnderstandingNextCard.tsx');
+  assert.match(home, /data-testid="legacy-perspective-selector"/);
+  assert.match(home, /data-testid="legacy-business-view-selector"/);
+  assert.match(home, /data-layout="analysis-mode-tabs"/);
+  assert.doesNotMatch(home, /bg-gradient-to-r from-blue-50 to-indigo-50/);
+  assert.match(understanding, /data-testid="understanding-technical-evidence"/);
+  assert.match(understanding, /data-testid="canonical-review-nonexecutable"/);
+  assert.doesNotMatch(understanding, /canonical-analyze-perspective[^\n]*rounded-xl[^\n]*shadow-sm/);
+});
+
+test('DPR-10 Gate C legacy-surface register rejects giant card shells while preserving true containment', async () => {
+  const migrated = [
+    'apps/desktop/src/components/home/HomeWorkspaceView.tsx',
+    'apps/desktop/src/components/home/HomeSourceUnderstandingSummary.tsx',
+    'apps/desktop/src/components/home/HomeResultView.tsx',
+    'apps/desktop/src/components/analysis/UnderstandingNextCard.tsx',
+    'apps/desktop/src/components/analysis/CanonicalMultiSourceReview.tsx',
+    'apps/desktop/src/components/analysis/DatasetUnderstandingCard.tsx',
+    'apps/desktop/src/components/analysis/BusinessFusionOverviewCard.tsx',
+    'apps/desktop/src/components/analysis/BusinessFusionOpportunityCard.tsx',
+    'apps/desktop/src/components/data-intake/DatabaseStep.tsx',
+    'apps/desktop/src/components/data-intake/GoogleSheetsStep.tsx',
+    'apps/desktop/src/components/data-intake/BusinessViewReviewCard.tsx',
+    'apps/desktop/src/components/data-intake/DatasetSummaryStep.tsx',
+    'apps/desktop/src/components/data-intake/RelationshipEvidenceDrawer.tsx',
+    'apps/desktop/src/components/analysis/VirtualDatasetPlanPreview.tsx',
+    'apps/desktop/src/components/analysis/RuntimePreviewCard.tsx',
+    'apps/desktop/src/components/analysis/ExecutionGuardNotice.tsx',
+    'apps/desktop/src/components/analysis/DuckDBLogicalPlanPreview.tsx',
+    'apps/desktop/src/components/analysis/ExpectedResultPreview.tsx',
+    'apps/desktop/src/components/analysis/CompiledQueryPreview.tsx',
+    'apps/desktop/src/components/analysis/SandboxPolicyPreview.tsx',
+    'apps/desktop/src/components/analysis/PreviewResultContractCard.tsx',
+    'apps/desktop/src/pages/Notifications.tsx',
+    'apps/desktop/src/pages/Charts.tsx',
+    'apps/desktop/src/pages/DashboardBuilder.tsx',
+    'apps/desktop/src/pages/Datasets.tsx',
+    'apps/desktop/src/pages/DataSources.tsx',
+  ];
+  for (const path of migrated) {
+    const source = await read(path);
+    assert.doesNotMatch(source, /rounded-(?:2xl|3xl)|shadow-2xl/, `${path} reintroduced a giant legacy card/sheet`);
+  }
+  const google = await read('apps/desktop/src/components/data-intake/GoogleSheetsStep.tsx');
+  const database = await read('apps/desktop/src/components/data-intake/DatabaseStep.tsx');
+  const notifications = await read('apps/desktop/src/pages/Notifications.tsx');
+  const fusion = await read('apps/desktop/src/components/analysis/BusinessFusionOverviewCard.tsx');
+  const advanced = await read('apps/desktop/src/pages/Advanced.tsx');
+  assert.match(google, /lb-control/);
+  assert.match(database, /lb-control/);
+  assert.match(notifications, /lb-page-gutter/);
+  assert.match(notifications, /border-b-2/);
+  assert.match(fusion, /border-y border-\[var\(--lb-divider\)\]/);
+  assert.doesNotMatch(advanced, /rounded-|shadow-/);
 });
 
 test('DPR-10 single and multi-file Deep BA use explicit primary-or-side-panel presentation', async () => {

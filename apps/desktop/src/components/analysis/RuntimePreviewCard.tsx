@@ -18,7 +18,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
   const canProceed = canProceedToExecution(preview, true);
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="w-full overflow-hidden border-y border-[var(--lb-divider)] bg-white flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
         <div className="flex items-center gap-3">
           <Play className="w-5 h-5 text-indigo-500" />
@@ -45,7 +45,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
       <div className="p-5 flex flex-col gap-6">
         <div>
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Business Question</span>
-          <p className="text-sm font-medium text-gray-900 bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <p className="border-l-2 border-slate-300 bg-gray-50 px-3 py-3 text-sm font-medium text-gray-900">
             {preview.question}
           </p>
         </div>
@@ -76,7 +76,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
         </div>
 
         {preview.warnings.length > 0 && (
-          <div className={`p-4 rounded-lg border flex flex-col gap-2 ${
+          <div className={`border-l-2 px-4 py-4 flex flex-col gap-2 ${
             preview.status === 'blocked' ? 'bg-red-50 border-red-100 text-red-800' : 'bg-amber-50 border-amber-100 text-amber-800'
           }`}>
             <div className="flex items-center gap-2 font-semibold text-[13px]">
@@ -95,7 +95,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
           <h4 className="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">Planned Operations</h4>
           <div className="flex flex-col gap-2">
             {preview.operations.map((op, idx) => (
-              <div key={op.id} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+              <div key={op.id} className="flex items-center gap-3 border-t border-[var(--lb-divider)] bg-white px-3 py-3">
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600">
                   {idx + 1}
                 </div>
@@ -115,7 +115,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
           </div>
         </div>
         
-        <div className="bg-blue-50 border border-blue-100 text-blue-800 text-[12px] px-4 py-3 rounded-lg flex gap-2 items-start">
+        <div className="border-l-2 border-blue-400 bg-blue-50 px-4 py-3 text-[12px] text-blue-800 flex gap-2 items-start">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <span>{preview.explanation}</span>
         </div>
@@ -124,7 +124,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
       <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
         <button
           onClick={onReviewAgain}
-          className="px-4 py-2 text-[13px] font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
+          className="lb-control flex items-center gap-2 px-4 py-2 text-[13px] font-medium text-gray-600"
         >
           <RefreshCw className="w-4 h-4" />
           Review Again
@@ -132,7 +132,7 @@ export const RuntimePreviewCard: React.FC<RuntimePreviewCardProps> = ({
         <button
           onClick={onAcceptPlan}
           disabled={!canProceed}
-          className={`px-4 py-2 text-[13px] font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2 ${
+          className={`px-4 py-2 text-[13px] font-medium transition-colors flex items-center gap-2 ${
             !canProceed
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
               : 'bg-indigo-600 text-white hover:bg-indigo-700'

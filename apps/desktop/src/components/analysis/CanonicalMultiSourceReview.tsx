@@ -179,7 +179,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
   );
 
   return (
-    <section data-testid="canonical-multisource-review" className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_65px_rgba(15,23,42,0.07)]">
+    <section data-testid="canonical-multisource-review" className="border-y border-[var(--lb-divider)] bg-white">
       <header className="bg-slate-950 px-6 py-6 text-white md:px-8 md:py-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
@@ -198,13 +198,13 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
               )}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 lg:min-w-[390px]">
+          <div className="grid grid-cols-3 border-y border-white/10 lg:min-w-[390px] lg:divide-x lg:divide-white/10">
             {[
               [t("Sources"), collection.sourceCount.toLocaleString()],
               [t("Rows"), collection.totalRows.toLocaleString()],
               [t("Periods"), collection.observedPeriods.length.toLocaleString()],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3">
+              <div key={label} className="bg-white/[0.04] px-4 py-3">
                 <div className="text-[10px] uppercase tracking-wide text-slate-400">{label}</div>
                 <div className="mt-1 text-[21px] font-semibold">{value}</div>
               </div>
@@ -213,9 +213,9 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
         </div>
       </header>
 
-      <div className="space-y-7 p-5 md:p-8">
+      <div className="space-y-7 px-1 py-5 md:py-7">
         {sources.length === 1 && onUseSource && (
-          <section className="flex flex-col gap-4 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 md:flex-row md:items-center md:justify-between">
+          <section className="flex flex-col gap-4 border-l-2 border-emerald-500 bg-emerald-50/60 px-4 py-4 md:flex-row md:items-center md:justify-between">
             <div className="max-w-3xl">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-800">
                 <CheckCircle2 className="h-4 w-4" />
@@ -232,7 +232,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
               data-testid="use-single-source"
               disabled={building}
               onClick={() => onUseSource(sources[0].key)}
-              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-[13px] font-semibold text-white shadow-lg shadow-emerald-700/15 transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+              className="lb-action-primary min-h-12 shrink-0 gap-2 px-6 py-3 text-[13px]"
             >
               {t("Analyze this source")}
               <ArrowRight className="h-4 w-4" />
@@ -265,7 +265,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
         />
 
         {selectedPerspective && (
-          <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5 md:p-6">
+          <section className="border-y border-blue-200 bg-blue-50/25 px-1 py-5 md:py-6">
             <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div className="max-w-3xl">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Your analysis')}</div>
@@ -278,14 +278,14 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                   <div className="mt-5 flex flex-wrap items-end gap-3">
                     <label className="text-[11px] font-semibold text-slate-600">
                       {t('Compare')}
-                      <select value={baselinePeriod} onChange={(event) => setBaselinePeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
+                      <select value={baselinePeriod} onChange={(event) => setBaselinePeriod(event.target.value)} className="lb-control mt-1.5 block min-w-36 px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
                     </label>
                     <span className="pb-3 text-[12px] font-medium text-slate-400">{t('with')}</span>
                     <label className="text-[11px] font-semibold text-slate-600">
                       {t('Period')}
-                      <select value={comparisonPeriod} onChange={(event) => setComparisonPeriod(event.target.value)} className="mt-1.5 block min-w-36 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[12px] text-slate-900">
+                      <select value={comparisonPeriod} onChange={(event) => setComparisonPeriod(event.target.value)} className="lb-control mt-1.5 block min-w-36 px-3 py-2.5 text-[12px] text-slate-900">
                         {collection.observedPeriods.map((period) => <option key={period} value={period}>{period}</option>)}
                       </select>
                     </label>
@@ -297,7 +297,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                     {currencyConflict
                       ? t('The source currency conflicts with Settings. Which currency should govern this analysis?')
                       : t('What currency are the amounts in?')}
-                    <div className="mt-1.5 flex items-center rounded-xl border border-slate-200 bg-white px-3">
+                    <div className="lb-control mt-1.5 flex items-center px-3">
                       <input
                         value={currency}
                         onChange={(event) => setCurrency(event.target.value.toUpperCase().slice(0, 3))}
@@ -315,7 +315,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                   </label>
                 )}
                 {!needsCurrency && hasMoneyEvidence && resolvedCurrency && (
-                  <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-800">
+                  <p className="mt-4 inline-flex items-center gap-2 border-l-2 border-emerald-500 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-800">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     {observedCurrencies.length === 1
                       ? t(`Currency ${resolvedCurrency} confirmed by source evidence.`)
@@ -346,7 +346,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                   }
                   else onBuild();
                 }}
-                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-[13px] font-semibold text-white shadow-lg shadow-blue-700/15 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+                className="lb-action-primary min-h-12 shrink-0 gap-2 px-6 py-3 text-[13px]"
               >
                 {building ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 {selectedPerspective.perspectiveId === "data_trust"
@@ -358,7 +358,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
           </section>
         )}
 
-        <details className="group rounded-2xl border border-slate-200 bg-slate-50/70">
+        <details className="group border-y border-[var(--lb-divider)] bg-slate-50/60">
           <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4">
             <Settings2 className="h-4 w-4 text-slate-500" />
             <div className="flex-1">
@@ -367,15 +367,15 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
             </div>
             <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
           </summary>
-          <div className="border-t border-slate-200 bg-white px-5 py-4">
-            <div className="grid gap-3 md:grid-cols-2">
+          <div className="border-t border-[var(--lb-divider)] bg-white px-1 py-4">
+            <div className="grid border-y border-[var(--lb-divider)] md:grid-cols-2 md:divide-x md:divide-[var(--lb-divider)]">
               {sources.map((source) => {
                 const draft = drafts[source.key];
                 const role = source.candidates?.roleCandidates[0];
                 const period = source.candidates?.reportingPeriodCandidates[0];
                 if (!draft) return null;
                 return (
-                  <div key={source.key} className="rounded-xl border border-slate-200 p-4">
+                  <div key={source.key} className="px-2 py-4 md:px-4">
                     <div className="flex items-start gap-3">
                       <Database className="mt-0.5 h-4 w-4 text-slate-400" />
                       <div className="min-w-0 flex-1">
@@ -391,7 +391,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
                           <select
                             value={draft.role}
                             onChange={(event) => { onFocusSubjectChange?.(null); onChange(source.key, { ...draft, role: event.target.value as CanonicalSourceRoleV1 | "" }); }}
-                            className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] normal-case tracking-normal text-slate-800"
+                            className="lb-control mt-1.5 w-full px-3 py-2 text-[11px] normal-case tracking-normal text-slate-800"
                           >
                             <option value="">Use LightBI suggestion</option>
                             {["sales", "accounting", "logistics", "inventory_snapshot", "inventory_movement"].map((item) => <option key={item} value={item}>{humanize(item)}</option>)}
@@ -407,7 +407,7 @@ export const CanonicalMultiSourceReview: React.FC<Props> = ({
         </details>
 
         {(relationshipPresentation || relationshipState || blockers.length > 0) && (
-          <div data-testid="multisource-relationship-state" className="rounded-xl border border-slate-200 bg-white p-4 text-[11px] text-slate-600">
+          <div data-testid="multisource-relationship-state" className="border-l-2 border-slate-300 bg-slate-50 px-4 py-3 text-[11px] text-slate-600">
             <p className="font-semibold text-slate-900">Relationship: {humanize(relationshipPresentation?.state ?? relationshipState ?? "not built")}</p>
             {(relationshipPresentation?.blockers.length || blockers.length > 0)
               ? <p className="mt-2 text-amber-700">{(relationshipPresentation?.blockers ?? blockers).map(humanize).join(", ")}</p>

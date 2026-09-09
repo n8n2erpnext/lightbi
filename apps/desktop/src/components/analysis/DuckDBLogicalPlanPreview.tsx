@@ -13,7 +13,7 @@ export const DuckDBLogicalPlanPreview: React.FC<DuckDBLogicalPlanPreviewProps> =
   const isDraft = plan.status === 'draft';
   
   return (
-    <div className="w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden flex flex-col text-slate-300">
+    <div className="w-full overflow-hidden border-y border-slate-700 bg-slate-900 flex flex-col text-slate-300">
       <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900">
         <div className="flex items-center gap-3">
           <Database className="w-5 h-5 text-blue-400" />
@@ -38,12 +38,12 @@ export const DuckDBLogicalPlanPreview: React.FC<DuckDBLogicalPlanPreviewProps> =
       </div>
 
       <div className="p-5 flex flex-col gap-6">
-        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
+        <div className="border-l-2 border-slate-600 bg-slate-800/50 px-4 py-4">
           <p className="text-[13px] text-slate-300">{summarizeDuckDBLogicalPlan(plan)}</p>
         </div>
 
         {plan.warnings.length > 0 && (
-          <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 flex flex-col gap-2 text-amber-200">
+          <div className="border-l-2 border-amber-500/40 bg-amber-500/10 px-4 py-4 flex flex-col gap-2 text-amber-200">
             <div className="flex items-center gap-2 font-semibold text-[13px]">
               {isBlocked ? <ShieldX className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
               {isBlocked ? 'Plan Blocked' : 'Plan Warnings'}
@@ -60,7 +60,7 @@ export const DuckDBLogicalPlanPreview: React.FC<DuckDBLogicalPlanPreviewProps> =
           <h4 className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Logical Operations</h4>
           <div className="flex flex-col gap-2 font-mono">
             {plan.operations.map((op) => (
-              <div key={op.id} className="flex items-start gap-3 p-3 bg-slate-950 border border-slate-800 rounded shadow-sm">
+              <div key={op.id} className="flex items-start gap-3 border-t border-slate-800 bg-slate-950 px-3 py-3">
                 <div className="flex-shrink-0 pt-0.5">
                   <Activity className="w-4 h-4 text-blue-500" />
                 </div>
@@ -85,7 +85,7 @@ export const DuckDBLogicalPlanPreview: React.FC<DuckDBLogicalPlanPreviewProps> =
       <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-end gap-3">
         <button
           onClick={onClose}
-          className="px-4 py-2 text-[13px] font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg shadow-sm transition-colors border border-slate-700"
+          className="border border-slate-700 bg-slate-800 px-4 py-2 text-[13px] font-medium text-slate-300 transition-colors hover:bg-slate-700"
         >
           Close preview
         </button>

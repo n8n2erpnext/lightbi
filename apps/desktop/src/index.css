@@ -45,3 +45,71 @@ body {
   border: 2px solid transparent;
   background-clip: padding-box;
 }
+
+@layer components {
+  /*
+   * Shared DPR-10 geometry primitives. Route canvases stay wide; reading columns
+   * opt into bounded measure. Dividers, not decorative cards, carry hierarchy.
+   */
+  .lb-page-scroll {
+    @apply h-full min-h-0 w-full overflow-y-auto;
+    background: var(--lb-canvas);
+    color: var(--lb-ink);
+  }
+
+  .lb-page-gutter {
+    width: 100%;
+    min-width: 0;
+    padding: var(--lb-page-gutter-block) var(--lb-page-gutter-inline);
+  }
+
+  .lb-inline-gutter {
+    padding-inline: var(--lb-page-gutter-inline);
+  }
+
+  .lb-page-header {
+    @apply flex flex-col gap-4 border-b pb-5 md:flex-row md:items-end md:justify-between;
+    border-color: var(--lb-divider);
+  }
+
+  .lb-reading-column {
+    width: min(100%, var(--lb-reading-width));
+  }
+
+  .lb-document-section {
+    @apply border-b py-5 first:border-t;
+    border-color: var(--lb-divider);
+  }
+
+  .lb-divider-grid {
+    @apply grid border-y;
+    border-color: var(--lb-divider);
+  }
+
+  .lb-flat-list {
+    @apply divide-y border-y;
+    border-color: var(--lb-divider);
+  }
+
+  .lb-flat-row {
+    @apply min-w-0 py-4;
+  }
+
+  .lb-control {
+    @apply border bg-white text-sm outline-none transition-colors;
+    min-height: var(--lb-control-compact-height);
+    border-color: var(--lb-divider);
+    border-radius: var(--lb-radius-default);
+  }
+
+  .lb-action-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40;
+    min-height: var(--lb-control-compact-height);
+    border-radius: var(--lb-radius-default);
+    background: var(--lb-ink);
+  }
+
+  .lb-action-primary:hover {
+    background: #000;
+  }
+}

@@ -82,7 +82,7 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex flex-col justify-start">
+      <div className="fixed inset-0 z-50 flex items-start justify-center px-4 py-8 md:px-8">
         {/* Backdrop overlay */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -95,11 +95,11 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
 
         {/* Sliding Drawer */}
         <motion.div
-          initial={{ y: '-100%' }}
+          initial={{ y: -24, opacity: 0 }}
           animate={{ y: 0 }}
-          exit={{ y: '-100%' }}
+          exit={{ y: -24, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full bg-white shadow-2xl rounded-b-3xl border-b border-gray-200"
+          className="relative w-full max-w-[var(--lb-dialog-width)] overflow-hidden rounded-[var(--lb-radius-strong)] border border-[var(--lb-divider)] bg-white shadow-xl"
           style={{ maxHeight: '70vh' }}
         >
           {/* Drawer Header */}
@@ -114,7 +114,7 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
           </div>
 
           {/* Drawer Content */}
-          <div className="w-full max-w-[960px] mx-auto px-6 overflow-y-auto max-h-[70vh]">
+          <div className="mx-auto max-h-[70vh] w-full overflow-y-auto px-6">
             {renderStep()}
           </div>
         </motion.div>

@@ -21,7 +21,7 @@ export const ExecutionGuardNotice: React.FC<ExecutionGuardNoticeProps> = ({
   const summary = summarizeExecutionGuard(result);
 
   return (
-    <div className={`w-full rounded-xl border p-5 flex flex-col gap-4 shadow-sm ${
+    <div className={`w-full border-l-2 px-5 py-5 flex flex-col gap-4 ${
       isBlock ? 'bg-red-50 border-red-100' :
       isWarn ? 'bg-amber-50 border-amber-100' :
       'bg-emerald-50 border-emerald-100'
@@ -46,7 +46,7 @@ export const ExecutionGuardNotice: React.FC<ExecutionGuardNoticeProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 bg-white/60 p-3 rounded-lg border border-white/20">
+      <div className="flex flex-col gap-2 border-y border-white/30 bg-white/60 px-3 py-3">
         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guard Reasons</span>
         <ul className="text-[13px] text-gray-800 space-y-1">
           {result.reasons.map((r, idx) => (
@@ -66,7 +66,7 @@ export const ExecutionGuardNotice: React.FC<ExecutionGuardNoticeProps> = ({
         {isBlock && (
           <button
             onClick={onReviewPlan}
-            className="px-4 py-2 text-[13px] font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-colors"
+            className="bg-red-600 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-red-700"
           >
             Review plan
           </button>
@@ -74,7 +74,7 @@ export const ExecutionGuardNotice: React.FC<ExecutionGuardNoticeProps> = ({
         {(isWarn || isAllow) && (
           <button
             onClick={onContinue}
-            className={`px-4 py-2 text-[13px] font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2 text-white ${
+            className={`px-4 py-2 text-[13px] font-medium transition-colors flex items-center gap-2 text-white ${
               isWarn ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'
             }`}
           >

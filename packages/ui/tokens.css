@@ -16,6 +16,15 @@
   --lb-space-6: 24px;
   --lb-space-8: 32px;
 
+  /* Whole-product geometry: one outer gutter, bounded reading width, wide visualization canvas. */
+  --lb-page-gutter-inline: clamp(20px, 3vw, 48px);
+  --lb-page-gutter-block: 28px;
+  --lb-reading-width: 960px;
+  --lb-dialog-width: 960px;
+  --lb-split-panel-min: 360px;
+  --lb-split-panel-max: 680px;
+  --lb-section-gap: 24px;
+
   --lb-control-compact-height: 32px;
   --lb-row-compact-height: 40px;
   --lb-row-data-height: 48px;

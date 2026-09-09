@@ -692,7 +692,7 @@ export const Investigation: React.FC = () => {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1180px] flex-1 flex-col gap-5 px-6 pb-24 pt-5 md:px-8 lg:px-10">
+      <main className="lb-page-gutter flex flex-1 flex-col gap-5 !pb-24 !pt-5">
         {aiBriefing && <InvestigationSemanticContext
           briefing={aiBriefing}
           briefingRationale={briefingRationale}

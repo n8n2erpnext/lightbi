@@ -37,19 +37,19 @@ export const RelationshipEvidenceDrawer: React.FC<RelationshipEvidenceDrawerProp
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-gray-200"
+          className="relative flex h-full w-full max-w-lg flex-col border-l border-[var(--lb-divider)] bg-white shadow-[0_0_32px_rgba(15,23,42,0.12)]"
         >
           <div className="flex items-center justify-between p-5 border-b border-gray-100">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Supporting Evidence</h3>
               <p className="text-sm text-gray-500">Why LightBI connected these datasets</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <button onClick={onClose} className="lb-control p-2 text-gray-500 hover:bg-gray-100">
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-gray-50">
+          <div className="flex-1 divide-y divide-[var(--lb-divider)] overflow-y-auto bg-[var(--lb-canvas)] px-5">
             {edges.length === 0 && (
               <div className="text-center text-gray-500 py-8">
                 No supporting relationships found.
@@ -61,9 +61,9 @@ export const RelationshipEvidenceDrawer: React.FC<RelationshipEvidenceDrawerProp
               const isRejected = edge.status === 'rejected';
 
               return (
-                <div key={edge.relationshipId} className={`bg-white border rounded-xl shadow-sm overflow-hidden transition-all ${isConfirmed ? 'border-emerald-200 ring-1 ring-emerald-50' : isRejected ? 'opacity-50 border-gray-200' : 'border-gray-200'}`}>
+                <div key={edge.relationshipId} className={`bg-white py-5 transition-all ${isConfirmed ? 'border-l-2 border-l-emerald-400 pl-4' : isRejected ? 'opacity-50' : ''}`}>
                   
-                  <div className="p-4 border-b border-gray-100 flex flex-col gap-2 bg-blue-50/30">
+                  <div className="flex flex-col gap-2 border-b border-[var(--lb-divider)] bg-blue-50/25 px-1 pb-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-[13px] font-semibold text-gray-900">Detected Link</h4>
                       <div className="flex flex-col items-end gap-1">
@@ -86,15 +86,15 @@ export const RelationshipEvidenceDrawer: React.FC<RelationshipEvidenceDrawerProp
                   </div>
 
                   <div className="p-4">
-                    <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="mb-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-y border-[var(--lb-divider)] bg-slate-50 px-3 py-3">
                       <div className="text-[12px] font-medium text-gray-600 truncate flex-1" title={edge.leftDatasetId}>
                         <span className="text-gray-400 font-normal">Dataset:</span> {edge.leftDatasetId}
-                        <div className="text-[11px] text-gray-800 font-mono mt-1 bg-white px-2 py-1 rounded border">{edge.leftColumnId}</div>
+                        <div className="mt-1 border-l-2 border-slate-300 bg-white px-2 py-1 font-mono text-[11px] text-gray-800">{edge.leftColumnId}</div>
                       </div>
                       <ArrowRightLeft className="w-4 h-4 text-gray-400 flex-shrink-0" />
                       <div className="text-[12px] font-medium text-gray-600 truncate flex-1" title={edge.rightDatasetId}>
                         <span className="text-gray-400 font-normal">Dataset:</span> {edge.rightDatasetId}
-                        <div className="text-[11px] text-gray-800 font-mono mt-1 bg-white px-2 py-1 rounded border">{edge.rightColumnId}</div>
+                        <div className="mt-1 border-l-2 border-slate-300 bg-white px-2 py-1 font-mono text-[11px] text-gray-800">{edge.rightColumnId}</div>
                       </div>
                     </div>
 
@@ -113,7 +113,7 @@ export const RelationshipEvidenceDrawer: React.FC<RelationshipEvidenceDrawerProp
                       {!isRejected && (
                         <button 
                           onClick={() => onRejectEdge(edge)}
-                          className="px-3 py-1.5 text-[12px] font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          className="lb-control px-3 py-1.5 text-[12px] font-medium text-red-600 hover:bg-red-50"
                         >
                           Mark as wrong
                         </button>
@@ -121,7 +121,7 @@ export const RelationshipEvidenceDrawer: React.FC<RelationshipEvidenceDrawerProp
                       {!isConfirmed && (
                         <button 
                           onClick={() => onConfirmEdge(edge)}
-                          className="px-3 py-1.5 text-[12px] font-medium bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm rounded-md transition-colors"
+                          className="lb-control px-3 py-1.5 text-[12px] font-medium text-gray-700"
                         >
                           Confirm
                         </button>

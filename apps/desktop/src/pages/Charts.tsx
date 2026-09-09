@@ -162,48 +162,48 @@ export const Charts: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-[#fbfbfa] text-[#202123]">
-      <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-6 py-8 md:px-8 lg:px-10 xl:px-12">
-        <header className="flex flex-col gap-4 border-b border-black/10 pb-5 lg:flex-row lg:items-end lg:justify-between">
+    <div className="lb-page-scroll">
+      <div className="lb-page-gutter flex flex-col gap-5">
+        <header className="lb-page-header lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-black/45"><BarChart3 className="h-4 w-4" strokeWidth={1.7} /> {t('Chart Library')}</div>
             <h1 className="text-[28px] font-semibold tracking-normal text-[#202123]">{t('Reusable charts for decision dashboards')}</h1>
             <p className="mt-2 max-w-2xl text-[14px] leading-6 text-black/50">{t('Save chart cards from Easy BA or Advanced results, then place them into dashboards that refresh when the dataset changes.')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/investigation" className="rounded-md border border-black/10 bg-white px-3 py-2 text-[13px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035]">{t('Create from BA brief')}</Link>
-            <Link to={selectedDashboard ? `/dashboards/${selectedDashboard.id}` : '/dashboards'} className="inline-flex items-center gap-2 rounded-md bg-[#202123] px-3 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> {t('Open dashboard')}</Link>
+            <Link to="/investigation" className="inline-flex h-9 items-center border border-[var(--lb-divider)] bg-white px-3 text-[13px] font-medium text-black/65 transition-colors hover:bg-black/[0.035]">{t('Create from BA brief')}</Link>
+            <Link to={selectedDashboard ? `/dashboards/${selectedDashboard.id}` : '/dashboards'} className="lb-action-primary gap-2 text-[13px]"><LayoutDashboard className="h-4 w-4" strokeWidth={1.7} /> {t('Open dashboard')}</Link>
           </div>
         </header>
 
-        {notice && <div className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] font-medium text-emerald-700"><CheckCircle2 className="h-4 w-4" /> {notice}</div>}
+        {notice && <div className="flex items-center gap-2 border-l-2 border-emerald-500 bg-emerald-50/50 px-3 py-2 text-[12px] font-medium text-emerald-700"><CheckCircle2 className="h-4 w-4" /> {notice}</div>}
 
-        <section className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Saved charts')}</div><div className="mt-2 text-2xl font-semibold">{charts.length}</div></div>
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Chart templates')}</div><div className="mt-2 text-2xl font-semibold">{chartTemplates.length}</div></div>
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm"><div className="text-[12px] font-medium text-black/45">{t('Dashboard cards placed')}</div><div className="mt-2 text-2xl font-semibold">{selectedDashboard?.widgets.length ?? 0}</div></div>
+        <section className="lb-divider-grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-[var(--lb-divider)]">
+          <div className="px-1 py-4 md:px-5"><div className="text-[12px] font-medium text-black/45">{t('Saved charts')}</div><div className="mt-2 text-2xl font-semibold">{charts.length}</div></div>
+          <div className="px-1 py-4 md:px-5"><div className="text-[12px] font-medium text-black/45">{t('Chart templates')}</div><div className="mt-2 text-2xl font-semibold">{chartTemplates.length}</div></div>
+          <div className="px-1 py-4 md:px-5"><div className="text-[12px] font-medium text-black/45">{t('Dashboard cards placed')}</div><div className="mt-2 text-2xl font-semibold">{selectedDashboard?.widgets.length ?? 0}</div></div>
         </section>
 
-        <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="rounded-lg border border-black/10 bg-white shadow-sm">
-            <div className="flex flex-col gap-3 border-b border-black/5 px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <section className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] xl:divide-x xl:divide-[var(--lb-divider)]">
+          <div className="min-w-0 xl:pr-6">
+            <div className="flex flex-col gap-3 border-b border-[var(--lb-divider)] pb-4 md:flex-row md:items-center md:justify-between">
               <div><h2 className="text-[15px] font-semibold">{t('Saved chart cards')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Pick a chart card, then add it to the selected dashboard.')}</p></div>
               <div className="relative w-full md:w-80"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35" strokeWidth={1.7} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder={t('Search saved charts')} className="h-9 w-full rounded-md border border-black/10 bg-white pl-9 pr-3 text-[13px] outline-none placeholder:text-black/30 focus:border-black/25" /></div>
             </div>
-            <div className="grid grid-cols-1 gap-3 p-5 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 pt-4 lg:grid-cols-2">
               {filteredCharts.map(chart => {
                 const dataset = datasetsObj[chart.datasetId];
                 const alreadyPlaced = Boolean(selectedDashboard?.widgets.some(widget => widget.type === 'Chart' && widget.referenceId === chart.id));
                 return (
-                  <div key={chart.id} className="rounded-lg border border-black/10 bg-[#fbfbfa] p-4 transition-colors hover:bg-white">
+                  <div key={chart.id} className="border border-[var(--lb-divider)] bg-white p-4 transition-colors hover:bg-black/[0.015]">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="mb-2 flex flex-wrap items-center gap-2"><h3 className="truncate text-[15px] font-semibold">{chart.name}</h3><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(chart.type)}`}>{chart.type}</span></div>
                         <p className="text-[13px] text-black/45">{t('Dataset')}: {dataset?.name ?? chart.datasetId}</p>
                       </div>
-                      <button disabled={alreadyPlaced} onClick={() => handleAddChart(chart.id)} className="rounded-md border border-black/10 bg-white px-2.5 py-1.5 text-[12px] font-medium text-black/65 shadow-sm transition-colors hover:bg-black/[0.035] disabled:text-emerald-700 disabled:opacity-80">{alreadyPlaced ? t('Added') : t('Add')}</button>
+                      <button disabled={alreadyPlaced} onClick={() => handleAddChart(chart.id)} className="border border-[var(--lb-divider)] bg-white px-2.5 py-1.5 text-[12px] font-medium text-black/65 transition-colors hover:bg-black/[0.035] disabled:text-emerald-700 disabled:opacity-80">{alreadyPlaced ? t('Added') : t('Add')}</button>
                     </div>
-                    <div className="mt-4 h-32 rounded-md border border-dashed border-black/10 bg-white">
+                    <div className="mt-4 h-32 border-t border-[var(--lb-divider)] bg-white pt-3">
                       {getSavedChartPayload(chart)
                         ? <MiniChartPreview type={chart.type} payload={getSavedChartPayload(chart)} />
                         : <div className="flex h-full items-center justify-center px-4 text-center text-[12px] text-black/35">{t('Needs data binding from a BA or Advanced result.')}</div>}
@@ -211,51 +211,51 @@ export const Charts: React.FC = () => {
                   </div>
                 );
               })}
-              {filteredCharts.length === 0 && <div className="col-span-full flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed border-black/10 bg-[#fbfbfa] p-6 text-center"><Sparkles className="mb-3 h-5 w-5 text-black/35" strokeWidth={1.7} /><h3 className="text-[14px] font-semibold">{t('No saved chart matched')}</h3><p className="mt-1 max-w-sm text-[13px] text-black/45">{t('Create a chart from a template below or save one from an analysis result.')}</p></div>}
+              {filteredCharts.length === 0 && <div className="col-span-full flex min-h-40 flex-col items-center justify-center border-y border-dashed border-[var(--lb-divider)] p-6 text-center"><Sparkles className="mb-3 h-5 w-5 text-black/35" strokeWidth={1.7} /><h3 className="text-[14px] font-semibold">{t('No saved chart matched')}</h3><p className="mt-1 max-w-sm text-[13px] text-black/45">{t('Create a chart from a template below or save one from an analysis result.')}</p></div>}
             </div>
           </div>
 
-          <aside className="rounded-lg border border-black/10 bg-white shadow-sm">
-            <div className="border-b border-black/5 px-5 py-4">
+          <aside className="xl:pl-6">
+            <div className="border-b border-[var(--lb-divider)] pb-4">
               <h2 className="text-[15px] font-semibold">{t('Dashboard target')}</h2>
               <p className="mt-1 text-[13px] text-black/45">{t('Choose where chart cards will be placed.')}</p>
             </div>
-            <div className="space-y-3 p-5">
-              <select value={selectedDashboard?.id ?? ''} onChange={event => setSelectedDashboardId(event.target.value)} className="h-9 w-full rounded-md border border-black/10 bg-white px-3 text-[13px] outline-none">
+            <div className="space-y-3 pt-4">
+              <select value={selectedDashboard?.id ?? ''} onChange={event => setSelectedDashboardId(event.target.value)} className="lb-control h-9 w-full px-3 text-[13px]">
                 {dashboards.map(dashboard => <option key={dashboard.id} value={dashboard.id}>{dashboard.name}</option>)}
               </select>
               <div className="flex gap-2">
-                <input value={newDashboardName} onChange={event => setNewDashboardName(event.target.value)} placeholder={t('New dashboard name')} className="h-9 min-w-0 flex-1 rounded-md border border-black/10 px-3 text-[13px] outline-none" />
-                <button onClick={handleCreateDashboard} className="inline-flex h-9 items-center gap-1 rounded-md bg-gray-900 px-3 text-[12px] font-medium text-white"><Plus className="h-3.5 w-3.5" /> {t('New')}</button>
+                <input value={newDashboardName} onChange={event => setNewDashboardName(event.target.value)} placeholder={t('New dashboard name')} className="lb-control h-9 min-w-0 flex-1 px-3 text-[13px]" />
+                <button onClick={handleCreateDashboard} className="lb-action-primary h-9 gap-1 text-[12px]"><Plus className="h-3.5 w-3.5" /> {t('New')}</button>
               </div>
-              <div className="rounded-md border border-black/10 bg-[#fbfbfa] p-3">
+              <div className="border-y border-[var(--lb-divider)] py-3">
                 <div className="mb-3 flex items-center justify-between text-[12px]"><span className="font-semibold">{selectedDashboard?.name ?? t('No dashboard')}</span><span className="text-black/40">{selectedDashboardCharts.length} {t('charts')}</span></div>
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedDashboardCharts.map(chart => <div key={chart.id} className="rounded border border-black/10 bg-white p-2"><div className="truncate text-[11px] font-semibold">{chart.name}</div><div className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[10px] ${chartTypeClass(chart.type)}`}>{chart.type}</div></div>)}
-                  {selectedDashboardCharts.length === 0 && <div className="col-span-2 rounded border border-dashed border-black/10 bg-white p-4 text-center text-[12px] text-black/40">{t('No chart cards placed yet.')}</div>}
+                <div className="divide-y divide-[var(--lb-divider)]">
+                  {selectedDashboardCharts.map(chart => <div key={chart.id} className="flex items-center justify-between gap-3 py-2"><div className="truncate text-[11px] font-semibold">{chart.name}</div><div className={`mt-1 inline-flex rounded border px-1.5 py-0.5 text-[10px] ${chartTypeClass(chart.type)}`}>{chart.type}</div></div>)}
+                  {selectedDashboardCharts.length === 0 && <div className="py-4 text-center text-[12px] text-black/40">{t('No chart cards placed yet.')}</div>}
                 </div>
               </div>
             </div>
           </aside>
         </section>
 
-        <section className="rounded-lg border border-black/10 bg-white shadow-sm">
-          <div className="grid gap-3 border-b border-black/5 px-5 py-4 md:grid-cols-[1fr_240px] md:items-end">
+        <section className="border-t border-[var(--lb-divider)] pt-5">
+          <div className="grid gap-3 border-b border-[var(--lb-divider)] pb-4 md:grid-cols-[1fr_240px] md:items-end">
             <div><h2 className="text-[15px] font-semibold">{t('Chart templates')}</h2><p className="mt-1 text-[13px] text-black/45">{t('Create a reusable chart card from a pattern, then tune it later with real dataset fields.')}</p></div>
-            <select value={selectedDataset?.id ?? ''} onChange={event => setSelectedDatasetId(event.target.value)} className="h-9 rounded-md border border-black/10 bg-white px-3 text-[13px] outline-none">
+            <select value={selectedDataset?.id ?? ''} onChange={event => setSelectedDatasetId(event.target.value)} className="lb-control h-9 px-3 text-[13px]">
               {datasets.map(dataset => <option key={dataset.id} value={dataset.id}>{dataset.name}</option>)}
             </select>
           </div>
-          <div className="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
             {chartTemplates.map(template => {
               const Icon = template.icon;
               return (
-                <div key={template.id} className="rounded-lg border border-black/10 bg-[#fbfbfa] p-4">
-                  <div className="mb-4 flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black/65 shadow-sm"><Icon className="h-5 w-5" strokeWidth={1.7} /></div><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(template.type)}`}>{template.type}</span></div>
+                <div key={template.id} className="border-b border-[var(--lb-divider)] p-4 md:border-r">
+                  <div className="mb-4 flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center text-black/65"><Icon className="h-5 w-5" strokeWidth={1.7} /></div><span className={`rounded border px-2 py-0.5 text-[11px] font-medium ${chartTypeClass(template.type)}`}>{template.type}</span></div>
                       <h3 className="text-[15px] font-semibold">{t(template.name)}</h3>
                       <p className="mt-1 text-[13px] leading-5 text-black/50">{t(template.intent)}</p>
-                      <div className="mt-4 rounded-md border border-black/5 bg-white p-3 text-[12px] leading-5 text-black/45">{t('Best for')}: {t(template.bestFor)}</div>
-                  <button disabled={!selectedDataset} onClick={() => handleCreateFromTemplate(template)} className="mt-4 h-9 w-full rounded-md bg-gray-900 text-[12px] font-medium text-white hover:bg-black disabled:opacity-40">{t('Create chart card')}</button>
+                      <div className="mt-4 border-l-2 border-[var(--lb-divider)] pl-3 text-[12px] leading-5 text-black/45">{t('Best for')}: {t(template.bestFor)}</div>
+                  <button disabled={!selectedDataset} onClick={() => handleCreateFromTemplate(template)} className="lb-action-primary mt-4 h-9 w-full text-[12px] disabled:opacity-40">{t('Create chart card')}</button>
                 </div>
               );
             })}
