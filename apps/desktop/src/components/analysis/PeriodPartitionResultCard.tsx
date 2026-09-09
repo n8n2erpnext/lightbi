@@ -57,7 +57,7 @@ export const PeriodPartitionResultCard: React.FC<{
   };
 
   return (
-    <section data-testid="period-partition-result" className="rounded-xl border border-blue-100 bg-white p-4 shadow-sm">
+    <section data-testid="period-partition-result" data-layout="multi-period-document" className="border-y border-[var(--lb-divider)] bg-white py-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -68,17 +68,15 @@ export const PeriodPartitionResultCard: React.FC<{
             {workspace.periodMembers.length} full-file {workspace.sourceRole} partitions · {metricLabel(workspace.metricId)}
           </p>
         </div>
-        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700">
-          Full-file executed
-        </span>
+        <span className="border-l-2 border-emerald-400 pl-2 text-[11px] font-semibold text-emerald-700">Full-file executed</span>
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-        <div className="h-[300px] min-w-0 rounded-lg border border-slate-100 bg-slate-50/40 p-2">
+        <div className="h-[300px] min-w-0 border-y border-[var(--lb-divider)] bg-slate-50/30 py-2">
           <ReactECharts option={option} style={{ height: "100%", width: "100%" }} notMerge />
         </div>
         <div className="space-y-3">
-          <div className={`rounded-lg border p-3 ${delta >= 0 ? "border-emerald-100 bg-emerald-50" : "border-red-100 bg-red-50"}`}>
+          <div className={`border-l-2 px-3 py-2 ${delta >= 0 ? "border-emerald-400 bg-emerald-50/50" : "border-red-400 bg-red-50/50"}`}>
             <div className="flex items-center gap-2">
               <DirectionIcon className={`h-4 w-4 ${delta >= 0 ? "text-emerald-700" : "text-red-700"}`} />
               <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">BA movement</p>
@@ -88,13 +86,13 @@ export const PeriodPartitionResultCard: React.FC<{
               {deltaPercent === null ? "" : ` (${Math.abs(deltaPercent * 100).toFixed(1)}%)`} from {String(result.rows[0].reporting_period)} to {String(result.rows[result.rows.length - 1].reporting_period)}.
             </p>
           </div>
-          <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+          <div className="border-y border-[var(--lb-divider)] py-3">
             <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">Strongest period</p>
             <p className="mt-2 text-[13px] text-slate-800">
               {String(result.rows[strongestIndex].reporting_period)} contributes the highest governed result: <strong>{formatNumber(values[strongestIndex])}</strong>.
             </p>
           </div>
-          <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+          <div className="border-l-2 border-blue-300 bg-blue-50/50 px-3 py-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-blue-700" />
               <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-800">Truth boundary</p>

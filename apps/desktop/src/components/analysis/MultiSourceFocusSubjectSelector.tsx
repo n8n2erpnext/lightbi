@@ -46,13 +46,13 @@ export const MultiSourceFocusSubjectSelector: React.FC<{
       onSelect={(candidate, option) => handleSelect(candidate as MultiSourceFocusSubjectCandidateV1, option)}
       onClear={() => onChange(null)}
     />
-    {selected && <div className="rounded-xl border border-violet-100 bg-white/80 p-3 text-[11px] text-slate-600">
-      <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-emerald-700"><CheckCircle2 className="h-3 w-3" />{matched.length} exact source match{matched.length === 1 ? "" : "es"}</span>
-        {absent.length > 0 && <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700"><MinusCircle className="h-3 w-3" />{absent.length} source{absent.length === 1 ? "" : "s"} without this exact value</span>}
-        {unavailable.length > 0 && <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-slate-600"><AlertCircle className="h-3 w-3" />{unavailable.length} source{unavailable.length === 1 ? "" : "s"} without a governed concept binding</span>}
+    {selected && <div className="border-y border-violet-100 py-3 text-[11px] text-slate-600">
+      <div className="grid gap-2 md:grid-cols-3">
+        <span className="inline-flex items-center gap-1.5 border-l-2 border-emerald-400 pl-2 text-emerald-700"><CheckCircle2 className="h-3 w-3" />{matched.length} exact source match{matched.length === 1 ? "" : "es"}</span>
+        {absent.length > 0 && <span className="inline-flex items-center gap-1.5 border-l-2 border-amber-400 pl-2 text-amber-700"><MinusCircle className="h-3 w-3" />{absent.length} source{absent.length === 1 ? "" : "s"} without this exact value</span>}
+        {unavailable.length > 0 && <span className="inline-flex items-center gap-1.5 border-l-2 border-slate-300 pl-2 text-slate-600"><AlertCircle className="h-3 w-3" />{unavailable.length} source{unavailable.length === 1 ? "" : "s"} without a governed concept binding</span>}
       </div>
-      <p className="mt-2 leading-5">Focus changes the analysis readout only where exact source evidence exists. Governed totals and source relationships remain unchanged.</p>
+      <p className="mt-3 leading-5">Focus changes the analysis readout only where exact source evidence exists. Governed totals and source relationships remain unchanged.</p>
     </div>}
   </div>;
 };

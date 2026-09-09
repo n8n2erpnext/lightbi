@@ -21,6 +21,7 @@ export const SelectedSubjectInvestigationBoard: React.FC<{
     <header data-report-section="true" data-report-role="executive_summary" data-report-keep-together="true" className="px-5 py-4 md:px-6">
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-700"><Search className="h-4 w-4" />{t('Selected-subject investigation')}</div>
       <h4 className="mt-2 text-lg font-semibold text-slate-950">{subjectBits.join(' · ')}</h4>
+      {plan.subject.filters && plan.subject.filters.length > 0 && <div data-testid="selected-subject-applied-filters" className="mt-2 flex flex-wrap gap-2">{plan.subject.filters.map(filter => <span key={filter} className="border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-medium text-blue-800">{filter}</span>)}</div>}
       <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">{t('This investigation is bounded to the selected evidence scope. Source rows remain separate and the governed summary is unchanged.')}</p>
     </header>
 

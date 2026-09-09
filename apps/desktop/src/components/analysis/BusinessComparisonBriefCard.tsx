@@ -9,6 +9,7 @@ import { useDisplayPreferences } from '../../stores/display-preferences-store';
 interface BusinessComparisonBriefCardProps {
   brief: DomainComparisonBrief;
   onApplyPeriodLabels?: (labelsBySource: Record<string, string>) => void;
+  compact?: boolean;
 }
 
 function formatNumber(value: number, locale: string): string {
@@ -34,9 +35,9 @@ function DriverList({ title, drivers, mode, locale, t }: { title: string; driver
   return <section className="py-3">
     <div className="mb-2 flex items-center gap-2"><Icon className={`h-4 w-4 ${accent}`} /><h4 className="text-[12px] font-semibold uppercase tracking-wide text-black/55">{title}</h4></div>
     {drivers.length === 0 ? <p className="text-[12px] text-black/45">{t('No reliable drivers found.')}</p> : <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">
-      {drivers.slice(0, 10).map((driver, index) => <div key={`${title}:${driver.key}`} className="flex items-start justify-between gap-3 py-2.5">
+      {drivers.slice(0, 10).map((driver, index) => <div key={`${title}:${driver.key}`} className="grid grid-cols-[minmax(0,1fr)_minmax(105px,150px)] items-start gap-4 py-2.5">
         <div className="min-w-0"><p className="truncate text-[13px] font-medium text-[#202123]">{index + 1}. {driver.key}</p><p className="text-[11px] text-black/45">{t('Revenue Δ')} {formatNumber(driver.revenueDelta, locale)} · {formatPercent(driver.revenueDeltaPercent)}</p></div>
-        {driver.currentProfit !== undefined && <div className="shrink-0 text-right"><p className="text-[12px] font-semibold text-black/70">{formatNumber(driver.currentProfit, locale)}</p><p className="text-[10px] uppercase text-black/35">{t('profit')}</p></div>}
+        {driver.currentProfit !== undefined && <div className="text-right"><p className="text-[12px] font-semibold text-black/70">{formatNumber(driver.currentProfit, locale)}</p><p className="text-[10px] uppercase text-black/35">{t('profit')}</p></div>}
       </div>)}
     </div>}
   </section>;
@@ -50,7 +51,7 @@ function NarrativeSectionCard({ section, t }: { section: NarrativeSection; t: (v
   </section>;
 }
 
-export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardProps> = ({ brief, onApplyPeriodLabels }) => {
+export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardProps> = ({ brief, onApplyPeriodLabels, compact = false }) => {
   const { t } = useUiLanguage();
   const locale = useDisplayPreferences(state => state.preferences.locale);
   const initialLabels = useMemo(
@@ -83,7 +84,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
       </section>
 
       {brief.metricDeltas.length > 0 && <section data-testid="comparison-management-section-02" data-section-number="02" data-report-section="true" data-report-role="performance_overview" data-report-keep-together="true" className="grid gap-3 border-b border-[var(--lb-divider)] py-4 md:grid-cols-[44px_minmax(0,1fr)]">
-        <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">02</div><div><h4 className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Key metrics')}</h4><div className="mt-2 divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">{brief.metricDeltas.map(metric => <div key={metric.metricId} className="flex items-center justify-between gap-4 py-3"><div><p className="text-[12px] font-semibold uppercase text-slate-500">{t(metric.label)}</p><p className="mt-0.5 text-[11px] text-slate-400">{formatNumber(metric.previousValue, locale)} → {formatNumber(metric.currentValue, locale)}</p></div><div className={`text-right ${metric.delta > 0 ? 'text-emerald-700' : metric.delta < 0 ? 'text-red-700' : 'text-slate-700'}`}><p className="text-[16px] font-semibold">{formatNumber(metric.delta, locale)}</p><p className="text-[11px]">{formatPercent(metric.deltaPercent)}</p></div></div>)}</div></div>
+        <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">02</div><div><h4 className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Key metrics')}</h4><div className={compact ? "mt-2 divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]" : "mt-2 grid border-y border-[var(--lb-divider)] lg:grid-cols-2 lg:gap-x-8"}>{brief.metricDeltas.map(metric => <div key={metric.metricId} className="grid grid-cols-[minmax(0,1fr)_minmax(120px,160px)] items-center gap-4 border-b border-[var(--lb-divider)] py-3"><div><p className="text-[12px] font-semibold uppercase text-slate-500">{t(metric.label)}</p><p className="mt-0.5 text-[11px] text-slate-400">{formatNumber(metric.previousValue, locale)} → {formatNumber(metric.currentValue, locale)}</p></div><div className={`text-right ${metric.delta > 0 ? 'text-emerald-700' : metric.delta < 0 ? 'text-red-700' : 'text-slate-700'}`}><p className="text-[16px] font-semibold">{formatNumber(metric.delta, locale)}</p><p className="text-[11px]">{formatPercent(metric.deltaPercent)}</p></div></div>)}</div></div>
       </section>}
 
       {narrativePlan.narrativeSections.length > 0 && <section data-testid="comparison-management-section-03" data-section-number="03" data-report-section="true" data-report-role="explanation_status" data-report-keep-together="true" className="grid gap-3 border-b border-[var(--lb-divider)] py-4 md:grid-cols-[44px_minmax(0,1fr)]">
@@ -91,7 +92,7 @@ export const BusinessComparisonBriefCard: React.FC<BusinessComparisonBriefCardPr
       </section>}
 
       {narrativePlan.driverPanels.length > 0 && <section data-testid="comparison-management-section-04" data-section-number="04" data-report-section="true" data-report-role="drivers_components" data-report-keep-together="true" className="grid gap-3 border-b border-[var(--lb-divider)] py-4 md:grid-cols-[44px_minmax(0,1fr)]">
-        <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">04</div><div data-testid="comparison-narrative-contributors"><h4 className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Main observed contributors')}</h4><div className="mt-2 divide-y divide-[var(--lb-divider)]">{narrativePlan.driverPanels.includes('growth') && <DriverList title={t('Largest observed increases')} drivers={brief.topGrowthDrivers} mode="growth" locale={locale} t={t} />}{narrativePlan.driverPanels.includes('decline') && <DriverList title={t('Largest observed decreases')} drivers={brief.topDeclineDrivers} mode="decline" locale={locale} t={t} />}{narrativePlan.driverPanels.includes('profit') && <DriverList title={t('Highest observed profit values')} drivers={brief.topProfitDrivers} mode="profit" locale={locale} t={t} />}</div></div>
+        <div className="text-[11px] font-semibold tracking-[0.14em] text-slate-400">04</div><div data-testid="comparison-narrative-contributors"><h4 className="text-[12px] font-semibold uppercase tracking-wide text-slate-600">{t('Main observed contributors')}</h4><div className={compact ? "mt-2 divide-y divide-[var(--lb-divider)]" : "mt-2 grid gap-x-8 xl:grid-cols-2"}>{narrativePlan.driverPanels.includes('growth') && <DriverList title={t('Largest observed increases')} drivers={brief.topGrowthDrivers} mode="growth" locale={locale} t={t} />}{narrativePlan.driverPanels.includes('decline') && <DriverList title={t('Largest observed decreases')} drivers={brief.topDeclineDrivers} mode="decline" locale={locale} t={t} />}{narrativePlan.driverPanels.includes('profit') && <DriverList title={t('Highest observed profit values')} drivers={brief.topProfitDrivers} mode="profit" locale={locale} t={t} />}</div></div>
       </section>}
 
       <section data-testid="comparison-management-section-05" data-section-number="05" className="grid gap-3 py-4 md:grid-cols-[44px_minmax(0,1fr)]">

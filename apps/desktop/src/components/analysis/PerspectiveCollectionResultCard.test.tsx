@@ -52,8 +52,8 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
 
     fireEvent.click(screen.getByTestId('collection-chart'));
     expect(screen.getByTestId('collection-chart-drill')).toBeTruthy();
-    expect(screen.getByText(/sales-2026-05\.xlsx/)).toBeTruthy();
-    expect(screen.getByText('Product')).toBeTruthy();
+    expect(screen.getAllByText(/sales-2026-05\.xlsx/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('columnheader', { name: 'Product' })).toBeTruthy();
     expect(screen.getByRole('table').parentElement?.className).toContain('max-h-[420px]');
 
     fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
@@ -61,6 +61,38 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('selected-subject-investigation')).toBeTruthy();
     expect(screen.getByTestId('selected-subject-benchmark').textContent).toContain('sales-2026-05.xlsx');
     expect(screen.queryByTestId('single-source-ba-overview')).toBeNull();
+  });
+
+  it('restores source-local quick filters for multi-file Step 2 without joining evidence across files', () => {
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[{ reporting_period: '2026-05', sales_revenue: 300 }]}
+      sourceCount={1}
+      evidenceSources={[{
+        period: '2026-05', role: 'sales', sourceName: 'sales-filter.xlsx', sourceRowCount: 3,
+        rows: [{ Product: 'A', Revenue: 100 }, { Product: 'A', Revenue: 120 }, { Product: 'B', Revenue: 80 }],
+        semanticFields: [
+          { canonicalId: 'product', label: 'Product', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Product', reason: 'test' },
+          { canonicalId: 'revenue', label: 'Revenue', domain: 'canonical', role: 'unknown', confidence: 100, physicalColumn: 'Revenue', reason: 'test' },
+        ],
+      }]}
+    />);
+
+    fireEvent.click(screen.getByTestId('collection-chart'));
+    expect(screen.getByTestId('collection-evidence-filters')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Filter column'), { target: { value: 'Product' } });
+    fireEvent.change(screen.getByLabelText('Filter value'), { target: { value: 'A' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add filter' }));
+    expect(screen.getByTestId('collection-evidence-filter-count').textContent).toContain('2 / 3');
+    expect(screen.getByRole('table').textContent).toContain('A');
+    expect(screen.getByRole('table').textContent).not.toContain('B80');
+
+    fireEvent.click(screen.getByRole('button', { name: /Investigate selected evidence/i }));
+    expect(screen.getByTestId('selected-subject-applied-filters').textContent).toContain('sales-filter.xlsx:Product:equals:A');
+    const benchmark = screen.getByTestId('selected-subject-benchmark').textContent ?? '';
+    expect(benchmark).toContain('sales-filter.xlsx');
+    expect(benchmark).toContain('2');
+    expect(benchmark).toContain('3');
   });
 
   it('treats one reporting period as a snapshot and routes through evidence before selected-subject investigation', () => {

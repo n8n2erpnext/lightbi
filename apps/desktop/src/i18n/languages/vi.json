@@ -234,6 +234,7 @@
     "filtered rows selected for export": "dòng đã lọc được chọn để xuất",
     "filtered rows selected": "dòng đã lọc được chọn",
     "matching rows": "dòng phù hợp",
+    "Filters apply only to this source and never join evidence across files.": "Bộ lọc chỉ áp dụng cho nguồn này và không bao giờ ghép bằng chứng giữa các tệp.",
     "No rows match the current filters.": "Không có dòng nào phù hợp với bộ lọc hiện tại.",
     "The table shows the first 500 filtered rows. Export includes every selected row matching the current filters.": "Bảng hiển thị 500 dòng đã lọc đầu tiên. Tệp xuất bao gồm mọi dòng đã chọn phù hợp với bộ lọc hiện tại.",
     "AI Semantic Briefing": "Tóm tắt ngữ nghĩa dữ liệu",

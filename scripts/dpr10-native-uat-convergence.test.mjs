@@ -152,6 +152,23 @@ test('DPR-10 Gate C legacy-surface register rejects giant card shells while pres
   assert.doesNotMatch(advanced, /rounded-|shadow-/);
 });
 
+test('DPR-10 multi-file layout stays fluid and Step 2 preserves source-local filtering', async () => {
+  const multi = await read('apps/desktop/src/components/analysis/PerspectiveCollectionResultCard.tsx');
+  const brief = await read('apps/desktop/src/components/analysis/BusinessComparisonBriefCard.tsx');
+  const period = await read('apps/desktop/src/components/analysis/PeriodPartitionResultCard.tsx');
+  const focus = await read('apps/desktop/src/components/analysis/MultiSourceFocusSubjectSelector.tsx');
+  assert.match(multi, /data-testid="collection-evidence-filters"/);
+  assert.match(multi, /filterDrillThroughRows/);
+  assert.match(multi, /Filters apply only to this source and never join evidence across files\./);
+  assert.match(multi, /xl:grid-cols-\[minmax\(0,1fr\)_clamp\(520px,44vw,760px\)\]/);
+  assert.match(multi, /max-w-\[1280px\]/);
+  assert.match(brief, /compact\?: boolean/);
+  assert.match(brief, /grid-cols-\[minmax\(0,1fr\)_minmax\(105px,150px\)\]/);
+  assert.doesNotMatch(period, /rounded-xl border border-blue-100[^\n]*shadow-sm/);
+  assert.match(period, /data-layout="multi-period-document"/);
+  assert.doesNotMatch(focus, /rounded-xl border border-violet-100/);
+});
+
 test('DPR-10 single and multi-file Deep BA use explicit primary-or-side-panel presentation', async () => {
   const investigation = await read('apps/desktop/src/pages/Investigation.tsx');
   const deep = await read('apps/desktop/src/components/investigation/InvestigationDeepAnalysis.tsx');
