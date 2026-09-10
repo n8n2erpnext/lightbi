@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-09",
-  "generatedAt": "2026-09-08T18:13:28.075Z",
+  "snapshotDate": "2026-09-10",
+  "generatedAt": "2026-09-10T01:10:00.000Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "d48c170a4a3935cc7cb7765932efe9724deee9f7",
+  "head": "150abbbd1c8e0f448b1a75740ef8c6cafe3db59e",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 950,
-    "markdown": 533,
+    "total": 951,
+    "markdown": 534,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9429,6 +9429,14 @@
       "title": "Execution Handoff: Canonical Schema Projection Phase 2"
     },
     {
+      "path": "docs/history/agent/handoffs/AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md",
+      "extension": ".md",
+      "bytes": 22595,
+      "sha256": "804cb265706b4a41529bcb28e9bbfced6d4229a2bcda7936aec3033f96cce39d",
+      "suggestedCategory": "historical-provenance",
+      "title": "LightBI DPR-10 Gate E Final Acceptance Handoff — 2026-09-10"
+    },
+    {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_DPR9_SEMANTIC_REPORT_PAGINATION_2026-09-09.md",
       "extension": ".md",
       "bytes": 29592,
@@ -9927,8 +9935,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
       "extension": ".md",
-      "bytes": 156665,
-      "sha256": "66d635cd32fe1d11905ef367301e7127e4046bc50efd49eab91ff63c1f4d9017",
+      "bytes": 159785,
+      "sha256": "99e79a6692a4ff3337bd8cec0da743301542e4b6c06ca91278c9a9daf87b0ef4",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04"
     },

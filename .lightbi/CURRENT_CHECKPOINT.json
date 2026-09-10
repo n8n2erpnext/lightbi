@@ -1,158 +1,47 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-09T07:58:09Z",
-  "status": "roadmap_1_0_dpr10_run12_native_uat_failed_whole_product_coherence_program_active",
-  "activeRuntime": "NEXT Core generation g-2026-09-05-next-034 on 5272 PID 3376963; immutable DPR-10 UI root dpr10-4848c0c on gateway 5273 PID 3057143; Control Plane 5274 PID 2346997 unchanged; live UI/source Product 4848c0cc5d22ef6b14236e823ab4ef497cb75e0f; Windows run #12 packaged successfully but owner native UAT FAILED; Production untouched",
+  "updatedAt": "2026-09-10T08:05:00+07:00",
+  "status": "dpr10_gate_e_final_web_native_acceptance_active",
+  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 37309 serving dpr10-gated-6be3422; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f",
-    "liveUiSource": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f"
+    "head": "b9827129f296bd1d99e4efdd1b63667479a3feda",
+    "remoteMatches": true,
+    "worktreeClean": true,
+    "liveUiSource": "6be3422fb31c08e6642463d34c31d44740e1d8ed"
   },
-  "roadmapDpr": {
-    "dpr0": "CLOSED",
-    "dpr1": "CLOSED",
-    "dpr2": "CLOSED",
-    "dpr3": "CLOSED",
-    "dpr4": "CLOSED",
-    "dpr5": "CLOSED",
-    "dpr6": "CLOSED",
-    "dpr7": "CLOSED",
-    "dpr8": "CLOSED",
-    "dpr9": "CLOSED — semantic report pagination source/release/live accepted",
-    "dpr10": "ACTIVE — exact run #12 native UAT FAILED; §23B whole-product coherence + native shell restoration program active"
-  },
-  "dpr7": {
-    "state": "CLOSED",
-    "contract": "lightbi.dashboard-composition-plan.v1; deterministic evidence-backed semantic roles/story order and membership before materialization; MB dashboardRoles advisory ordering prior only; hard-coded automated breakdown Bar default removed via DPR-6 DecisionVisualizationPlan v2",
-    "productCommit": "324eceb91329fbff5a26fb70d6840d00f3483483",
-    "verification": "focused 19/19; broad presentation/MB/Focus/renderer 27 files/116 tests; TypeScript PASS; source-size 543 production modules; release-authoritative PASS with build 3818 modules and governed regression 11 files/44 tests; exact-SHA rebuild PASS",
-    "runtimeAcceptance": "PASS 2/2 in 34.7s on Chromium ARM 151.0.7922.34 for canonical six-file multi-source Dashboard and canonical single-file inventory Deep BA -> Dashboard; current materialized writer budget 1–8 widgets; pageerror=[]",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr7-324eceb"
-  },
-  "dpr8": {
-    "state": "CLOSED — foundation + Understanding + Home/New Brief + Decision Workspace + Deep BA + BA Step 2 source/live-accepted",
-    "scope": "closed shared Canvas-first surface refactor + UI system; presentation consumes DPR-1..DPR-7 authority without re-deriving metrics/questions/narratives/charts/dashboard membership",
-    "boundary": "DPR-8 owns layout/presentation only; consume DPR-1..DPR-7 semantic contracts without re-deriving metrics/questions/narratives/charts/dashboard membership; no metric/formula/join/evidence/MB authority escalation",
-    "foundationProductCommit": "e030e4ddfc2997b8abe0ca75d5fe2541b8d9d5f7",
-    "understandingProductCommit": "900d7aa93d59b2c58501ba6efe49390182a157be",
-    "understandingVerification": "DPR-8 contract 4/4; Understanding 8/8; focused Understanding+i18n 11/11; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/44 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "understandingRuntimeAcceptance": "NEXT 5273 Chromium PASS on canonical inventory: four ordered regions; perspective rows 40/40/40/40px; three vertical secondary questions; semantic+technical evidence collapsed; primary visible; Analyze CTA top=852 bottom=896 inside 900px viewport at scrollY=0; sidebar 224px/56px; pageerror=[]",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr8-step2-6d51850",
-    "homeProductCommit": "eeaf4464da4d28306edf4f4daa095655a94c0a21",
-    "homeVerification": "Home history 2/2; i18n 3/3; DPR-8 contract 5/5; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/44 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "homeRuntimeAcceptance": "NEXT 5273 Chromium PASS: command 179.5–259.5px; suggestions 275.5–317.5px; three vertical source rows; six real session-history rows in flat list; no horizontal overflow at 1440px or 720px; pageerror=[]",
-    "decisionWorkspaceProductCommit": "73506f0ef8f1a656d592df6031399106a7de3ffe",
-    "decisionWorkspaceVerification": "DPR-8 contract 6/6; focused 16/16; Investigation 19/19; broad 14 files/64 tests; TypeScript/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/45 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "decisionWorkspaceRuntimeAcceptance": "NEXT 5273 Chromium PASS: tracked six-file multi-source and sanitized single-file preserve answer-first order; multi Evidence Drill Back round-trip PASS; Evidence collapsed; no horizontal overflow/pageerror; single correctly omits unproven key number",
-    "deepBAProductCommit": "d7ea5ce8d024145df612c7bdea44701bf10e4129",
-    "deepBAVerification": "DPR-8 contract 7/7; focused Deep BA 6/6; broad 12 files/56 tests; TypeScript/i18n/diff-check PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/45 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "deepBARuntimeAcceptance": "NEXT 5273 Chromium PASS 2/2 in 33.6s: tracked multi Deep BA numbered 01–05 with collapsed supporting context/reasons and Back to Decision Workspace; tracked single Deep BA management document + primary section and Back; no horizontal overflow/pageerror",
-    "step2ProductCommit": "6d5185085c7c1c31ae0e427dd2d79ecf2aa93dd9",
-    "step2Verification": "DPR-8 contract 8/8; i18n PASS; source-size 545 modules; release-authoritative build 3822 + governed regression 11 files/45 tests; release_1_0_suite=passed; exact-SHA rebuild 3822 PASS",
-    "step2RuntimeAcceptance": "NEXT 5273 Chromium PASS 2/2 in 33.6s: tracked MB-6 single selected-row and canonical six-file multi selected-evidence Step 2 both use focused-investigation order, evidence default closed, correct Back state, no horizontal overflow/pageerror"
-  },
-  "trustRuntime": {
-    "userManagerPid": 943,
-    "signerLauncherPid": 12020,
-    "issuerLauncherPid": 3817149,
-    "attestationLauncherPid": 1505209,
-    "currentContainerInitPids": {
-      "signer": 13437,
-      "installationIssuer": 3817195,
-      "attestation": 1505255,
-      "proDelivery": 13384
-    },
+  "controlPlane": {
+    "sourceCommit": "435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b",
+    "runtimeRoot": "/home/ubuntu/services/lightbi-control-plane-next034-435e38a",
+    "pid": 1116289,
+    "generation": "g-2026-09-05-next-034",
+    "runtimeChannel": "internal",
     "productionAuthority": false
   },
-  "nextAction": "Execute canonical UI/UX plan §23B in staged gates: A restore real Windows native File/Edit/View/Help shell and close exact package↔signed TEST REL↔installation issuer trust orchestration; B restore multi-file history visibility with 6/page × max 5 displayed pages and explicit-only Deep BA/Step 2 side-panel mode; C migrate the whole route/dialog legacy UI register to one LightBI geometry/density grammar; D expand the existing ECharts renderer/palette/template capability and Dashboard semantic materialization without a diversity quota; E rerun full release/NEXT/exact Windows acceptance. Do not hand an installer to owner until machine gates including exact installation-trust probe pass. Do not touch Production/51xx without owner approval.",
+  "dpr10": {
+    "state": "ACTIVE — Gates A–D implemented/source-green; Gate E exact Web/native acceptance pending",
+    "canonicalPlanSection": "23B",
+    "releaseEvidence": "/tmp/lightbi-final-release-suite.log => release_1_0_suite=passed; build 3828; governed 11 files/46 tests",
+    "liveGateD": "Revenue rich tooltip and Healthcare inferred/not-production-active probes accepted on 6be3422; 30-pattern source library; Map renderer pending",
+    "remainingGate": "final b982712 /app -> browser matrix -> exact Windows package -> installed runtime evidence -> signed TEST REL -> issuer/certificate/attestation continuity proof -> Account/native shell smoke -> owner UAT"
+  },
+  "trustContainers": {
+    "installationIssuer": "6f8d49919877",
+    "attestation": "ba78fa6bb2ce",
+    "signer": "c58c90a4604b",
+    "proDelivery": "cb6395655a5d"
+  },
+  "nextAction": "Read the 2026-09-10 Gate-E handoff. Verify exact state. Build immutable NEXT /app from Product b982712 with CP 435e38a, rotate only Gateway 5273, run final browser matrix, then trigger the exact Windows artifact and close signed TEST REL/issuer proof before giving one installer to owner. Do not touch Production/51xx.",
   "blockers": [
-    "Production promotion and Offline Root/phase2a freeze remain owner-gated",
-    "NEXT047 remains stale and is not the current post-DPR release candidate"
+    "Owner UAT is required before DPR-10 closure",
+    "Stable/Production promotion is separately owner-gated"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#146-2026-09-09-dpr-9-closes-with-true-semantic-report-pagination-dpr-10-is-active",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md"
-  ],
-  "documentationHead": "114094db5e7fcff5225564bec103c3990a8643ee",
-  "dpr9": {
-    "state": "CLOSED — source/release/deploy and exact-live single+multi artifact acceptance complete",
-    "scope": "lightbi.analysis-report-plan.v1 shared semantic report page model; semantic page breaks/keep-together; bounded PNG page export; true multi-page PDF; exact detail-state restore after export",
-    "boundary": "consume closed DPR-1..DPR-8 governed analysis/presentation authority; report pagination may not create or strengthen metric/formula/join/causal/evidence authority; preserve Web Live Demo /app and Desktop/shared-source parity",
-    "productCommit": "aa511844bb7b2f9fbfb5b575bc726fef293e9952",
-    "verification": "report plan 4/4; focused report/Deep BA/Step2/multi 20/20; TypeScript PASS; DPR-8+DPR-9 release contracts 11/11; i18n PASS after cataloging two PNG save descriptions; source-size 547; build 3824; governed 11 files/45 tests; release_1_0_suite=passed; exact-SHA build 3824 PASS",
-    "candidateArtifactAcceptance": "multi canonical six-file: 7 semantic sections, 4 bounded PNG pages + 4-page PDF; single tracked MB-6 Healthcare: 14 semantic sections, 5 bounded PNG pages + 5-page PDF; no browser errors",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr9-aa51184",
-    "liveGatewayPid": 1461645,
-    "liveAcceptance": "PASS 2/2 in 61s on exact live NEXT aa511844...: canonical six-file multi and tracked MB-6 Healthcare single both used lightbi.analysis-report-plan.v1, produced real PNG/PDF downloads, restored exact pre-export details open[] state, and had zero page errors; live artifacts verified multi 4 PNG pages + 4-page PDF and single 5 PNG pages + 5-page PDF",
-    "diskAtHandoff": "/ 121G total / 84G used / 37G free (70%); lightbi-next-web approximately 1.5G; disposable /tmp/dpr9-report-* artifacts only a few MiB each",
-    "nextTarget": "CLOSED; DPR-10 Cross-domain acceptance and release regression is active"
-  },
-  "dpr10": {
-    "state": "ACTIVE — Windows run #12 reproducible/package-green but owner native visual UAT FAILED; §23B whole-product coherence program active",
-    "scope": "whole-product DPR-10 closure: native shell/menu, exact signed installation-trust release orchestration, history recovery/pagination, explicit-only BA side panel, app-wide IA/geometry convergence, ECharts renderer/palette/template coverage, Dashboard semantic materialization, plus preserved cross-domain numeric/evidence/MB/report contracts",
-    "boundary": "acceptance/regression only; no new metric/formula/join/causal/evidence/MB authority; Production promotion remains owner-gated",
-    "productGateCommit": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f",
-    "liveUiSource": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f",
-    "verification": "Run #12 predecessor machine gates remain evidence only: DPR-10 convergence 5/5; DPR-8 8/8; DPR-9 3/3; DPR-10 cross-domain 52/52; MB deterministic 1/1; focused component+i18n 15/15; native icon/capability PASS; source-size 548; production build 3828; governed 11 files/45 tests; release_1_0_suite=passed. Owner UAT subsequently FAILED, so these results do not close DPR-10.",
-    "liveAcceptance": "Immutable NEXT dpr10-4848c0c remains live on gateway 5273 PID 3057143 with direct/public /app HTTP 200; Core 5272 PID 3376963, CP 5274 PID 2346997 and Trust containers are unchanged. This runtime is predecessor evidence while §23B successor work is active.",
-    "remainingGate": "complete §23B whole-product program, exact machine acceptance including signed installation-trust probe, then owner packaged Windows native visual UAT before DPR-10 closure or stable promotion",
-    "crossDomainGateCommit": "8ed2370809a5a4ddc413277a3d1eb7956eaa5020",
-    "nativeRecoveryPredecessorCommit": "e04257ca847e2d18dabb87038dbbb8ffc0b26159",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr10-4848c0c",
-    "liveGatewayPid": 3057143,
-    "brandAuthority": {
-      "state": "owner-restored pre-optimized mark for DPR-10 native UAT",
-      "svgSha256": "47220c4ae55ec2fc9abb6d621cb1c2c3f638c956620144ceb5a922de5b8889a5",
-      "sourceReferenceCommit": "40ca2d8b1dbd213bca510e51b9e09c5c19279f5d",
-      "installerHeaderSha256": "512c50e26bfd756f4c79f2869005f76ef4b4cf774c559abf39766721ea1f5142",
-      "installerSidebarSha256": "18a54a7a07bebe4d3218d68f793e20bea36492dd9952205043c0646d03c0ae05"
-    },
-    "nativeAcceptanceArtifact": {
-      "workflowRunId": "34319524815",
-      "runNumber": 12,
-      "headSha": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f",
-      "status": "SUCCESS — workflow/package only; owner native visual UAT FAILED",
-      "artifactId": "10091606449",
-      "artifactName": "LightBI-Windows-R1P12-Native-Acceptance",
-      "artifactZipSha256": "aa3a645f6fd701a81204cd22ca685a8a76e88244a8994775e68a5645e8e94990",
-      "installer": "LightBI-NEXT-0.9.2-next.r1p12.12-x64-setup.exe",
-      "installerSizeBytes": 32670062,
-      "installerSha256": "78af8a79495e2c160321cd532182ff23cc7b2f7ce3cd3438aa91ecae0327b128",
-      "publisherStatus": "NotSigned",
-      "productionAuthority": false,
-      "generationId": "g-actions-r1p12-34319524815-1",
-      "ownerVisualUat": "FAILED",
-      "ownerVisualUatMeaning": "Run #12 is retained as reproducible failed-UAT evidence; package success must not be interpreted as DPR-10 acceptance."
-    },
-    "nativeUat12": {
-      "result": "FAILED",
-      "workflowRunId": "34319524815",
-      "headSha": "4848c0cc5d22ef6b14236e823ab4ef497cb75e0f",
-      "defects": [
-        "installation_issuer_release_not_allowed reproduced on exact package and is now a real Trust/release-orchestration defect",
-        "multi-file Session History visibility/recovery regressed; execution safety must remain fail-closed",
-        "Deep BA and BA Step 2 auto-dock behavior is rejected; side panel must be explicit-user-only with primary/full default",
-        "native File/Edit/View/Help menu disappeared because the custom undecorated shell superseded accepted native chrome",
-        "global gutters/split geometry still waste outer width while crowding inner content",
-        "Charts/Dashboard materialization remains visually uniform and palette-heavy despite richer ontology/MB chart knowledge",
-        "legacy card/rounded/shadow UI remains across routes, intake/dialogs, Charts, Datasets and clean-data handoff",
-        "Session History needs six items per page and at most five displayed pages"
-      ]
-    },
-    "wholeProductProgram": {
-      "canonicalPlanSection": "23B",
-      "state": "ACTIVE",
-      "gates": [
-        "A native shell + Trust foundation",
-        "B history + explicit side-panel interaction",
-        "C shared UI primitives + whole-codebase migration",
-        "D chart renderer/template/palette + Dashboard materialization",
-        "E Web + exact native release acceptance"
-      ],
-      "productionAuthority": false
-    }
-  }
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#150-2026-09-10-dpr-10-gate-d-chart-intelligence-is-source-green-gate-e-final-webnative-acceptance-is-active",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b-dpr-10-whole-product-coherence--native-shell-restoration-program--2026-09-09",
+    "docs/history/agent/handoffs/AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md"
+  ]
 }

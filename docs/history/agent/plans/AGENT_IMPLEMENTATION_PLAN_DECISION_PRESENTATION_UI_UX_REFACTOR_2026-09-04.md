@@ -1244,6 +1244,19 @@ Do not cut an owner installer after each sub-step. Implement in this order so la
 
 DPR-10 remains **ACTIVE** until owner accepts a packaged Windows artifact produced after this whole-program gate. Run #12 is retained as reproducible failed-UAT evidence and must not be relabeled as accepted.
 
+
+### 23B.13 Execution checkpoint — 2026-09-10 — Gate D source/live evidence complete; Gate E active
+
+DPR-10 remains **ACTIVE**. The whole-product successor program has progressed through Gate A–D source implementation. Final Product source candidate is `b9827129f296bd1d99e4efdd1b63667479a3feda`; it includes native OS chrome/runtime provenance, History and explicit-only Deep BA/Step 2 panel behavior, whole-product UI convergence, multi-file per-source Step 2 filtering, the global 30-pattern visualization library, expanded ECharts renderer/palette/tooltip behavior, Dashboard visualization-plan persistence, and final native/RC/eSigner authority pinned to trust-ready Control Plane `435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b`.
+
+The final source-candidate release-authoritative run ended `release_1_0_suite=passed`, including production build `3828` modules and governed regression `11 files / 46 tests`. Gate-D live proof on immutable NEXT UI `dpr10-gated-6be3422` includes rich Revenue hover values and evidence-bound Healthcare inferred-domain authority; the global library is 30 canonical patterns, with current browser presentation exposing 29 renderer-ready actions and one truthful geospatial-map pending state. A temporary browser script that searched visible text for internal pattern IDs produced an invalid `templates=1/missing=29` measurement; final Gate-E acceptance must count visible template cards/names or stable DOM identities instead.
+
+NEXT Control Plane 5274 has already been deliberately rotated to immutable trust-ready source `435e38a...` and passed its distribution suite `305/305` before deployment. At this checkpoint Core 5272 is PID `3376963`, Gateway 5273 is PID `37309` serving the predecessor Gate-D UI root `/home/ubuntu/services/lightbi-next-web/dpr10-gated-6be3422`, and CP 5274 is PID `1116289` serving `435e38a...`. Therefore the latest Product `b982712...` is **not yet live on `/app`** and must not be described as live.
+
+Gate E continuation is exact and ordered: rebuild immutable `/app` from Product `b982712...` with CP authority `435e38a...`; rotate only Gateway 5273; run final browser acceptance including 30-template DOM count, official/inferred/shape-only visualization lanes, mixed Dashboard renderers, History/multi/Deep/Step2/report smokes; trigger one exact Windows native acceptance artifact from the same Product SHA; independently verify installed-runtime + installer provenance; publish/sign the exact internal TEST REL for that installed runtime; run the trust-ready issuer/certificate/attestation proof with issuer/signer process continuity; prove Account hot recovery and the real File/Edit/View/Help native menu; then hand exactly one final installer to the owner for UAT. DPR-10 closes only after owner acceptance. Stable promotion and all Production/51xx actions remain separately owner-gated.
+
+Successor continuity details, exact paths, known stale-harness traps and the Trust orchestration sequence are recorded in [`AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md`](../handoffs/AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md).
+
 ## 24. Source bookmarks
 
 - [`../../../project-book/LIBRARY_RULES.md`](../../../project-book/LIBRARY_RULES.md) — documentation governance used for this plan.
