@@ -43,4 +43,18 @@ describe('DPR-6 dashboard renderer type preservation', () => {
     });
   });
 
+  it('prefers an admitted visual-narrative renderer override over coarse persisted transport metadata', () => {
+    const chart = {
+      id: 'chart_combo', projectId: 'proj', datasetId: 'dataset', name: 'Revenue + cost', type: 'Bar',
+      xAxis: [], yAxis: [], filters: {}, createdAt: '2026-09-10', updatedAt: '2026-09-10',
+      formatting: { lightbiData: {
+        visualNarrativeRendererFamily: 'combo_bar_line',
+        decisionVisualizationPlan: { visualizationPlan: {
+          patternId: 'category_bar', rendererFamily: 'bar', patternRules: { colorSemantics: ['categorical'] },
+        } },
+      } },
+    } as any;
+    expect(resolveDashboardVisualizationMetadata(chart).rendererFamily).toBe('combo_bar_line');
+  });
+
 });

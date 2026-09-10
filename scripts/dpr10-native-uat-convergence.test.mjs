@@ -213,12 +213,15 @@ test('DPR-10 Gate D exposes the canonical 30-chart library and preserves officia
   assert.match(investigationPlan, /analyticalIntent === 'distribution'/);
 });
 
-test('DPR-10 Gate D rich ECharts renderers, semantic palette, hover detail and 1+2 analysis composition are source contracts', async () => {
+test('DPR-10 Gate D rich ECharts renderers, semantic palette, hover detail and Visual Narrative composition are source contracts', async () => {
   const registry = await read('apps/desktop/src/lib/visualization-renderer-registry.ts');
   const renderer = await read('apps/desktop/src/components/dashboards/DashboardChartWidget.tsx');
   const preview = await read('apps/desktop/src/components/analysis/ChartPreviewRenderer.tsx');
   const chartLibrary = await read('apps/desktop/src/pages/Charts.tsx');
   const investigation = await read('apps/desktop/src/pages/Investigation.tsx');
+  const visualNarrative = await read('apps/desktop/src/components/analysis/VisualNarrativeCanvas.tsx');
+  const composition = await read('apps/desktop/src/lib/visual-narrative-composition.ts');
+  const bundle = await read('apps/desktop/src/lib/perspective-analysis-bundle.ts');
   const palette = await read('apps/desktop/src/lib/visualization-palette.ts');
   for (const family of ['area','grouped_bar','stacked_bar','normalized_stacked','combo_bar_line','waterfall','histogram','box_plot','bubble','heatmap','cohort_heatmap','funnel','pareto','bullet','diverging_bar','calendar_heatmap','sankey','timeline','control_chart','small_multiples','radar']) {
     assert.match(registry, new RegExp(`${family}: cap\\('${family}'`));
@@ -231,8 +234,17 @@ test('DPR-10 Gate D rich ECharts renderers, semantic palette, hover detail and 1
   assert.match(preview, /generateDashboardChartOptions/);
   assert.match(chartLibrary, /VISUALIZATION_CHART_TEMPLATE_LIBRARY_V1/);
   assert.match(chartLibrary, /ChartTemplatePreview/);
-  assert.match(investigation, /\.slice\(0, 2\)/);
-  assert.match(investigation, /visualizationPlan=\{item\.decisionVisualizationPlan\?\.visualizationPlan \?\? null\}/);
+  assert.match(investigation, /buildInvestigationVisualNarrativePlan/);
+  assert.match(investigation, /<VisualNarrativeCanvas/);
+  assert.doesNotMatch(investigation, /\.slice\(0, 2\)/);
+  assert.match(bundle, /maxSupporting = 6/);
+  assert.match(bundle, /final presentation membership is[\s\S]{0,120}visual narrative composer/);
+  assert.match(visualNarrative, /data-testid="visual-narrative-canvas"/);
+  assert.match(visualNarrative, /data-testid="perspective-analysis-bundle"/);
+  assert.match(composition, /layoutCount: VisualNarrativeLayoutCountV1/);
+  assert.match(composition, /if \(!\[1, 3, 5\]\.includes\(count\)\)/);
+  assert.match(composition, /allowedVisualCounts: \[1, 3, 5\]/);
+  assert.match(composition, /visual_budget_exceeded/);
   assert.match(palette, /LIGHTBI_QUALITATIVE_PALETTE_V1/);
   assert.doesNotMatch(palette, /^\s*'#4f46e5'/m);
 });

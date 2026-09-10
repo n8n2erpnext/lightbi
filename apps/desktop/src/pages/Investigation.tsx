@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Activity, AlertTriangle, ClipboardCheck, FileSpreadsheet } from 'lucide-react';
-import { getCurrentInvestigationSession } from '../lib/investigation-session';
+import { getCurrentInvestigationSession, type InvestigationSession } from '../lib/investigation-session';
 import type { SafeSqlPreview } from '../lib/safe-sql-preview';
 import type { DuckDBPreviewResult } from '../lib/duckdb-preview-sandbox';
 import { executeGovernedDescriptiveAnalysis, prepareGovernedDescriptiveAnalysis } from '../lib/governed-descriptive-executor';
 import { createChartPreviewModel, type ChartPreviewModel } from '../lib/chart-preview-model';
 import { ChartPreviewRenderer } from '../components/analysis/ChartPreviewRenderer';
+import { VisualNarrativeCanvas } from '../components/analysis/VisualNarrativeCanvas';
 import { validatePreviewAgainstIntent, type ResultValidationResult } from '../lib/result-validator-contract';
 import { useDisplayPreferences } from '../stores/display-preferences-store';
 import { Settings2 } from 'lucide-react';
@@ -35,6 +36,7 @@ import { useUiLanguage } from '../lib/ui-language';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
 import type { DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
 import { buildInvestigationDecisionVisualizationPlan } from '../lib/investigation-visualization-plan';
+import { buildInvestigationVisualNarrativePlan } from '../lib/investigation-visual-narrative';
 import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
 import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
 import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
@@ -54,6 +56,9 @@ export const Investigation: React.FC = () => {
   const { t } = useUiLanguage();
   const navigate = useNavigate();
   const session = getCurrentInvestigationSession();
+  const selectedPerspectiveId = session?.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
+    ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
+    : null;
   const isUniversalDescriptiveAction = Boolean(session?.analysisAction.id.startsWith('universal:'));
   const canonicalMultiSourceHandoff = session?.canonicalHandoff && 'multiSource' in session.canonicalHandoff
     ? session.canonicalHandoff as CanonicalMultiSourceInvestigationHandoffV1
@@ -118,6 +123,7 @@ export const Investigation: React.FC = () => {
   const [supportingCharts, setSupportingCharts] = useState<Array<InvestigationDrillOrigin & {
     actionId: string;
     label: string;
+    runtimeIntent: InvestigationSession['runtimeIntent'];
     decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   }>>([]);
   const [isLoadingSupportingCharts, setIsLoadingSupportingCharts] = useState(false);
@@ -132,9 +138,7 @@ export const Investigation: React.FC = () => {
       analysisAction: session.analysisAction,
       semanticFields: session.aiBriefing?.semanticFields ?? [],
       analysisAuthority: primaryAnalysisAuthority,
-      selectedPerspective: session.workspaceDataset && typeof session.workspaceDataset === 'object' && 'selectedPerspective' in session.workspaceDataset
-        ? String((session.workspaceDataset as { selectedPerspective?: unknown }).selectedPerspective ?? '') || null
-        : null,
+      selectedPerspective: selectedPerspectiveId,
     });
   }, [session, primaryAnalysisAuthority?.artifactIdentity, primaryAnalysisAuthority?.authorization.metric?.metricId, primaryAnalysisAuthority?.authorization.metric?.runtimeState]);
   const filteredSingleSourceBAOverview = useMemo(() => {
@@ -245,7 +249,9 @@ export const Investigation: React.FC = () => {
       // value exposure, etc.) and left Easy Mode with one trivial chart.
       .filter(item => item.analysisAction.id !== session.analysisAction.id)
       .filter(item => item.runtimePlanPreview.status !== 'blocked')
-      .slice(0, 2);
+      // Execute a bounded candidate pool first. Set membership is decided only
+      // after governed results exist, by the visual narrative composer.
+      .slice(0, 6);
     if (candidates.length === 0) {
       setSupportingCharts([]);
       return;
@@ -254,7 +260,7 @@ export const Investigation: React.FC = () => {
     setIsLoadingSupportingCharts(true);
     setSupportingCharts([]);
     void (async () => {
-      const results: Array<InvestigationDrillOrigin & { actionId: string; label: string; decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null }> = [];
+      const results: Array<InvestigationDrillOrigin & { actionId: string; label: string; runtimeIntent: InvestigationSession['runtimeIntent']; decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null }> = [];
       for (const item of candidates) {
         if (!supportingRuns.current.isCurrent(run)) return;
         const preparation = prepareGovernedDescriptiveAnalysis(item.runtimePlanPreview, session.rows || []);
@@ -278,11 +284,12 @@ export const Investigation: React.FC = () => {
             const decisionVisualizationPlan = buildInvestigationDecisionVisualizationPlan({
               chartModel: model, runtimeIntent: item.runtimeIntent, analysisAction: item.analysisAction,
               primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+              selectedPerspectiveId,
             });
             results.push({
               actionId: item.analysisAction.id, label: item.analysisAction.opportunityName,
-              analysisAction: item.analysisAction, runtimePlan: preparation.runtimePlan, chartModel: model,
-              decisionVisualizationPlan,
+              analysisAction: item.analysisAction, runtimeIntent: item.runtimeIntent,
+              runtimePlan: preparation.runtimePlan, chartModel: model, decisionVisualizationPlan,
             });
           }
         } catch (error) {
@@ -294,7 +301,7 @@ export const Investigation: React.FC = () => {
       if (supportingRuns.current.isCurrent(run)) setIsLoadingSupportingCharts(false);
     });
     return () => supportingRuns.current.cancel();
-  }, [session?.id, primaryAnalysisAuthority?.domain.primaryDomain]);
+  }, [session?.id, primaryAnalysisAuthority?.domain.primaryDomain, selectedPerspectiveId]);
 
   if (!session) {
     return (
@@ -412,8 +419,53 @@ export const Investigation: React.FC = () => {
     buildInvestigationDecisionVisualizationPlan({
       chartModel, runtimeIntent, analysisAction,
       primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+      selectedPerspectiveId,
     }),
-  [analysisAction, chartModel, primaryAnalysisAuthority?.domain.primaryDomain, runtimeIntent]);
+  [analysisAction, chartModel, primaryAnalysisAuthority?.domain.primaryDomain, runtimeIntent, selectedPerspectiveId]);
+
+  const visualNarrative = useMemo(() => {
+    if (!chartModel || chartModel.status !== 'ready' || !primaryDecisionVisualizationPlan || focusComparison.status === 'ready') return null;
+    const sourceScopeKey = session.canonicalHandoff?.artifactIdentity ?? currentCanonicalArtifact?.identity ?? session.datasetId;
+    try {
+      return buildInvestigationVisualNarrativePlan({
+        primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+        selectedPerspectiveId,
+        items: [
+          {
+            id: analysisAction.id, isPrimary: true,
+            managementQuestion: analysisAction.description || analysisAction.opportunityName,
+            analysisAction, runtimeIntent, chartModel,
+            decisionVisualizationPlan: primaryDecisionVisualizationPlan,
+            sourceScopeKey,
+          },
+          ...supportingCharts.map(item => ({
+            id: item.actionId, isPrimary: false,
+            managementQuestion: item.analysisAction.description || item.label,
+            analysisAction: item.analysisAction, runtimeIntent: item.runtimeIntent,
+            chartModel: item.chartModel,
+            decisionVisualizationPlan: item.decisionVisualizationPlan ?? null,
+            sourceScopeKey,
+          })),
+        ],
+      });
+    } catch (error) {
+      console.warn('Visual narrative composition skipped', error);
+      return null;
+    }
+  }, [analysisAction, chartModel, currentCanonicalArtifact?.identity, focusComparison.status, primaryAnalysisAuthority?.domain.primaryDomain, primaryDecisionVisualizationPlan, runtimeIntent, selectedPerspectiveId, session.canonicalHandoff?.artifactIdentity, session.datasetId, supportingCharts]);
+
+  const visualNarrativeCanvasItems = visualNarrative && chartModel ? [
+    {
+      id: analysisAction.id, label: analysisAction.opportunityName, chartModel,
+      visualizationPlan: primaryDecisionVisualizationPlan?.visualizationPlan ?? null,
+      onDrillThrough: (point: Parameters<typeof runDrillThrough>[0]) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); },
+    },
+    ...supportingCharts.map(item => ({
+      id: item.actionId, label: item.label, chartModel: item.chartModel,
+      visualizationPlan: item.decisionVisualizationPlan?.visualizationPlan ?? null,
+      onDrillThrough: (point: Parameters<typeof runDrillThrough>[0]) => { void runDrillThrough(point, item); },
+    })),
+  ] : [];
 
 
   const durableAnalysisWorkbookPlan = useMemo(() => {
@@ -461,6 +513,8 @@ export const Investigation: React.FC = () => {
     baDecisionBrief,
     governedResultTotal,
     supportingCharts,
+    visualNarrativePlan: visualNarrative?.plan ?? null,
+    selectedPerspectiveId,
     createChart,
     createDashboard,
     addChartToDashboard,
@@ -767,7 +821,12 @@ export const Investigation: React.FC = () => {
               ) : previewResult?.status === 'failed' ? (
                 <div className="flex h-64 w-full flex-col items-center justify-center border-y border-red-200 bg-red-50/50 p-6 text-center text-red-500"><AlertTriangle className="mb-2 h-8 w-8 text-red-400" /><span className="text-sm font-medium">Execution Failed</span><span className="mt-1 text-xs text-red-400">{previewResult.errorMessage || 'Preview could not be rendered.'}</span></div>
               ) : previewResult?.rows && previewResult.rows.length > 0 && runtimeIntent.expectedShape === 'table' ? (
-                <div className="space-y-5"><DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />{chartModel && chartModel.chartType !== 'table' && <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>}</div>
+                <div className="space-y-5">
+                  <DatasetInsightSummary columns={previewResult.columns} rows={previewResult.rows} rowCount={previewResult.rowCount} />
+                  {visualNarrative ? <VisualNarrativeCanvas plan={visualNarrative.plan} items={visualNarrativeCanvasItems} /> : chartModel && chartModel.chartType !== 'table' ? <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div> : null}
+                </div>
+              ) : visualNarrative ? (
+                <VisualNarrativeCanvas plan={visualNarrative.plan} items={visualNarrativeCanvasItems} />
               ) : chartModel && runtimeIntent.expectedShape !== 'table' ? (
                 <div className="rounded-[14px] border border-black/10 bg-white p-4"><ChartPreviewRenderer model={chartModel} visualizationPlan={primaryDecisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, { analysisAction, runtimePlan: isUniversalDescriptiveAction ? enhancedRuntimePlan : runtimePlanPreview, chartModel }); }} /></div>
               ) : (
@@ -779,12 +838,12 @@ export const Investigation: React.FC = () => {
 
             {focusComparison.status === 'ready' ? <FocusSubjectContextBundle comparison={focusComparison.comparison} /> : baDecisionBrief ? <BasicBAExplanation brief={baDecisionBrief} /> : null}
 
-            {focusComparison.status !== 'ready' && (isLoadingSupportingCharts || supportingCharts.length > 0) && (
-              <section data-testid="perspective-analysis-bundle" className="border-t border-[var(--lb-divider)] pt-4">
-                <div className="flex items-start justify-between gap-3"><div><h3 className="text-[14px] font-semibold text-[#202123]">{t('Supporting analyses for this perspective')}</h3><p className="mt-1 text-[12px] text-black/50">{t('LightBI checks the same governed source from complementary dimensions.')}</p></div><span className="text-[11px] font-semibold text-blue-700">{isLoadingSupportingCharts ? t('Preparing...') : `${supportingCharts.length} ${t('supporting charts')}`}</span></div>
-                {isLoadingSupportingCharts && supportingCharts.length === 0 ? <div className="mt-4 h-28 animate-pulse border-y border-blue-100 bg-white/70" /> : <div className="mt-4 grid gap-4 lg:grid-cols-2">{supportingCharts.map(item => <article key={item.actionId} data-testid="supporting-analysis-chart" className="rounded-xl border border-black/10 bg-white p-3"><h4 className="mb-2 text-[12px] font-semibold text-[#202123]">{item.label}</h4><ChartPreviewRenderer model={item.chartModel} visualizationPlan={item.decisionVisualizationPlan?.visualizationPlan ?? null} onDrillThrough={(point) => { void runDrillThrough(point, item); }} /></article>)}</div>}
-              </section>
+            {focusComparison.status !== 'ready' && isLoadingSupportingCharts && visualNarrative?.plan.layoutCount === 1 && (
+              <div data-testid="visual-narrative-loading" className="border-t border-[var(--lb-divider)] pt-3 text-[11px] text-black/40">
+                {t('Checking complementary evidence for this perspective...')}
+              </div>
             )}
+
 
             {focusComparison.status === 'ready' ? <FocusSubjectBANextAction canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => openDeepAnalysis({ kind: 'perspective' })); }} /> : baDecisionBrief ? <BasicBANextAction brief={baDecisionBrief} canAnalyzeDeeper={previewResult?.status === 'executed' && canExecute} onAnalyzeDeeper={() => { void persistWorkspaceSession().finally(() => openDeepAnalysis({ kind: 'perspective' })); }} /> : null}
 

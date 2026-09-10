@@ -10,6 +10,7 @@ import {
   type VisualizationPatternIdV1,
 } from './visualization-ontology';
 import { evaluateVisualizationSuitability, type VisualizationSuitabilityInputV1 } from './visualization-suitability';
+import { officialDomainVisualPatternOrder } from './domain-visual-playbooks';
 import {
   rendererCapabilityForPattern,
   rendererSupportsSurfaces,
@@ -66,6 +67,7 @@ export type GovernedVisualizationPlanV1 = {
 const DEFAULT_PATTERN_ORDER: Partial<Record<VisualizationAnalyticalIntentV1, VisualizationPatternIdV1[]>> = {
   single_value: ['kpi_summary'],
   target_attainment: ['target_combo','target_bullet','kpi_summary'],
+  period_comparison: ['category_compare','grouped_compare','variance_diverging','trend_line'],
   trend: ['trend_line','trend_area','sparkline','calendar_intensity'],
   category_comparison: ['category_compare','ranking_bar','grouped_compare'],
   ranking: ['ranking_bar','concentration_pareto','evidence_table'],
@@ -96,9 +98,13 @@ function candidateOrder(input: GovernedVisualizationPlanInputV1): VisualizationP
     .filter(pattern => pattern.intents.includes(input.analyticalIntent))
     .map(pattern => pattern.id);
   const defaults = DEFAULT_PATTERN_ORDER[input.analyticalIntent] ?? intentPatterns;
+  const officialDomain = officialDomainVisualPatternOrder(input.domainProfile?.domainId, input.analyticalIntent);
   const domain = (input.domainProfile?.preferredPatternIds ?? [])
     .filter(patternId => VISUALIZATION_PATTERN_BY_ID_V1.get(patternId)?.intents.includes(input.analyticalIntent));
-  return uniquePatterns([...domain, ...defaults, ...intentPatterns]);
+  // MB advice is ranked for this exact question/perspective. It may reorder only
+  // patterns already compatible with the analytical intent; deterministic
+  // suitability and renderer capability remain the admission authority below.
+  return uniquePatterns([...domain, ...officialDomain, ...defaults, ...intentPatterns]);
 }
 export function createGovernedVisualizationPlan(
   input: GovernedVisualizationPlanInputV1,

@@ -93,4 +93,49 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(resolveInvestigationVisualizationIntent(intent, statusAction)).toBe('category_comparison');
   });
 
+  it('preserves the actual selected perspective id in the decision visualization plan', () => {
+    const chartModel = {
+      id: 'chart-perspective', sourceResultId: 'result-perspective', status: 'ready' as const,
+      chartType: 'bar' as const, title: 'Revenue by product', xField: 'Product', yField: 'Revenue',
+      seriesFields: ['Revenue'], rows: [{ Product: 'A', Revenue: 100 }, { Product: 'B', Revenue: 80 }],
+      warnings: [], source: 'duckdb_preview_result' as const,
+    };
+    const runtimeIntent = {
+      id: 'intent-perspective', sourceActionId: 'action-revenue', type: 'group_by' as const,
+      dimensions: ['Product'], measures: ['Revenue'], expectedShape: 'bar_chart' as const,
+      status: 'ready' as const, warnings: [], blockedReasons: [], source: 'analysis_action' as const,
+    };
+    const action = {
+      id: 'action-revenue', opportunityName: 'Revenue by product', label: 'Revenue by product', description: 'Which products contribute most revenue?',
+      actionType: 'group_by' as const, dimensions: ['Product'], measures: ['Revenue'], confidenceScore: 90, source: 'dataset_understanding' as const,
+    };
+    const plan = buildInvestigationDecisionVisualizationPlan({ chartModel, runtimeIntent, analysisAction: action, primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money' });
+    expect(plan?.perspectiveId).toBe('revenue_money');
+  });
+
+  it('recognizes evidence-backed inventory concentration as risk concentration without granting new metric authority', () => {
+    const concentrationAction = {
+      ...action('group_by'), id: 'action_concentration', opportunityName: 'Inventory concentration exposure',
+      description: 'Where is inventory concentration exposure by warehouse?', dimensions: ['Warehouse'], measures: ['inventory_value'],
+    };
+    const concentrationIntent = { ...runtimeIntent('group_by'), id: 'intent_concentration', sourceActionId: 'action_concentration', dimensions: ['Warehouse'], measures: ['inventory_value'] };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: concentrationAction, runtimeIntent: concentrationIntent, primaryDomain: 'inventory', selectedPerspectiveId: 'inventory_health',
+      chartModel: { id: 'chart_concentration', sourceResultId: 'result_concentration', status: 'ready', chartType: 'bar', title: 'Inventory concentration', xField: 'Warehouse', yField: 'inventory_value', seriesFields: ['inventory_value'], rows: [{ Warehouse: 'A', inventory_value: 80 }, { Warehouse: 'B', inventory_value: 20 }], warnings: [], source: 'duckdb_preview_result' },
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('risk_concentration');
+    expect(plan?.visualizationPlan.patternId).toBe('concentration_pareto');
+    expect(plan?.visualizationPlan.governance).toMatchObject({ metricAuthority: 'upstream_only', mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true });
+  });
+
+  it('does not let an inventory perspective force a special intent when the question only asks a generic category comparison', () => {
+    const genericAction = { ...action('group_by'), opportunityName: 'Stock by store', description: 'Show stock quantity by store' };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: genericAction, runtimeIntent: runtimeIntent('group_by'), primaryDomain: 'inventory', selectedPerspectiveId: 'inventory_health',
+      chartModel: { id: 'chart_generic', sourceResultId: 'result_generic', status: 'ready', chartType: 'bar', title: 'Stock by store', xField: 'Store', yField: 'stock_qty', seriesFields: ['stock_qty'], rows: [{ Store: 'A', stock_qty: 12 }, { Store: 'B', stock_qty: 8 }], warnings: [], source: 'duckdb_preview_result' },
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('category_comparison');
+    expect(plan?.visualizationPlan.patternId).toBe('ranking_bar');
+  });
+
 });

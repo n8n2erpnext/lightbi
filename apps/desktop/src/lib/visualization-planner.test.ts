@@ -4,7 +4,7 @@ import type { DomainVisualProfileV1 } from './domain-visual-profile';
 
 const domainProfile = (preferredPatternIds: DomainVisualProfileV1['preferredPatternIds']): DomainVisualProfileV1 => ({
   schemaVersion: 'lightbi.domain-visual-profile.v1', domainId: 'test', authority: 'advisory_only',
-  analyticalIntents: ['trend','category_comparison'], preferredPatternIds,
+  analyticalIntents: ['trend','category_comparison'], preferredPatternIds, rankedPatternAdvice: [],
   conceptIds: ['concept.test'], evidenceRequirements: [], constraints: [], priorities: [], abstainWhen: [],
   unmappedChartFamilies: [],
   policy: { mayAuthorizeMetric: false, mayAuthorizeFormula: false, mayAuthorizeJoin: false, mayChooseRenderer: false, retrievalRankIsConfidence: false },
@@ -30,6 +30,18 @@ describe('DPR-6 governed visualization planner', () => {
     expect(plan.candidates[0]).toMatchObject({ patternId: 'ranking_bar', fromDomainPrior: true, eligible: false });
     expect(plan.patternId).toBe('evidence_table');
     expect(plan.rendererFamily).toBe('table');
+  });
+
+
+  it('lets ranked MB presentation advice outrank a static official prior only within an already-compatible intent', () => {
+    const profile = { ...domainProfile(['variance_diverging']), domainId: 'revenue' };
+    const plan = createGovernedVisualizationPlan({
+      analyticalIntent: 'period_comparison', availableRoles: ['category','measure','signed_measure'],
+      cardinality: { categories: 8, series: 1 }, domainProfile: profile,
+      requiredSurfaces: ['preview','persistence','dashboard'],
+    });
+    expect(plan.patternId).toBe('variance_diverging');
+    expect(plan.governance.deterministicSuitabilityFinal).toBe(true);
   });
 
   it('uses the histogram renderer when the semantic distribution shape is supported', () => {

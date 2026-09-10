@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { ChartPreviewModel } from './chart-preview-model';
 import { createDecisionVisualizationPlan } from './decision-visualization-plan';
 import { createInvestigationChartActions } from './investigation-chart-actions';
+import { createVisualNarrativeCompositionPlan } from './visual-narrative-composition';
 
 const scatterModel: ChartPreviewModel = {
   id: 'chart_scatter', sourceResultId: 'result_scatter', status: 'ready',
@@ -126,13 +127,13 @@ describe('DPR-7 single-source dashboard composition', () => {
     expect(dashboardMetadata.dashboardCompositionPlan.governance).toMatchObject({ mbAuthority: 'advisory_only', mbMayChangeMembership: false });
     expect(dashboardMetadata.dashboardCompositionAdvice.governance).toMatchObject({ authority: 'advisory_only', mayChangeMembership: false });    const composition = dashboardMetadata.dashboardCompositionPlan;
     expect(composition.rejected.some((item: any) => item.reason === 'metric_budget_exceeded')).toBe(true);
-    expect(composition.rejected.some((item: any) => item.reason === 'visual_budget_exceeded')).toBe(true);
+    expect(composition.rejected.some((item: any) => item.reason === 'visual_budget_exceeded')).toBe(false);
     expect(chartInputs.filter(input => input.type === 'Number')).toHaveLength(4);
-    expect(chartInputs).toHaveLength(8);
+    expect(chartInputs).toHaveLength(9);
     expect(added).toEqual(chartInputs.map((_input, index) => `chart_${index + 1}`));
 
     const breakdownCharts = chartInputs.filter(input => input.formatting?.lightbiData?.source === 'perspective_dashboard_ba_breakdown');
-    expect(breakdownCharts).toHaveLength(3);
+    expect(breakdownCharts).toHaveLength(4);
     for (const chart of breakdownCharts) {
       expect(chart.formatting.lightbiData.decisionVisualizationPlan.schemaVersion).toBe('lightbi.decision-visualization-plan.v2');
       expect(chart.formatting.lightbiData.decisionVisualizationPlan.visualizationPlan.analyticalIntent).toBe('ranking');
@@ -143,5 +144,54 @@ describe('DPR-7 single-source dashboard composition', () => {
     expect(composition.items.some((item: any) => item.semanticRole === 'primary_answer')).toBe(true);
     expect(composition.items.some((item: any) => item.semanticRole === 'ranked_driver')).toBe(true);
     expect(composition.items.every((item: any) => item.evidenceRefs.length > 0 && item.reasonForInclusion)).toBe(true);
+  });
+});
+
+describe('Visual narrative dashboard inheritance', () => {
+  it('persists one combined hero widget and the real selected perspective without resurrecting consumed support charts', async () => {
+    const primary: ChartPreviewModel = {
+      id: 'primary', sourceResultId: 'result_revenue', status: 'ready', chartType: 'bar', title: 'Revenue',
+      xField: 'Month', yField: 'Revenue', seriesFields: ['Revenue'],
+      rows: [{ Month: 'May', Revenue: 100 }, { Month: 'June', Revenue: 140 }], warnings: [], source: 'duckdb_preview_result',
+    };
+    const support: ChartPreviewModel = {
+      id: 'support', sourceResultId: 'result_cost', status: 'ready', chartType: 'line', title: 'Cost',
+      xField: 'Month', yField: 'Cost', seriesFields: ['Cost'],
+      rows: [{ Month: 'May', Cost: 70 }, { Month: 'June', Cost: 88 }], warnings: [], source: 'duckdb_preview_result',
+    };
+    const primaryPlan = createDecisionVisualizationPlan({
+      perspectiveId: 'view:executive', sourceCount: 1, dimensionField: 'Month', metricIds: ['Revenue'], rows: primary.rows,
+      analyticalIntent: 'category_comparison', availableRoles: ['category','measure'],
+      cardinality: { points: 2, categories: 2, series: 1 }, requiredSurfaces: ['preview','persistence','dashboard'],
+    });
+    const visualNarrativePlan = createVisualNarrativeCompositionPlan({ candidates: [
+      { id: 'action_revenue', isPrimary: true, managementQuestion: 'Compare revenue and cost', storyRole: 'comparison', analyticalIntent: 'period_comparison', dimensionField: 'Month', metricIds: ['Revenue'], unitFamily: 'money', grainId: 'month', sourceScopeKey: 'artifact-1', evidenceBacked: true, evidenceRefs: ['e:revenue'], decisionImportance: 100, rendererFamily: 'bar', pointCount: 2, combination: { groupId: 'finance-story', mark: 'bar', explicitUnitLabel: true } },
+      { id: 'action_cost', managementQuestion: 'Show cost on the same monthly comparison', storyRole: 'comparison', analyticalIntent: 'period_comparison', dimensionField: 'Month', metricIds: ['Cost'], unitFamily: 'money', grainId: 'month', sourceScopeKey: 'artifact-1', evidenceBacked: true, evidenceRefs: ['e:cost'], decisionImportance: 90, rendererFamily: 'line', pointCount: 2, combination: { groupId: 'finance-story', mark: 'line', explicitUnitLabel: true } },
+    ] });
+    expect(visualNarrativePlan.layoutCount).toBe(1);
+    expect(visualNarrativePlan.units[0].presentation).toBe('combo_bar_line');
+
+    const chartInputs: any[] = []; const layouts: any[] = []; let dashboardMetadata: any = null;
+    const actions = createInvestigationChartActions({
+      session: { datasetId: 'dataset_1', supportingAnalyses: [{ analysisAction: { id: 'action_cost', measures: ['Cost'] } }] } as any,
+      analysisAction: { id: 'action_revenue', opportunityName: 'Revenue performance', description: 'Compare revenue and cost', dimensions: ['Month'], measures: ['Revenue'] } as any,
+      chartModel: primary, previewResult: { status: 'executed' } as any, primaryDecisionVisualizationPlan: primaryPlan,
+      singleSourceBAOverview: null, baDecisionBrief: null, governedResultTotal: null,
+      supportingCharts: [{ actionId: 'action_cost', label: 'Cost', chartModel: support, decisionVisualizationPlan: null }],
+      visualNarrativePlan, selectedPerspectiveId: 'view:executive',
+      createChart: input => { chartInputs.push(input); return `chart_${chartInputs.length}`; },
+      createDashboard: (_name, metadata) => { dashboardMetadata = metadata; return 'dashboard_1'; },
+      addChartToDashboard: (_dashboardId, _chartId, layout) => { layouts.push(layout); },
+      persistWorkspaceSession: async () => null, setSavedChartNotice: () => undefined,
+      closeDeepAnalysis: () => undefined, navigate: () => undefined, t: value => value,
+    });
+    await actions.createPerspectiveDashboard();
+    expect(chartInputs).toHaveLength(1);
+    expect(chartInputs[0].formatting.lightbiData.visualNarrativeRendererFamily).toBe('combo_bar_line');
+    expect(chartInputs[0].formatting.lightbiData.rows[0]).toMatchObject({ Month: 'May', Revenue: 100, Cost: 70 });
+    expect(layouts).toEqual([{ x: 0, y: 0, w: 20, h: 8 }]);
+    expect(dashboardMetadata.visualNarrativeCompositionPlan.layoutCount).toBe(1);
+    expect(dashboardMetadata.perspectiveId).toBe('view:executive');
+    expect(dashboardMetadata.dashboardCompositionPlan.context.decisionPerspective).toBe('view:executive');
   });
 });

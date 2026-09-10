@@ -5,6 +5,7 @@ import type { DrillThroughPoint } from '../../lib/drill-through-export';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
 import { formatValue, inferSemanticType } from '../../lib/display-formatter';
 import type { GovernedVisualizationPlanV1 } from '../../lib/visualization-planner';
+import type { VisualizationRendererFamilyV1 } from '../../lib/visualization-renderer-registry';
 import { generateDashboardChartOptions } from '../dashboards/DashboardChartWidget';
 
 type ChartClickParams = {
@@ -15,8 +16,10 @@ type ChartClickParams = {
 export const ChartPreviewRenderer: React.FC<{
   model: ChartPreviewModel;
   visualizationPlan?: GovernedVisualizationPlanV1 | null;
+  rendererFamilyOverride?: VisualizationRendererFamilyV1 | null;
+  heightClassName?: string;
   onDrillThrough?: (point: DrillThroughPoint) => void;
-}> = ({ model, visualizationPlan, onDrillThrough }) => {
+}> = ({ model, visualizationPlan, rendererFamilyOverride, heightClassName, onDrillThrough }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const { preferences } = useDisplayPreferences();
 
@@ -31,7 +34,7 @@ export const ChartPreviewRenderer: React.FC<{
     const primarySemantic = primaryYField ? inferSemanticType(primaryYField, primarySample) : 'number';
     const valueType = primarySemantic === 'currency' ? 'currency' : 'number';
     const coarseType = model.chartType === 'line' ? 'line' : model.chartType === 'scatter' ? 'scatter' : 'bar';
-    const family = visualizationPlan?.rendererFamily ?? (coarseType === 'line' ? 'line' : coarseType === 'scatter' ? 'scatter' : 'bar');
+    const family = rendererFamilyOverride ?? visualizationPlan?.rendererFamily ?? (coarseType === 'line' ? 'line' : coarseType === 'scatter' ? 'scatter' : 'bar');
     const colorSemantics = visualizationPlan?.patternRules?.colorSemantics ?? null;
 
     chartInstance.setOption(generateDashboardChartOptions({
@@ -75,7 +78,7 @@ export const ChartPreviewRenderer: React.FC<{
       window.removeEventListener('resize', handleResize);
       chartInstance.dispose();
     };
-  }, [model, onDrillThrough, preferences, visualizationPlan]);
+  }, [model, onDrillThrough, preferences, rendererFamilyOverride, visualizationPlan]);
 
   if (model.status === 'empty') {
     return (
@@ -125,7 +128,7 @@ export const ChartPreviewRenderer: React.FC<{
 
   return (
     <div
-      className="h-[360px] w-full rounded-[18px] bg-white transition-[filter] duration-200"
+      className={`${heightClassName ?? 'h-[360px]'} w-full rounded-[18px] bg-white transition-[filter] duration-200`}
       ref={chartRef}
       data-testid="chart-preview-canvas"
     />

@@ -16,7 +16,7 @@ import { createAnalysisWorkbookPlan, saveExcelAnalysisWorkbook, type AnalysisWor
 import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } from "../../lib/decision-visualization-plan";
 import { createDashboardCompositionPlan, type DashboardCompositionCandidateV1 } from "../../lib/dashboard-composition-plan";
 import { adviseDashboardComposition } from "../../lib/dashboard-composition-advice";
-import { createDashboardBreakdownVisualizationPlan, createExecutiveDashboardInformationBudget, dashboardAdvisoryRoles, dashboardDecisionVisualizationMetadata, persistedDashboardChartType } from "../../lib/dashboard-composition-writer";
+import { createDashboardBreakdownVisualizationPlan, createExecutiveDashboardInformationBudget, dashboardAdvisoryRoles, dashboardDecisionVisualizationMetadata, materializeDashboardWidgetLayouts, persistedDashboardChartType } from "../../lib/dashboard-composition-writer";
 import { generateDashboardChartOptions } from "../dashboards/DashboardChartWidget";
 import { buildDomainVisualProfile } from "../../lib/domain-visual-profile";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
@@ -124,6 +124,11 @@ export const PerspectiveCollectionResultCard: React.FC<{
     Object.keys(row).filter((key) => key !== "reporting_period")))];
   const distinctPeriodCount = new Set(rows.map(row => String(row.reporting_period ?? ''))).size;
   const hasPeriodComparison = distinctPeriodCount >= 2;
+  const hasTrendEvidence = distinctPeriodCount >= 3;
+  const primaryAnalyticalIntent = distinctPeriodCount === 2 ? 'period_comparison' : hasTrendEvidence ? 'trend' : 'category_comparison';
+  const primaryAvailableRoles = distinctPeriodCount === 2
+    ? ['category','measure','signed_measure'] as const
+    : hasTrendEvidence ? ['ordered_time','measure'] as const : ['category','measure'] as const;
   const movements = metricIds.map((metricId) => {
     const first = Number(rows[0]?.[metricId] ?? 0);
     const last = Number(rows[rows.length - 1]?.[metricId] ?? 0);
@@ -150,8 +155,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
     : null;
   const baseDecisionVisualizationPlan = createDecisionVisualizationPlan({
     perspectiveId, rows, sourceCount, dimensionField: 'reporting_period', metricIds: primaryChartMetricIds,
-    analyticalIntent: hasPeriodComparison ? 'trend' : 'category_comparison',
-    availableRoles: hasPeriodComparison ? ['ordered_time','measure'] : ['category','measure'],
+    analyticalIntent: primaryAnalyticalIntent,
+    availableRoles: [...primaryAvailableRoles],
     cardinality: { points: rows.length, categories: distinctPeriodCount, series: primaryChartMetricIds.length },
     domainProfile: multiFileDomainProfile,
     requiredSurfaces: ['preview','persistence','dashboard'],
@@ -217,6 +222,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
       bullets: priority.map((driver, index) => `${index + 1}. ${driver.dimension}: ${driver.key} · ${changeLabel} ${formatMetric(largestMovement.metricId, driverChange(driver))}`),
     };
   })();
+  const primaryVisualHeight = distinctPeriodCount <= 2 ? 230 : distinctPeriodCount <= 6 ? 300 : 360;
   const option = {
     ...generateDashboardChartOptions({
       title: displayMetricLabel(primaryChartMetricIds[0] ?? ''),
@@ -569,10 +575,11 @@ export const PerspectiveCollectionResultCard: React.FC<{
         limitations: overviewLimitations,
       } : null,
     });
-    for (const item of compositionPlan.items) {
-      const materialize = materializers.get(item.candidateId);
-      if (!materialize) continue;
-      addChartToDashboard(dashboardId, materialize());
+    const materializableItems = compositionPlan.items.filter(item => materializers.has(item.candidateId));
+    const widgetLayouts = materializeDashboardWidgetLayouts(materializableItems);
+    for (const item of materializableItems) {
+      const materialize = materializers.get(item.candidateId)!;
+      addChartToDashboard(dashboardId, materialize(), widgetLayouts.get(item.candidateId));
     }
     navigate(`/dashboards/${dashboardId}`);
   };
@@ -674,9 +681,9 @@ export const PerspectiveCollectionResultCard: React.FC<{
           <p className="mt-1 text-[11px] text-slate-500">{hasPeriodComparison ? <>{largestMovement.delta >= 0 ? '+' : '−'}{formatMetric(largestMovement.metricId, Math.abs(largestMovement.delta))}{largestMovement.percent === null ? '' : ` (${Math.abs(largestMovement.percent * 100).toFixed(1)}%)`} {t('vs first period')}</> : t('Single-period snapshot')}</p>
         </section>}
 
-        <section data-testid="collection-primary-visual" className="min-w-0">
-          <div className="min-h-[430px] rounded-xl border border-slate-100 bg-slate-50/40 p-3">
-            <ReactECharts option={option} style={{ height: '390px', width: '100%' }} notMerge onEvents={{ click: (params: { dataIndex?: number; seriesIndex?: number }) => { const dataIndex = Number(params.dataIndex); const seriesIndex = Number(params.seriesIndex); if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !primaryChartMetricIds[seriesIndex]) return; setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ''), metricId: primaryChartMetricIds[seriesIndex] }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} />
+        <section data-testid="collection-primary-visual" data-period-mode={distinctPeriodCount === 2 ? 'comparison' : hasTrendEvidence ? 'trend' : 'snapshot'} className="min-w-0">
+          <div className="rounded-xl border border-slate-100 bg-slate-50/40 p-3">
+            <ReactECharts option={option} style={{ height: `${primaryVisualHeight}px`, width: '100%' }} notMerge onEvents={{ click: (params: { dataIndex?: number; seriesIndex?: number }) => { const dataIndex = Number(params.dataIndex); const seriesIndex = Number(params.seriesIndex); if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !primaryChartMetricIds[seriesIndex]) return; setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ''), metricId: primaryChartMetricIds[seriesIndex] }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} />
             <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point to inspect evidence')}>
               {rows.flatMap(row => metricIds.map(metricId => { const period = String(row.reporting_period ?? ''); const active = chartSelection?.period === period && chartSelection.metricId === metricId; return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>; }))}
             </div>

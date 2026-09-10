@@ -319,6 +319,12 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(breakdown?.type).toBe('Row');
     expect(breakdown?.formatting?.lightbiData?.decisionVisualizationPlan?.visualizationPlan?.patternId).toBe('ranking_bar');
     expect(breakdown?.formatting?.lightbiData?.sourceName).toBe('current-period.xlsx');
+    const widthsByRow = new Map<number, number>();
+    for (const widget of dashboard.widgets) {
+      expect(widget.layout.x + widget.layout.w).toBeLessThanOrEqual(20);
+      widthsByRow.set(widget.layout.y, (widthsByRow.get(widget.layout.y) ?? 0) + widget.layout.w);
+    }
+    expect([...widthsByRow.values()].every(width => width === 20)).toBe(true);
   });
 
   it('renders the multi-file Decision Workspace in answer-first order', () => {
@@ -339,6 +345,20 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
     expect(screen.getByTestId('collection-decision-workspace').getAttribute('data-layout')).toBe('answer-first-canvas');
   });
 
+
+  it('treats exactly two reporting periods as comparison rather than a trend chart', () => {
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[
+        { reporting_period: '2026-05', sales_revenue: 300 },
+        { reporting_period: '2026-06', sales_revenue: 250 },
+      ]}
+      sourceCount={2}
+      evidenceSources={[]}
+    />);
+    expect(screen.getByTestId('collection-primary-visual').getAttribute('data-period-mode')).toBe('comparison');
+    expect(screen.getByTestId('collection-chart').getAttribute('data-series-type')).toBe('bar');
+  });
 
   it('materializes only the governed hero metric on the multi-file primary chart instead of mixing incompatible units on one axis', () => {
     render(<PerspectiveCollectionResultCard

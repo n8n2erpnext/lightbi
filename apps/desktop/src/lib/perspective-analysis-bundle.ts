@@ -27,7 +27,7 @@ export function createPerspectiveAnalysisBundle(
   understanding: DatasetUnderstandingResult,
   primaryActionId: string,
   selectedPerspectiveId?: string | null,
-  maxSupporting = 3,
+  maxSupporting = 6,
 ): PerspectiveAnalysisBundle {
   const action = understanding.availableActions.find(item => item.id === primaryActionId);
   const questionId = action?.questionId;
@@ -36,29 +36,56 @@ export function createPerspectiveAnalysisBundle(
     ? selectedPerspectiveId as DomainId
     : question?.domain ?? null;
   const questionDomain = new Map(understanding.recommendedQuestions.map(item => [item.id, item.domain]));
+  const questionFit = new Map(understanding.recommendedQuestions.map(item => [item.id, item.fitScore]));
   const seenShapes = new Set<string>();
   if (action) seenShapes.add(diversityKey(action));
 
-  const supportingActions = understanding.availableActions
+  const eligible = understanding.availableActions
     .filter(candidate => candidate.id !== primaryActionId)
-    // Registry and plugin actions are first-class. The old prefix was an
-    // implementation detail, not a governance boundary; keeping it here made
-    // newly declared domain questions disappear from Easy Mode charts.
+    // Registry and plugin actions are first-class. This stage is only a
+    // resource-bounded execution pool; final presentation membership is
+    // decided later by the visual narrative composer after evidence exists.
     .filter(candidate => candidate.executionScope !== 'not_supported')
     .filter(candidate => supportsSelectedPerspective(questionDomain.get(candidate.questionId), selectedDomain))
-    .sort((left, right) => {
-      const kindPriority = (value: AnalysisAction) => value.actionKind === 'trend' ? 3 : value.actionKind === 'group_by' ? 2 : value.actionKind === 'distribution' ? 1 : 0;
-      return kindPriority(right) - kindPriority(left)
-        || right.dimensions.length - left.dimensions.length
-        || left.label.localeCompare(right.label);
-    })
     .filter(candidate => {
       const key = diversityKey(candidate);
       if (seenShapes.has(key)) return false;
       seenShapes.add(key);
       return true;
-    })
-    .slice(0, Math.max(0, maxSupporting));
+    });
+
+  const buckets = new Map<string, AnalysisAction[]>();
+  for (const candidate of eligible) {
+    const key = String(candidate.actionKind || 'unknown');
+    const bucket = buckets.get(key) ?? [];
+    bucket.push(candidate);
+    buckets.set(key, bucket);
+  }
+  for (const bucket of buckets.values()) {
+    bucket.sort((left, right) => Number(questionFit.get(right.questionId) ?? 0) - Number(questionFit.get(left.questionId) ?? 0)
+      || right.dimensions.length - left.dimensions.length
+      || left.label.localeCompare(right.label)
+      || left.id.localeCompare(right.id));
+  }
+  const primaryKind = String(action?.actionKind ?? '');
+  const kindOrder = [...buckets.keys()].sort((left, right) => {
+    if (left === primaryKind && right !== primaryKind) return 1;
+    if (right === primaryKind && left !== primaryKind) return -1;
+    return left.localeCompare(right);
+  });
+  const supportingActions: AnalysisAction[] = [];
+  const budget = Math.max(0, maxSupporting);
+  while (supportingActions.length < budget) {
+    let added = false;
+    for (const kind of kindOrder) {
+      const next = buckets.get(kind)?.shift();
+      if (!next) continue;
+      supportingActions.push(next);
+      added = true;
+      if (supportingActions.length >= budget) break;
+    }
+    if (!added) break;
+  }
 
   return { domain: selectedDomain, primaryActionId, supportingActions };
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   MB_CHART_FAMILY_TO_PATTERN_IDS_V1,
+  buildDomainVisualProfile,
   projectDomainVisualProfileFromAdvice,
 } from './domain-visual-profile';
 import { VISUALIZATION_PATTERN_BY_ID_V1, VISUALIZATION_PATTERN_LIBRARY_V1 } from './visualization-ontology';

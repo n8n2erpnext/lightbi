@@ -38,5 +38,5 @@ export interface AppRuntimeState {
   setActiveDatasource: (datasourceId: string | null) => void;
   createDashboard: (name: string, metadata?: Record<string, unknown>) => string;
   createChart: (chart: Omit<Chart, 'id' | 'createdAt' | 'updatedAt'>) => string;
-  addChartToDashboard: (dashboardId: string, chartId: string) => void;
+  addChartToDashboard: (dashboardId: string, chartId: string, layout?: { x: number; y: number; w: number; h: number }) => void;
 }

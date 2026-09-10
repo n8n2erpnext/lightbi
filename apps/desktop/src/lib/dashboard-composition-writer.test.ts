@@ -4,6 +4,7 @@ import {
   createDashboardBreakdownVisualizationPlan,
   createExecutiveDashboardInformationBudget,
   dashboardAdvisoryRoles,
+  materializeDashboardWidgetLayouts,
 } from './dashboard-composition-writer';
 import type { DashboardCompositionCandidateV1 } from './dashboard-composition-plan';
 
@@ -11,6 +12,7 @@ const candidate = (id: string, artifactKind: DashboardCompositionCandidateV1['ar
   id, managementQuestion: `Question ${id}`, semanticRole: artifactKind === 'metric' ? 'context_metric' : 'ranked_driver',
   artifactKind, evidenceBacked: true, evidenceRefs: [`evidence:${id}`], decisionImportance: 50,
   reasonForInclusion: 'test',
+
 });
 
 describe('Dashboard composition writer support', () => {
@@ -20,7 +22,7 @@ describe('Dashboard composition writer support', () => {
       ...Array.from({ length: 6 }, (_, index) => candidate(`visual-${index}`, 'visual')),
     ];
     expect(createExecutiveDashboardInformationBudget(candidates)).toEqual({
-      maxItems: candidates.length, maxMetrics: 4, maxVisuals: 4,
+      maxItems: candidates.length, maxMetrics: 4, maxVisuals: 5,
     });
   });
   it('creates a governed ranking visualization plan for a BA breakdown instead of choosing Bar directly', () => {
@@ -45,4 +47,25 @@ describe('Dashboard composition writer support', () => {
       'drivers', 'relationship', 'Cost', 'Revenue',
     ]);
   });
+  it('materializes composition intent without orphan half-width gaps', () => {
+    const items = [
+      { candidateId: 'hero', widthIntent: 'full', heightIntent: 'standard' },
+      { candidateId: 'driver', widthIntent: 'half', heightIntent: 'standard' },
+      { candidateId: 'risk', widthIntent: 'half', heightIntent: 'compact' },
+      { candidateId: 'evidence', widthIntent: 'half', heightIntent: 'standard' },
+    ] as any;
+    const layouts = materializeDashboardWidgetLayouts(items);
+    expect(layouts.get('hero')).toEqual({ x: 0, y: 0, w: 20, h: 8 });
+    expect(layouts.get('driver')).toEqual({ x: 0, y: 8, w: 10, h: 8 });
+    expect(layouts.get('risk')).toEqual({ x: 10, y: 8, w: 10, h: 3 });
+    expect(layouts.get('evidence')).toEqual({ x: 0, y: 16, w: 20, h: 8 });
+  });
+
+  it('packs compact metric bands across the full 20-column row', () => {
+    const items = ['a','b','c'].map(candidateId => ({ candidateId, widthIntent: 'compact', heightIntent: 'compact' })) as any;
+    const layouts = materializeDashboardWidgetLayouts(items);
+    expect([...layouts.values()].map(item => [item.x, item.w])).toEqual([[0,7],[7,7],[14,6]]);
+    expect([...layouts.values()].reduce((sum, item) => sum + item.w, 0)).toBe(20);
+  });
+
 });

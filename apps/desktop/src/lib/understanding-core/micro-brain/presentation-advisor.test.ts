@@ -98,3 +98,32 @@ describe("Micro Brain presentation lobe", () => {
     expect(prohibition?.presentation.mustNot?.join(" ")).toContain("invent metrics or numbers");
   });
 });
+
+// DPR-10 Visual Narrative wiring regressions.
+describe('Micro Brain presentation runtime aliases', () => {
+  it('maps the official runtime inventory id to the exact corpus domain feature without narrowing recall', () => {
+    const advice = adviseMicroBrainPresentation({
+      domainId: 'inventory', perspectiveId: 'inventory', analyticalIntent: 'aging',
+      userQuestion: 'Which inventory positions are aging?',
+      semanticSignals: ['stock quantity', 'days in stock'], limit: 12,
+    });
+    expect(advice.candidates.map(candidate => candidate.hit.conceptId))
+      .toContain('concept.presentation_domain_inventory_warehouse');
+  });
+  it('maps real app perspective ids onto exact MB perspective features while preserving the original tag', () => {
+    const inventory = adviseMicroBrainPresentation({
+      domainId: 'inventory', perspectiveId: 'inventory_health', analyticalIntent: 'aging',
+      userQuestion: 'Which inventory positions are aging?', semanticSignals: ['stock age','warehouse'], limit: 12,
+    });
+    expect(inventory.candidates.map(candidate => candidate.hit.conceptId))
+      .toContain('concept.presentation_perspective_inventory');
+
+    const executive = adviseMicroBrainPresentation({
+      domainId: 'revenue', perspectiveId: 'executive_overview', analyticalIntent: 'variance',
+      userQuestion: 'What changed and where should leadership look first?', semanticSignals: ['revenue','profit'], limit: 12,
+    });
+    expect(executive.candidates.map(candidate => candidate.hit.conceptId))
+      .toContain('concept.presentation_perspective_executive');
+  });
+
+});

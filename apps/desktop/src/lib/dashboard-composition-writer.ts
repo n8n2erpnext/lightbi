@@ -5,6 +5,7 @@ import type {
   DashboardCompositionCandidateV1,
   DashboardInformationBudgetV1,
   DashboardSemanticRoleV1,
+  DashboardCompositionPlanItemV1,
 } from './dashboard-composition-plan';
 
 export function createExecutiveDashboardInformationBudget(
@@ -13,7 +14,7 @@ export function createExecutiveDashboardInformationBudget(
   return {
     maxItems: Math.max(1, candidates.length),
     maxMetrics: 4,
-    maxVisuals: 4,
+    maxVisuals: 5,
   };
 }
 
@@ -78,4 +79,65 @@ export function persistedDashboardChartType(decisionPlan: DecisionVisualizationP
   const chartType = rendererCapabilityForPattern(patternId).persistedChartType;
   if (!chartType) throw new Error(`VISUALIZATION_PERSISTENCE_UNAVAILABLE:${patternId}`);
   return chartType;
+}
+
+
+export type DashboardWidgetLayoutV1 = { x: number; y: number; w: number; h: number };
+
+function dashboardHeightUnits(item: DashboardCompositionPlanItemV1): number {
+  if (item.heightIntent === 'compact') return 3;
+  if (item.heightIntent === 'tall') return 11;
+  return 8;
+}
+
+function packedWidths(count: number, kind: 'compact' | 'half'): number[] {
+  if (count <= 0) return [];
+  if (kind === 'half') return count === 1 ? [20] : [10, 10];
+  if (count === 1) return [20];
+  if (count === 2) return [10, 10];
+  if (count === 3) return [7, 7, 6];
+  return [5, 5, 5, 5];
+}
+
+/**
+ * Materialize composition width/height intent onto the runtime 20-column grid.
+ * Incomplete compact/half rows stretch to consume the row instead of leaving
+ * an orphan blank region. Story order remains deterministic and unchanged.
+ */
+export function materializeDashboardWidgetLayouts(
+  items: readonly DashboardCompositionPlanItemV1[],
+): Map<string, DashboardWidgetLayoutV1> {
+  const layouts = new Map<string, DashboardWidgetLayoutV1>();
+  let y = 0;
+  for (let index = 0; index < items.length;) {
+    const item = items[index];
+    if (item.widthIntent === 'full' || item.widthIntent === 'wide') {
+      const h = dashboardHeightUnits(item);
+      layouts.set(item.candidateId, { x: 0, y, w: 20, h });
+      y += h;
+      index += 1;
+      continue;
+    }
+    const kind = item.widthIntent === 'compact' ? 'compact' : 'half';
+    const rowLimit = kind === 'compact' ? 4 : 2;
+    const row: DashboardCompositionPlanItemV1[] = [];
+    while (index < items.length && row.length < rowLimit) {
+      const candidate = items[index];
+      const candidateKind = candidate.widthIntent === 'compact' ? 'compact'
+        : candidate.widthIntent === 'half' ? 'half' : null;
+      if (candidateKind !== kind) break;
+      row.push(candidate);
+      index += 1;
+    }
+    const widths = packedWidths(row.length, kind);
+    const rowHeight = Math.max(...row.map(dashboardHeightUnits));
+    let x = 0;
+    row.forEach((candidate, rowIndex) => {
+      const w = widths[rowIndex];
+      layouts.set(candidate.candidateId, { x, y, w, h: dashboardHeightUnits(candidate) });
+      x += w;
+    });
+    y += rowHeight;
+  }
+  return layouts;
 }

@@ -8,6 +8,17 @@
     "direction": "ltr"
   },
   "messages": {
+    "Actual and target": "Thực tế và mục tiêu",
+    "Actual value and achievement rate": "Giá trị thực tế và tỷ lệ hoàn thành",
+    "Availability: on-hand versus demand or receipts": "Khả dụng: tồn hiện có so với nhu cầu hoặc lượng nhận vào",
+    "Checking complementary evidence for this perspective...": "Đang kiểm tra bằng chứng bổ sung cho góc nhìn này...",
+    "Customer value and purchase frequency": "Giá trị khách hàng và tần suất mua hàng",
+    "Inventory value and quantity context": "Bối cảnh giá trị và số lượng tồn kho",
+    "Profit and margin context": "Bối cảnh lợi nhuận và biên lợi nhuận",
+    "Revenue and cost on one governed financial story": "Doanh thu và chi phí trong cùng một câu chuyện tài chính được quản trị",
+    "Revenue and volume in one governed comparison": "Doanh thu và sản lượng trong cùng một phép so sánh được quản trị",
+    "Volume and delay/downtime in one operational story": "Sản lượng và độ trễ/thời gian dừng trong cùng một câu chuyện vận hành",
+    "Volume and SLA/service rate": "Sản lượng và tỷ lệ SLA/mức dịch vụ",
     "A governed BA answer is not available for this metric yet; use source evidence instead.": "Chưa có câu trả lời BA được quản trị cho chỉ số này; hãy dùng bằng chứng từ nguồn dữ liệu.",
     "Answer to your selected question": "Câu trả lời cho câu hỏi bạn đã chọn",
     "available business dimension": "chiều nghiệp vụ khả dụng",

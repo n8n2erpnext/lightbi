@@ -97,7 +97,7 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
     }));
     return id;
   },
-  addChartToDashboard: (dashboardId, chartId) => set((state) => {
+  addChartToDashboard: (dashboardId, chartId, requestedLayout) => set((state) => {
     const dashboard = state.dashboards[dashboardId];
     const chart = state.charts[chartId];
     if (!dashboard || !chart) return state;
@@ -105,16 +105,23 @@ export const useAppRuntime = create<AppRuntimeState>((set) => ({
       return { activeDashboardId: dashboardId };
     }
     const index = dashboard.widgets.length;
+    const defaultLayout = {
+      x: (index % 2) * 10,
+      y: Math.floor(index / 2) * 8,
+      w: chart.type === 'Number' ? 5 : 10,
+      h: chart.type === 'Number' ? 3 : 8,
+    };
+    const layout = requestedLayout ? {
+      x: Math.max(0, Math.min(19, Math.trunc(requestedLayout.x))),
+      y: Math.max(0, Math.trunc(requestedLayout.y)),
+      w: Math.max(1, Math.min(20, Math.trunc(requestedLayout.w))),
+      h: Math.max(1, Math.min(14, Math.trunc(requestedLayout.h))),
+    } : defaultLayout;
     const widget = {
       id: `widget-${Date.now()}-${index}`,
       type: 'Chart' as const,
       referenceId: chartId,
-      layout: {
-        x: (index % 2) * 10,
-        y: Math.floor(index / 2) * 8,
-        w: chart.type === 'Number' ? 5 : 10,
-        h: chart.type === 'Number' ? 3 : 8,
-      },
+      layout,
     };
     return {
       dashboards: {

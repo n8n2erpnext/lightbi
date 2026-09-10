@@ -7,9 +7,18 @@ import type {
   VisualizationAnalyticalIntentV1,
   VisualizationPatternIdV1,
 } from './visualization-ontology';
-import { officialDomainPatternOrder } from './domain-chart-sets';
+import type { MicroBrainPresentationAdvisoryKindV1 } from './understanding-core/micro-brain/contracts';
+import { officialDomainVisualPatternOrder } from './domain-visual-playbooks';
 
 export const DOMAIN_VISUAL_PROFILE_VERSION = 'lightbi.domain-visual-profile.v1' as const;
+
+export type DomainVisualPatternAdviceV1 = {
+  patternId: VisualizationPatternIdV1;
+  conceptId: string;
+  advisoryKind: Extract<MicroBrainPresentationAdvisoryKindV1, 'domain_profile' | 'perspective_profile' | 'chart_pattern'>;
+  fusedRank: number;
+  rrfScore: number;
+};
 
 export type DomainVisualProfileV1 = {
   schemaVersion: typeof DOMAIN_VISUAL_PROFILE_VERSION;
@@ -19,6 +28,7 @@ export type DomainVisualProfileV1 = {
   candidateLibraryScope?: 'canonical_30_patterns';
   analyticalIntents: VisualizationAnalyticalIntentV1[];
   preferredPatternIds: VisualizationPatternIdV1[];
+  rankedPatternAdvice: DomainVisualPatternAdviceV1[];
   conceptIds: string[];
   evidenceRequirements: string[];
   constraints: string[];
@@ -89,38 +99,50 @@ export function projectDomainVisualProfileFromAdvice(
   domainId: string,
   advice: MicroBrainPresentationAdviceV1,
 ): DomainVisualProfileV1 {
-  const eligible = advice.candidates.filter(candidate =>
-    candidate.presentation.advisoryKind === 'domain_profile');
-  const families = unique(eligible.flatMap(candidate => candidate.presentation.chartFamilies ?? []));
-  const mapped = families.flatMap(family => MB_CHART_FAMILY_TO_PATTERN_IDS_V1[family] ?? []);
-  const unmapped = families.filter(family => !MB_CHART_FAMILY_TO_PATTERN_IDS_V1[family]);
-  const officialPrior = officialDomainPatternOrder(domainId);
+  const acceptedKinds = new Set(['domain_profile', 'perspective_profile', 'chart_pattern']);
+  const eligible = advice.candidates
+    .filter(candidate => acceptedKinds.has(candidate.presentation.advisoryKind))
+    .sort((left, right) => left.hit.fusedRank - right.hit.fusedRank || left.hit.conceptId.localeCompare(right.hit.conceptId));
+  const rankedPatternAdvice: DomainVisualPatternAdviceV1[] = [];
+  const seenPatterns = new Set<VisualizationPatternIdV1>();
+  const unmappedFamilies: string[] = [];
+  for (const candidate of eligible) {
+    for (const family of candidate.presentation.chartFamilies ?? []) {
+      const mapped = MB_CHART_FAMILY_TO_PATTERN_IDS_V1[family] ?? [];
+      if (mapped.length === 0) { unmappedFamilies.push(family); continue; }
+      for (const patternId of mapped) {
+        if (seenPatterns.has(patternId)) continue;
+        seenPatterns.add(patternId);
+        rankedPatternAdvice.push({
+          patternId, conceptId: candidate.hit.conceptId,
+          advisoryKind: candidate.presentation.advisoryKind as DomainVisualPatternAdviceV1['advisoryKind'],
+          fusedRank: candidate.hit.fusedRank, rrfScore: candidate.hit.rrfScore,
+        });
+      }
+    }
+  }
+  const officialPrior = officialDomainVisualPatternOrder(domainId);
   return {
-    schemaVersion: DOMAIN_VISUAL_PROFILE_VERSION,
-    domainId,
-    authority: 'advisory_only',
+    schemaVersion: DOMAIN_VISUAL_PROFILE_VERSION, domainId, authority: 'advisory_only',
     selectionSource: officialPrior.length > 0 ? 'official_domain_prior' : 'inferred_domain_advice',
     candidateLibraryScope: 'canonical_30_patterns',
     analyticalIntents: knownIntents(eligible.flatMap(candidate => candidate.presentation.analyticalIntents ?? [])),
-    // Exact official-domain priors are presentation-only and are merged ahead of
-    // MB advice. Inferred/open-world domains never enter this list. Suitability
-    // and renderer capability remain the final gates.
-    preferredPatternIds: [...new Set([...officialPrior, ...mapped])],
+    preferredPatternIds: rankedPatternAdvice.map(item => item.patternId),
+    rankedPatternAdvice,
     conceptIds: unique(eligible.map(candidate => candidate.hit.conceptId)),
     evidenceRequirements: unique(eligible.flatMap(candidate => candidate.presentation.evidenceRequirements ?? [])),
     constraints: unique(eligible.flatMap(candidate => candidate.presentation.constraints ?? [])),
     priorities: unique(eligible.flatMap(candidate => candidate.presentation.priorities ?? [])),
     abstainWhen: unique(eligible.flatMap(candidate => candidate.presentation.abstainWhen ?? [])),
-    unmappedChartFamilies: unmapped,
-    policy: {
-      mayAuthorizeMetric: false, mayAuthorizeFormula: false, mayAuthorizeJoin: false,
-      mayChooseRenderer: false, retrievalRankIsConfidence: false,
-    },
+    unmappedChartFamilies: unique(unmappedFamilies),
+    policy: { mayAuthorizeMetric: false, mayAuthorizeFormula: false, mayAuthorizeJoin: false, mayChooseRenderer: false, retrievalRankIsConfidence: false },
   };
 }
 
 export type DomainVisualProfileOptionsV1 = {
   perspectiveId?: string;
+  analyticalIntent?: VisualizationAnalyticalIntentV1;
+  userQuestion?: string;
   semanticSignals?: string[];
   advisor?: (query: MicroBrainPresentationQueryV1) => MicroBrainPresentationAdviceV1;
 };
@@ -133,7 +155,8 @@ export function buildDomainVisualProfile(
   const advice = advisor({
     domainId,
     perspectiveId: options.perspectiveId,
-    analyticalIntent: 'domain_visual_profile',
+    analyticalIntent: options.analyticalIntent ?? 'domain_visual_profile',
+    userQuestion: options.userQuestion,
     semanticSignals: options.semanticSignals,
     limit: 12,
   });

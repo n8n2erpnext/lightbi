@@ -43,12 +43,18 @@ export const resolveDashboardVisualizationMetadata = (chart: Chart): {
   patternId: VisualizationPatternIdV1 | null;
   colorSemantics: VisualizationColorSemanticsV1[] | null;
 } => {
-  const visual = (chart.formatting?.lightbiData as any)?.decisionVisualizationPlan?.visualizationPlan;
-  const rendererFamily = typeof visual?.rendererFamily === 'string' && visual.rendererFamily in VISUALIZATION_RENDERER_CAPABILITIES_V1
+  const lightbiData = (chart.formatting?.lightbiData as any) ?? {};
+  const visual = lightbiData?.decisionVisualizationPlan?.visualizationPlan;
+  const narrativeOverride = typeof lightbiData?.visualNarrativeRendererFamily === 'string'
+    && lightbiData.visualNarrativeRendererFamily in VISUALIZATION_RENDERER_CAPABILITIES_V1
+    ? lightbiData.visualNarrativeRendererFamily as VisualizationRendererFamilyV1
+    : null;
+  const rendererFamily = narrativeOverride
+    ?? (typeof visual?.rendererFamily === 'string' && visual.rendererFamily in VISUALIZATION_RENDERER_CAPABILITIES_V1
     ? visual.rendererFamily as VisualizationRendererFamilyV1
     : chart.type === 'Bubble' ? 'bubble'
       : chart.type === 'Funnel' ? 'funnel'
-      : resolveDashboardRendererType(chart.type) as VisualizationRendererFamilyV1;
+      : resolveDashboardRendererType(chart.type) as VisualizationRendererFamilyV1);
   const patternId = typeof visual?.patternId === 'string' && VISUALIZATION_PATTERN_BY_ID_V1.has(visual.patternId as VisualizationPatternIdV1)
     ? visual.patternId as VisualizationPatternIdV1 : null;
   const colorSemantics = Array.isArray(visual?.patternRules?.colorSemantics)

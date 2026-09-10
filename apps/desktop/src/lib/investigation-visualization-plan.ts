@@ -5,6 +5,7 @@ import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } fro
 import { buildDomainVisualProfile } from './domain-visual-profile';
 import { analyticalIntentFromRuntimeIntentType } from './visualization-planner';
 import type { VisualizationAnalyticalIntentV1, VisualizationEvidenceRoleV1 } from './visualization-ontology';
+import { adviseMicroBrainPresentation } from './understanding-core/micro-brain/presentation-advisor';
 
 
 function semanticText(runtimeIntent: RuntimeIntent, analysisAction: AnalysisAction): string {
@@ -26,11 +27,12 @@ export function resolveInvestigationVisualizationIntent(
   const hasVariance = /\b(delta|variance|gap|change|difference|chênh|chenh|biến động|bien dong)\b/.test(text);
   const hasRank = /\b(rank|ranking|top|bottom|highest|lowest|largest|smallest|most|least|leader|contribute|contributes|contributed|contributing|contributor|contributors)\b/.test(text);
   const hasControlLimit = /\b(control limit|ucl|lcl|upper limit|lower limit|process control)\b/.test(text);
-  const hasPareto = /\b(pareto|80\s*\/\s*20|concentration|cumulative contribution)\b/.test(text);
+  const hasPareto = /\b(pareto|80\s*\/\s*20|cumulative contribution)\b/.test(text);
 
   if ((base === 'relationship' || base === 'category_comparison' || base === 'trend') && hasTarget && hasActual) return 'target_attainment';
   if ((base === 'category_comparison' || base === 'relationship') && hasVariance) return 'variance';
   if ((base === 'category_comparison' || base === 'distribution') && hasPareto) return 'pareto';
+  if ((base === 'category_comparison' || base === 'distribution') && /\b(concentration|concentrated|dependency|dependence|exposure|over[- ]?reliance)\b/.test(text)) return 'risk_concentration';
   if ((base === 'category_comparison' || base === 'distribution') && hasRank) return 'ranking';
   // A categorical distribution such as Status/Channel mix is not a numeric
   // distribution. Without an explicit numeric observation, histogram/boxplot
@@ -38,6 +40,47 @@ export function resolveInvestigationVisualizationIntent(
   if (base === 'distribution' && runtimeIntent.dimensions.length > 0 && runtimeIntent.measures.length === 0) return 'category_comparison';
   if (base === 'trend' && hasControlLimit) return 'quality_control';
   return base;
+}
+
+
+function questionIntentHints(runtimeIntent: RuntimeIntent, analysisAction: AnalysisAction): VisualizationAnalyticalIntentV1[] {
+  const text = semanticText(runtimeIntent, analysisAction);
+  const hints: VisualizationAnalyticalIntentV1[] = [];
+  const add = (intent: VisualizationAnalyticalIntentV1, pattern: RegExp) => { if (pattern.test(text)) hints.push(intent); };
+  add('risk_concentration', /(concentration|concentrated|dependency|dependence|exposure|over[- ]?reliance)/);
+  add('aging', /(aging|ageing|age bucket|days in stock|days outstanding|overdue)/);
+  add('process_time', /(lead time|cycle time|processing time|duration|downtime|wait time|turnaround)/);
+  add('capacity_utilization', /(capacity|utilization|occupancy|load factor)/);
+  add('funnel', /(funnel|conversion|drop[- ]?off|stage progression|pipeline stage)/);
+  add('cohort_retention', /(cohort|retention)/);
+  add('geospatial', /(geospatial|geographic|on a map|map view)/);
+  add('anomaly_scan', /(anomal(?:y|ies)|outlier|unusual|exception|spike|dip)/);
+  return [...new Set(hints)];
+}
+
+function perspectiveRankedIntentCandidates(input: {
+  runtimeIntent: RuntimeIntent;
+  analysisAction: AnalysisAction;
+  primaryDomain?: string | null;
+  selectedPerspectiveId?: string | null;
+}): VisualizationAnalyticalIntentV1[] {
+  const base = resolveInvestigationVisualizationIntent(input.runtimeIntent, input.analysisAction);
+  const hints = questionIntentHints(input.runtimeIntent, input.analysisAction).filter(intent => intent !== base);
+  if (hints.length === 0) return [base];
+  const advice = adviseMicroBrainPresentation({
+    domainId: input.primaryDomain ?? undefined,
+    perspectiveId: input.selectedPerspectiveId ?? undefined,
+    userQuestion: input.analysisAction.description || input.analysisAction.opportunityName,
+    semanticSignals: [...input.analysisAction.dimensions, ...input.analysisAction.measures],
+    limit: 12,
+  });
+  const rank = (intent: VisualizationAnalyticalIntentV1) => {
+    for (let index = 0; index < advice.candidates.length; index += 1) {
+      if ((advice.candidates[index].presentation.analyticalIntents ?? []).includes(intent)) return index;
+    }
+    return Number.MAX_SAFE_INTEGER;
+  };
+  return [...hints].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).concat(base);
 }
 
 function evidenceRolesForIntent(input: {
@@ -57,6 +100,8 @@ function evidenceRolesForIntent(input: {
       : ['measure','target'];
   }
   if (intent === 'variance') return hasDimension ? ['category','signed_measure'] : ['measure','benchmark'];
+  if (intent === 'risk_concentration') return hasDimension ? ['category','measure'] : ['measure'];
+  if (intent === 'funnel') return hasDimension ? ['ordered_stage','measure'] : ['measure'];
   if (intent === 'evidence_detail') return ['entity_key'];
   return ['category','measure', ...(metricCount > 1 ? ['series' as const] : [])];
 }
@@ -66,6 +111,7 @@ export type InvestigationVisualizationPlanInput = {
   runtimeIntent: RuntimeIntent;
   analysisAction: AnalysisAction;
   primaryDomain?: string | null;
+  selectedPerspectiveId?: string | null;
 };
 
 export function buildInvestigationDecisionVisualizationPlan(
@@ -73,37 +119,47 @@ export function buildInvestigationDecisionVisualizationPlan(
 ): DecisionVisualizationPlanV1 | null {
   const { chartModel, runtimeIntent, analysisAction } = input;
   if (!chartModel || chartModel.status !== 'ready' || chartModel.rows.length === 0) return null;
-  const analyticalIntent = resolveInvestigationVisualizationIntent(runtimeIntent, analysisAction);
-  const hasDimension = runtimeIntent.dimensions.length > 0 && Boolean(chartModel.xField);
-  const measureAsAxis = analyticalIntent === 'relationship' || (analyticalIntent === 'distribution' && !hasDimension);
-  const xFieldRole = measureAsAxis ? 'measure' as const : 'dimension' as const;
-  const xField = measureAsAxis
-    ? (analyticalIntent === 'relationship' ? chartModel.seriesFields[0] : chartModel.yField || chartModel.seriesFields[0])
-    : chartModel.xField;
-  if (!xField) return null;
-  const metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
-    .filter((value): value is string => Boolean(value && (xFieldRole === 'measure' || value !== xField))))];
-  if (metricIds.length === 0) return null;
-  const availableRoles = evidenceRolesForIntent({ intent: analyticalIntent, runtimeIntent, metricCount: metricIds.length, hasDimension });
-  const domainProfile = input.primaryDomain ? buildDomainVisualProfile(input.primaryDomain, {
-    perspectiveId: analysisAction.id,
-    semanticSignals: [analysisAction.opportunityName, ...analysisAction.dimensions, ...analysisAction.measures],
-  }) : null;
-  try {
-    return createDecisionVisualizationPlan({
-      perspectiveId: analysisAction.id, rows: chartModel.rows, sourceCount: 1,
-      dimensionField: xField, xFieldRole, metricIds, analyticalIntent,
-      availableRoles: [...availableRoles],
-      cardinality: {
-        points: chartModel.rows.length,
-        categories: xFieldRole === 'dimension'
-          ? new Set(chartModel.rows.map(row => String(row[xField] ?? ''))).size
-          : undefined,
-        series: metricIds.length,
-      },
-      requiredSurfaces: ['preview','persistence','dashboard'], domainProfile,
-    });
-  } catch {
-    return null;
+  const intentCandidates = perspectiveRankedIntentCandidates({
+    runtimeIntent, analysisAction,
+    primaryDomain: input.primaryDomain,
+    selectedPerspectiveId: input.selectedPerspectiveId,
+  });
+  for (const analyticalIntent of intentCandidates) {
+    const hasDimension = runtimeIntent.dimensions.length > 0 && Boolean(chartModel.xField);
+    const measureAsAxis = analyticalIntent === 'relationship' || (analyticalIntent === 'distribution' && !hasDimension);
+    const xFieldRole = measureAsAxis ? 'measure' as const : 'dimension' as const;
+    const xField = measureAsAxis
+      ? (analyticalIntent === 'relationship' ? chartModel.seriesFields[0] : chartModel.yField || chartModel.seriesFields[0])
+      : chartModel.xField;
+    if (!xField) continue;
+    const metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
+      .filter((value): value is string => Boolean(value && (xFieldRole === 'measure' || value !== xField))))];
+    if (metricIds.length === 0) continue;
+    const availableRoles = evidenceRolesForIntent({ intent: analyticalIntent, runtimeIntent, metricCount: metricIds.length, hasDimension });
+    const domainProfile = input.primaryDomain ? buildDomainVisualProfile(input.primaryDomain, {
+      perspectiveId: input.selectedPerspectiveId ?? undefined,
+      analyticalIntent,
+      userQuestion: analysisAction.description || analysisAction.opportunityName,
+      semanticSignals: [analysisAction.id, analysisAction.opportunityName, ...analysisAction.dimensions, ...analysisAction.measures],
+    }) : null;
+    try {
+      return createDecisionVisualizationPlan({
+        perspectiveId: input.selectedPerspectiveId?.trim() || analysisAction.id, rows: chartModel.rows, sourceCount: 1,
+        dimensionField: xField, xFieldRole, metricIds, analyticalIntent,
+        availableRoles: [...availableRoles],
+        cardinality: {
+          points: chartModel.rows.length,
+          categories: xFieldRole === 'dimension'
+            ? new Set(chartModel.rows.map(row => String(row[xField] ?? ''))).size
+            : undefined,
+          series: metricIds.length,
+        },
+        requiredSurfaces: ['preview','persistence','dashboard'], domainProfile,
+      });
+    } catch {
+      // A presentation hint never overrides deterministic suitability. Try the
+      // next question-compatible intent, ending at the original runtime base.
+    }
   }
+  return null;
 }
