@@ -59,7 +59,7 @@ import type { WorkspaceSessionRecord } from '../lib/workspace-session-api';
 import { executeHomeCanonicalMultiSourceBuild } from '../lib/home-canonical-multisource-build';
 import { createDurableInvestigationWorkspaceHandoff } from '../lib/home-workspace-persistence';
 import { findHomeDemoScenario, isHomeDemoSourceName, selectHomeDemoActionId, type HomeDemoScenario } from '../lib/home-demo-scenarios';
-import { createFocusSubjectSelection, deriveFocusSubjectCandidates, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../lib/focus-subject-analysis';
+import { createFocusSubjectSelection, deriveFocusSubjectCandidates, evaluateFocusSubjectActionCompatibility, type FocusSubjectCandidate, type FocusSubjectOption, type FocusSubjectSelection } from '../lib/focus-subject-analysis';
 import type { MultiSourceFocusSubjectSelectionV1 } from '../lib/multisource-focus-subject';
 export const Home: React.FC = () => {
   const { preferences } = useDisplayPreferences();
@@ -210,6 +210,10 @@ export const Home: React.FC = () => {
       }
     }
 
+    const focusCompatibility = evaluateFocusSubjectActionCompatibility(selectedFocusSubject, action);
+    const sessionFocusSubject = focusCompatibility?.compatible === false ? undefined : selectedFocusSubject ?? undefined;
+    if (focusCompatibility?.compatible === false) setSelectedFocusSubject(null);
+
     createInvestigationSession(
       currentDataset?.file_name || 'dataset',
       action,
@@ -231,7 +235,7 @@ export const Home: React.FC = () => {
       multiSourceDataset,
       supportingAnalyses,
       datasetForSession ? { ...datasetForSession, selectedPerspective } : datasetForSession,
-      selectedFocusSubject ?? undefined
+      sessionFocusSubject
     );
     navigate('/investigation');
   };

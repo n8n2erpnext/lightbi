@@ -20,7 +20,7 @@ import { saveExcelPivotWorkbook, type ExcelPivotExportModeV1, type ExcelPivotExp
 import type { CanonicalSourceBoundaryV1 } from '../../lib/understanding-core/canonical-source-boundary';
 import type { DecisionVisualizationPlanV1 } from '../../lib/decision-visualization-plan';
 import { saveAnalysisReportPdf, saveAnalysisReportPngPages } from '../../lib/analysis-report-export';
-import type { FocusSubjectComparison } from '../../lib/focus-subject-analysis';
+import { deriveFocusSubjectNarrative, type FocusSubjectComparison } from '../../lib/focus-subject-analysis';
 import { FocusSubjectDeepAnalysisPanel } from './FocusSubjectDeepAnalysisPanel';
 import { BAAnalysisAuthorityBanner } from './BAAnalysisAuthorityBanner';
 import type { BAAnalysisAuthorityContextV1 } from '../../lib/understanding-core/ba-analysis-authority-context';
@@ -59,6 +59,12 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
   const [pivotProgress, setPivotProgress] = useState<ExcelPivotExportProgressV1 | null>(null);
   const fileStem = (localize(action.opportunityName) || 'LightBI-BA').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80);
   const selectedSourceName = sourceName || canonicalSourceBoundary?.datasetId || action.opportunityName;
+  const reportSummary = focusComparison && !filteredScope
+    ? deriveFocusSubjectNarrative(focusComparison).summary
+    : brief?.executiveSummary
+      ?? businessFusionOverview?.executiveSummary
+      ?? singleSourceBAOverview?.findings[0]
+      ?? (filteredScope ? `Selected-subject investigation for ${filteredScope.point.dimensionField} = ${filteredScope.point.label}.` : `Governed business analysis for ${localize(action.opportunityName)}.`);
   const selectedSubjectInvestigationPlan = useMemo(() => {
     if (!filteredScope || !singleSourceBAOverview) return null;
     return buildSelectedSubjectInvestigationPlan({
@@ -84,7 +90,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     setExportState('image'); setExportError('');
     try {
       if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
-      await saveAnalysisReportPngPages(exportRef.current, fileStem);
+      await saveAnalysisReportPngPages(exportRef.current, fileStem, { title: localize(action.opportunityName), summary: reportSummary, sourceNames: [selectedSourceName] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the image.')); }
     finally { setExportState('idle'); }
   };
@@ -93,7 +99,7 @@ export const InvestigationDeepAnalysis: React.FC<InvestigationDeepAnalysisProps>
     setExportState('pdf'); setExportError('');
     try {
       if (!exportRef.current) throw new Error(t('The analysis is not ready to export.'));
-      await saveAnalysisReportPdf(exportRef.current, fileStem);
+      await saveAnalysisReportPdf(exportRef.current, fileStem, { title: localize(action.opportunityName), summary: reportSummary, sourceNames: [selectedSourceName] });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t('Could not export the PDF.')); }
     finally { setExportState('idle'); }
   };

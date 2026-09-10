@@ -14,7 +14,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('echarts-for-react', () => ({
   default: (props: { option?: { series?: Array<{ type?: string }> }; onEvents?: { click?: (params: { dataIndex: number; seriesIndex: number }) => void } }) => (
-    <button type="button" data-testid="collection-chart" data-series-type={props.option?.series?.[0]?.type} onClick={() => props.onEvents?.click?.({ dataIndex: 0, seriesIndex: 0 })}>Chart</button>
+    <button type="button" data-testid="collection-chart" data-series-type={props.option?.series?.[0]?.type} data-series-count={props.option?.series?.length ?? 0} onClick={() => props.onEvents?.click?.({ dataIndex: 0, seriesIndex: 0 })}>Chart</button>
   ),
 }));
 
@@ -337,6 +337,79 @@ describe('PerspectiveCollectionResultCard selected-data analysis', () => {
       expect(nodes[index].compareDocumentPosition(nodes[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     }
     expect(screen.getByTestId('collection-decision-workspace').getAttribute('data-layout')).toBe('answer-first-canvas');
+  });
+
+
+  it('materializes only the governed hero metric on the multi-file primary chart instead of mixing incompatible units on one axis', () => {
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[
+        { reporting_period: '2026-05', sales_revenue: 23_000_000_000, gross_profit: 3_000_000_000, delivery_count: 1500 },
+        { reporting_period: '2026-06', sales_revenue: 20_700_000_000, gross_profit: 2_900_000_000, delivery_count: 1490 },
+      ]}
+      sourceCount={6}
+      evidenceSources={[]}
+    />);
+    expect(screen.getByTestId('collection-chart').getAttribute('data-series-count')).toBe('1');
+    expect(screen.getByText(/Key attention/i)).toBeTruthy();
+    expect(screen.getAllByText(/Gross Profit/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Delivery Count/i).length).toBeGreaterThan(0);
+  });
+
+  it('binds each visible follow-up question to a distinct evidence-backed BA answer path', () => {
+    const deepDiveBrief = createDomainComparisonBrief({
+      periods: [
+        { id: 'may', label: '2026-05', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-05', rows: [{ Product: 'A', Revenue: 300 }, { Product: 'B', Revenue: 100 }] },
+        { id: 'june', label: '2026-06', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-06', rows: [{ Product: 'A', Revenue: 220 }, { Product: 'B', Revenue: 250 }] },
+      ],
+      preferredDomain: 'revenue',
+    });
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[{ reporting_period: '2026-05', sales_revenue: 400 }, { reporting_period: '2026-06', sales_revenue: 470 }]}
+      sourceCount={2}
+      deepDiveBrief={deepDiveBrief}
+      evidenceSources={[]}
+    />);
+
+    expect(screen.getByText('Questions LightBI can answer next')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /What drove the change/i }));
+    expect(screen.getByTestId('collection-followup-answer').textContent).toMatch(/Observed contributors/i);
+    fireEvent.click(screen.getByTestId('collection-deep-perspective-back'));
+
+    fireEvent.click(screen.getByRole('button', { name: /Break down Sales Revenue/i }));
+    expect(screen.getByTestId('collection-followup-answer').textContent).toMatch(/Evidence-backed breakdown/i);
+    fireEvent.click(screen.getByTestId('collection-deep-perspective-back'));
+
+    fireEvent.click(screen.getByRole('button', { name: /Which segments should I investigate first/i }));
+    expect(screen.getByTestId('collection-followup-answer').textContent).toMatch(/Segments to investigate first/i);
+  });
+
+  it('keeps Gross Profit follow-up answers on profit evidence instead of leaking revenue deltas', () => {
+    const deepDiveBrief = createDomainComparisonBrief({
+      periods: [
+        { id: 'may', label: '2026-05', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-05', rows: [
+          { Product: 'A', Revenue: 300, Cost: 180 }, { Product: 'B', Revenue: 100, Cost: 70 },
+        ] },
+        { id: 'june', label: '2026-06', labelConfidence: 'high', labelReason: 'test', sortableKey: '2026-06', rows: [
+          { Product: 'A', Revenue: 220, Cost: 160 }, { Product: 'B', Revenue: 250, Cost: 160 },
+        ] },
+      ],
+      preferredDomain: 'revenue',
+    });
+    render(<PerspectiveCollectionResultCard
+      perspectiveId="executive_overview"
+      rows={[{ reporting_period: '2026-05', gross_profit: 150 }, { reporting_period: '2026-06', gross_profit: 150 }]}
+      sourceCount={2}
+      deepDiveBrief={deepDiveBrief}
+      evidenceSources={[]}
+    />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Break down Gross Profit/i }));
+    const answer = screen.getByTestId('collection-followup-answer').textContent ?? '';
+    expect(answer).toMatch(/current profit/i);
+    expect(answer).toMatch(/profit change/i);
+    expect(answer).not.toMatch(/revenue change/i);
   });
 
 });

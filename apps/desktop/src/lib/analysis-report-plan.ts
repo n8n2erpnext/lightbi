@@ -102,7 +102,7 @@ function rebalanceTrailingPage(
     const candidateSection = sectionById.get(candidate.sectionId);
     if (!trailingSection || !candidateSection) break;
     if (firstTrailing.continued || firstTrailing.sourceOffsetUnits > 0 || candidate.continued || candidate.sourceOffsetUnits > 0 || candidate.scaledToFit) break;
-    if (trailingSection.pageBreakBefore || candidateSection.pageBreakBefore || candidateSection.pageBreakAfter) break;
+    if ((trailingSection.pageBreakBefore && trailingSection.role !== 'evidence_appendix') || candidateSection.pageBreakBefore || candidateSection.pageBreakAfter) break;
     if (candidate.renderedHeightUnits + trailing.usedHeightUnits > pageHeightUnits) break;
     if (previous.usedHeightUnits - candidate.renderedHeightUnits < minPreviousFill) break;
 
@@ -111,6 +111,49 @@ function rebalanceTrailingPage(
     recomputePageOffsets(previous);
     recomputePageOffsets(trailing);
   }
+}
+
+
+const MIN_SPARSE_EVIDENCE_FILL_RATIO = 0.24;
+const MIN_COMPACT_SCALE = 0.86;
+
+function compactSparseEvidenceTrailingPage(
+  pages: AnalysisReportPageV1[],
+  sections: AnalysisReportSectionV1[],
+  pageHeightUnits: number,
+): void {
+  if (pages.length < 2) return;
+  const trailing = pages.at(-1)!;
+  const previous = pages.at(-2)!;
+  if (trailing.usedHeightUnits >= pageHeightUnits * MIN_SPARSE_EVIDENCE_FILL_RATIO) return;
+  if (trailing.fragments.length === 0 || trailing.fragments.some(fragment => fragment.role !== 'evidence_appendix')) return;
+  const sectionById = new Map(sections.map(section => [section.id, section]));
+  if (trailing.fragments.some(fragment => {
+    const section = sectionById.get(fragment.sectionId);
+    return !section || (section.pageBreakBefore && section.role !== 'evidence_appendix') || section.pageBreakAfter;
+  })) return;
+  if (previous.fragments.some(fragment => {
+    const section = sectionById.get(fragment.sectionId);
+    return !section || section.pageBreakAfter;
+  })) return;
+  const combined = previous.usedHeightUnits + trailing.usedHeightUnits;
+  if (combined <= pageHeightUnits) {
+    previous.fragments.push(...trailing.fragments);
+    recomputePageOffsets(previous);
+    pages.pop();
+    return;
+  }
+  const scale = pageHeightUnits / combined;
+  if (scale < MIN_COMPACT_SCALE) return;
+  const combinedFragments = [...previous.fragments, ...trailing.fragments];
+  combinedFragments.forEach(fragment => {
+    fragment.renderedHeightUnits *= scale;
+    fragment.scale *= scale;
+    fragment.scaledToFit = fragment.scale < 1;
+  });
+  previous.fragments = combinedFragments;
+  recomputePageOffsets(previous);
+  pages.pop();
 }
 
 export function createAnalysisReportPlan(input: CreateAnalysisReportPlanInputV1): AnalysisReportPlanV1 {
@@ -144,8 +187,15 @@ export function createAnalysisReportPlan(input: CreateAnalysisReportPlanInputV1)
   };
 
   input.sections.forEach((section, sectionIndex) => {
-    if (section.pageBreakBefore && current().fragments.length > 0) nextPage();
     const remaining = () => input.pageHeightUnits - current().usedHeightUnits;
+    if (section.pageBreakBefore && current().fragments.length > 0) {
+      // Evidence appendices use a preferred break: start a new page only when the
+      // current page cannot hold a useful slice. This avoids one-line orphan pages
+      // while preserving hard semantic breaks for executive/decision sections.
+      const preferredEvidenceBreak = section.role === 'evidence_appendix';
+      const usefulSlice = Math.min(section.heightUnits, input.pageHeightUnits * 0.22);
+      if (!preferredEvidenceBreak || remaining() < usefulSlice) nextPage();
+    }
     const mustStayWhole = section.keepTogether || !section.splittable;
 
     if (mustStayWhole) {
@@ -177,6 +227,7 @@ export function createAnalysisReportPlan(input: CreateAnalysisReportPlanInputV1)
 
   while (pages.length > 1 && pages.at(-1)?.fragments.length === 0) pages.pop();
   rebalanceTrailingPage(pages, input.sections, input.pageHeightUnits);
+  compactSparseEvidenceTrailingPage(pages, input.sections, input.pageHeightUnits);
   return {
     schemaVersion: ANALYSIS_REPORT_PLAN_VERSION,
     pageHeightUnits: input.pageHeightUnits,

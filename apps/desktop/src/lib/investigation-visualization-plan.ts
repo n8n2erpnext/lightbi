@@ -24,12 +24,18 @@ export function resolveInvestigationVisualizationIntent(
   const hasTarget = /\b(target|goal|plan|budget|benchmark|quota|muc tieu|ke hoach)\b/.test(text);
   const hasActual = /\b(actual|achieved|achievement|result|performance|thuc te|dat duoc)\b/.test(text);
   const hasVariance = /\b(delta|variance|gap|change|difference|chênh|chenh|biến động|bien dong)\b/.test(text);
-  const hasRank = /\b(rank|ranking|top|bottom|highest|lowest|leader|contributor)\b/.test(text);
+  const hasRank = /\b(rank|ranking|top|bottom|highest|lowest|largest|smallest|most|least|leader|contribute|contributes|contributed|contributing|contributor|contributors)\b/.test(text);
   const hasControlLimit = /\b(control limit|ucl|lcl|upper limit|lower limit|process control)\b/.test(text);
+  const hasPareto = /\b(pareto|80\s*\/\s*20|concentration|cumulative contribution)\b/.test(text);
 
   if ((base === 'relationship' || base === 'category_comparison' || base === 'trend') && hasTarget && hasActual) return 'target_attainment';
   if ((base === 'category_comparison' || base === 'relationship') && hasVariance) return 'variance';
-  if (base === 'category_comparison' && hasRank) return 'ranking';
+  if ((base === 'category_comparison' || base === 'distribution') && hasPareto) return 'pareto';
+  if ((base === 'category_comparison' || base === 'distribution') && hasRank) return 'ranking';
+  // A categorical distribution such as Status/Channel mix is not a numeric
+  // distribution. Without an explicit numeric observation, histogram/boxplot
+  // would bin the aggregated counts and answer a different question.
+  if (base === 'distribution' && runtimeIntent.dimensions.length > 0 && runtimeIntent.measures.length === 0) return 'category_comparison';
   if (base === 'trend' && hasControlLimit) return 'quality_control';
   return base;
 }

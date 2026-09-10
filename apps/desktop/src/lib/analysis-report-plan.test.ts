@@ -28,7 +28,7 @@ describe('AnalysisReportPlan', () => {
     expect(plan.governance.mayStrengthenAuthority).toBe(false);
   });
 
-  it('honors explicit page breaks before and after sections', () => {
+  it('keeps hard semantic breaks while treating evidence-appendix breaks as editorial preferences', () => {
     const plan = createAnalysisReportPlan({
       pageHeightUnits: 120,
       sections: [
@@ -38,7 +38,7 @@ describe('AnalysisReportPlan', () => {
       ],
     });
     expect(plan.pages.map(page => page.fragments.map(fragment => fragment.sectionId))).toEqual([
-      ['summary'], ['answer'], ['evidence'],
+      ['summary'], ['answer', 'evidence'],
     ]);
   });
   it('backtracks one adjacent whole section instead of leaving an editorial orphan on the final page', () => {
@@ -57,7 +57,7 @@ describe('AnalysisReportPlan', () => {
     expect(plan.pages[1].fragments.map(fragment => fragment.pageOffsetUnits)).toEqual([0, 45]);
   });
 
-  it('never rebalances across an explicit semantic page break', () => {
+  it('can rebalance a sparse evidence appendix despite a preferred evidence page break', () => {
     const plan = createAnalysisReportPlan({
       pageHeightUnits: 100,
       sections: [
@@ -67,8 +67,9 @@ describe('AnalysisReportPlan', () => {
       ],
     });
     expect(plan.pages.map(page => page.fragments.map(fragment => fragment.sectionId))).toEqual([
-      ['answer', 'drivers'], ['evidence'],
+      ['answer'], ['drivers', 'evidence'],
     ]);
+    expect(plan.pages.at(-1)?.usedHeightUnits).toBe(65);
   });
 
   it('splits only explicitly splittable evidence across bounded pages', () => {
@@ -96,4 +97,19 @@ describe('AnalysisReportPlan', () => {
     });
     expect(plan.pages[0].fragments[0].scale).toBeCloseTo(0.625, 4);
   });
+
+  it('compacts a tiny trailing evidence page into the previous page when readability stays above the report threshold', () => {
+    const plan = createAnalysisReportPlan({
+      pageHeightUnits: 100,
+      sections: [
+        section({ id: 'analysis', role: 'answer_overview', heightUnits: 90 }),
+        section({ id: 'limitations', role: 'evidence_appendix', heightUnits: 15, pageBreakBefore: true, keepTogether: false, splittable: true }),
+      ],
+    });
+    expect(plan.pages).toHaveLength(1);
+    expect(plan.pages[0].fragments.map(fragment => fragment.sectionId)).toEqual(['analysis', 'limitations']);
+    expect(plan.pages[0].usedHeightUnits).toBeCloseTo(100, 3);
+    expect(plan.pages[0].fragments.every(fragment => fragment.scale >= 0.86)).toBe(true);
+  });
+
 });

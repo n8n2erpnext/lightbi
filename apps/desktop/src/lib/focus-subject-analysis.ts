@@ -8,12 +8,14 @@ export {
   deriveFocusSubjectCandidates,
   resolveFocusAutoPerspectiveId,
   searchFocusSubjectOptions,
+  evaluateFocusSubjectActionCompatibility,
 } from "./focus-subject-candidates";
 export type {
   FocusPerspectiveCandidate,
   FocusSubjectCandidate,
   FocusSubjectOption,
   FocusSubjectSelection,
+  FocusSubjectActionCompatibility,
 } from "./focus-subject-candidates";
 
 export type FocusMetricComparison = {

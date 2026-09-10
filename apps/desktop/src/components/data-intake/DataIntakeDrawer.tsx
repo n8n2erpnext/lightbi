@@ -82,14 +82,15 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center px-4 py-8 md:px-8">
+      <div data-testid="data-intake-modal" className="fixed inset-0 z-[80] isolate flex items-start justify-center px-4 py-8 md:px-8">
         {/* Backdrop overlay */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
+          data-testid="data-intake-backdrop"
+          className="absolute inset-0 z-0 bg-slate-950/35"
           onClick={onClose}
         />
 
@@ -99,7 +100,8 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
           animate={{ y: 0 }}
           exit={{ y: -24, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-[var(--lb-dialog-width)] overflow-hidden rounded-[var(--lb-radius-strong)] border border-[var(--lb-divider)] bg-white shadow-xl"
+          data-testid="data-intake-panel"
+          className="relative z-10 w-full max-w-[var(--lb-dialog-width)] overflow-hidden rounded-[var(--lb-radius-strong)] border border-[var(--lb-divider)] bg-white shadow-2xl"
           style={{ maxHeight: '70vh' }}
         >
           {/* Drawer Header */}

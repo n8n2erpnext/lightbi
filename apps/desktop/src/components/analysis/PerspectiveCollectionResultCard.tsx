@@ -17,6 +17,8 @@ import { createDecisionVisualizationPlan, type DecisionVisualizationPlanV1 } fro
 import { createDashboardCompositionPlan, type DashboardCompositionCandidateV1 } from "../../lib/dashboard-composition-plan";
 import { adviseDashboardComposition } from "../../lib/dashboard-composition-advice";
 import { createDashboardBreakdownVisualizationPlan, createExecutiveDashboardInformationBudget, dashboardAdvisoryRoles, dashboardDecisionVisualizationMetadata, persistedDashboardChartType } from "../../lib/dashboard-composition-writer";
+import { generateDashboardChartOptions } from "../dashboards/DashboardChartWidget";
+import { buildDomainVisualProfile } from "../../lib/domain-visual-profile";
 import { useAnalysisExportStore } from "../../stores/analysis-export-store";
 import { useUiLanguage } from "../../lib/ui-language";
 import { saveAnalysisReportPdf, saveAnalysisReportPngPages } from "../../lib/analysis-report-export";
@@ -39,6 +41,7 @@ export interface PerspectiveCollectionEvidenceSource {
 
 type ChartSelection = { period: string; metricId: string };
 type CollectionAnalysisView = 'decision_workspace' | 'evidence_drill' | 'deep_perspective' | 'deep_selected';
+type CollectionFollowUpKind = 'change_drivers' | 'dimension_breakdown' | 'priority_segments';
 
 function rolesForMetric(metricId: string): string[] {
   if (metricId === "sales_revenue") return ["sales"];
@@ -76,6 +79,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
 }> = ({ perspectiveId, rows, sourceCount, deepDiveBrief, focusDeepDiveBrief, focusSubject = null, evidenceSources = [] }) => {
   const [analysisView, setAnalysisView] = useState<CollectionAnalysisView>('decision_workspace');
   const [analysisPresentationMode, setAnalysisPresentationMode] = useState<AnalysisPresentationMode>('primary');
+  const [selectedFollowUpKind, setSelectedFollowUpKind] = useState<CollectionFollowUpKind | null>(null);
   const openDeepAnalysis = (view: Extract<CollectionAnalysisView, 'deep_perspective' | 'deep_selected'>) => { setAnalysisPresentationMode('primary'); setAnalysisView(view); };
   const leaveDeepAnalysis = (view: Extract<CollectionAnalysisView, 'decision_workspace' | 'evidence_drill'>) => { setAnalysisPresentationMode('primary'); setAnalysisView(view); };
   const sidePanelActive = analysisPresentationMode === 'side_panel' && (analysisView === 'deep_perspective' || analysisView === 'deep_selected');
@@ -120,18 +124,6 @@ export const PerspectiveCollectionResultCard: React.FC<{
     Object.keys(row).filter((key) => key !== "reporting_period")))];
   const distinctPeriodCount = new Set(rows.map(row => String(row.reporting_period ?? ''))).size;
   const hasPeriodComparison = distinctPeriodCount >= 2;
-  const baseDecisionVisualizationPlan = createDecisionVisualizationPlan({
-    perspectiveId, rows, sourceCount, dimensionField: 'reporting_period', metricIds,
-    analyticalIntent: hasPeriodComparison ? 'trend' : 'category_comparison',
-    availableRoles: hasPeriodComparison
-      ? ['ordered_time','measure', ...(metricIds.length > 1 ? ['series' as const] : [])]
-      : ['category','measure', ...(metricIds.length > 1 ? ['series' as const] : [])],
-    cardinality: { points: rows.length, categories: distinctPeriodCount, series: metricIds.length },
-    requiredSurfaces: ['preview','persistence','dashboard'],
-    sourceRefs: evidenceSources.map(source => ({
-      sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
-    })),
-  });
   const movements = metricIds.map((metricId) => {
     const first = Number(rows[0]?.[metricId] ?? 0);
     const last = Number(rows[rows.length - 1]?.[metricId] ?? 0);
@@ -149,44 +141,97 @@ export const PerspectiveCollectionResultCard: React.FC<{
     : movements[0];
   const firstPeriod = String(rows[0]?.reporting_period ?? "the first period");
   const lastPeriod = String(rows[rows.length - 1]?.reporting_period ?? "the latest period");
-  const questions = largestMovement
+  const primaryChartMetricIds = largestMovement ? [largestMovement.metricId] : metricIds.slice(0, 1);
+  const multiFileDomainProfile = effectiveDeepDiveBrief
+    ? buildDomainVisualProfile(effectiveDeepDiveBrief.domainId, {
+      perspectiveId,
+      semanticSignals: [...metricIds, ...evidenceSources.map(source => source.role)],
+    })
+    : null;
+  const baseDecisionVisualizationPlan = createDecisionVisualizationPlan({
+    perspectiveId, rows, sourceCount, dimensionField: 'reporting_period', metricIds: primaryChartMetricIds,
+    analyticalIntent: hasPeriodComparison ? 'trend' : 'category_comparison',
+    availableRoles: hasPeriodComparison ? ['ordered_time','measure'] : ['category','measure'],
+    cardinality: { points: rows.length, categories: distinctPeriodCount, series: primaryChartMetricIds.length },
+    domainProfile: multiFileDomainProfile,
+    requiredSurfaces: ['preview','persistence','dashboard'],
+    sourceRefs: evidenceSources.map(source => ({
+      sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
+    })),
+  });
+  const questions: Array<{ kind: CollectionFollowUpKind; label: string }> = largestMovement
     ? hasPeriodComparison
       ? [
-        t(`What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`),
-        t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`),
-        t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`),
+        { kind: 'change_drivers', label: t(`What drove the change in ${displayMetricLabel(largestMovement.metricId)} from ${firstPeriod} to ${lastPeriod}?`) },
+        { kind: 'dimension_breakdown', label: t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`) },
+        { kind: 'priority_segments', label: t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`) },
       ]
       : [
-        t(`What explains the composition of ${displayMetricLabel(largestMovement.metricId)} in ${firstPeriod}?`),
-        t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`),
-        t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`),
+        { kind: 'change_drivers', label: t(`What explains the composition of ${displayMetricLabel(largestMovement.metricId)} in ${firstPeriod}?`) },
+        { kind: 'dimension_breakdown', label: t(`Break down ${displayMetricLabel(largestMovement.metricId)} by the most useful business dimensions.`) },
+        { kind: 'priority_segments', label: t(`Which segments should I investigate first for ${displayMetricLabel(largestMovement.metricId)}?`) },
       ]
     : [];
+  const briefMetricId = largestMovement?.metricId === 'sales_revenue' ? 'revenue' : largestMovement?.metricId === 'gross_profit' ? 'profit' : largestMovement?.metricId ?? null;
+  const matchedBriefMetric = briefMetricId ? effectiveDeepDiveBrief?.metricDeltas.find(metric => metric.metricId === briefMetricId) ?? null : null;
+  const canAnswerFollowUps = Boolean(effectiveDeepDiveBrief && matchedBriefMetric);
+  const followUpAnswer = (() => {
+    if (!selectedFollowUpKind || !effectiveDeepDiveBrief || !largestMovement || !matchedBriefMetric) return null;
+    const metricName = displayMetricLabel(largestMovement.metricId);
+    const revenueDrivers = [...effectiveDeepDiveBrief.topGrowthDrivers, ...effectiveDeepDiveBrief.topDeclineDrivers]
+      .filter((driver, index, all) => all.findIndex(other => other.dimension === driver.dimension && other.key === driver.key) === index);
+    const profitMode = briefMetricId === 'profit' && effectiveDeepDiveBrief.topProfitDrivers.length > 0;
+    const drivers = profitMode ? [...effectiveDeepDiveBrief.topProfitDrivers] : revenueDrivers;
+    const driverChange = (driver: typeof drivers[number]) => profitMode ? driver.profitDelta ?? 0 : driver.revenueDelta;
+    const driverCurrent = (driver: typeof drivers[number]) => profitMode ? driver.currentProfit ?? 0 : driver.currentRevenue;
+    const changeLabel = profitMode ? t('profit change') : t('revenue change');
+    const currentLabel = profitMode ? t('current profit') : t('current revenue');
+    const rankedByChange = [...drivers].sort((left, right) => Math.abs(driverChange(right)) - Math.abs(driverChange(left)));
+    if (selectedFollowUpKind === 'change_drivers') {
+      const top = rankedByChange.slice(0, 5);
+      return {
+        title: hasPeriodComparison ? t(`Observed contributors to the ${metricName} change`) : t(`Observed composition of ${metricName}`),
+        summary: hasPeriodComparison
+          ? t(`${metricName} changed by ${formatMetric(largestMovement.metricId, matchedBriefMetric.delta)} across the governed comparison. The items below are observed contributors, not proven causes.`)
+          : t(`LightBI can describe the observed ${metricName} composition from source-bound evidence; it does not infer a cause from one period.`),
+        bullets: top.map(driver => `${driver.dimension}: ${driver.key} · ${hasPeriodComparison ? changeLabel : currentLabel} ${formatMetric(largestMovement.metricId, hasPeriodComparison ? driverChange(driver) : driverCurrent(driver))}`),
+      };
+    }
+    if (selectedFollowUpKind === 'dimension_breakdown') {
+      const dimension = effectiveDeepDiveBrief.primaryDimension ?? effectiveDeepDiveBrief.signalCoverage.dimensionField ?? drivers[0]?.dimension ?? t('available business dimension');
+      const ranked = profitMode
+        ? [...drivers].sort((left, right) => driverCurrent(right) - driverCurrent(left)).slice(0, 5)
+        : rankedByChange.slice(0, 5);
+      return {
+        title: t(`Evidence-backed breakdown by ${dimension}`),
+        summary: profitMode
+          ? t(`${dimension} is the strongest currently verified breakdown for this comparison. The governed brief exposes the highest observed current ${metricName} entries and their movement; it does not infer causality.`)
+          : t(`${dimension} is the strongest currently verified breakdown for this comparison. The governed brief exposes the strongest observed ${metricName} movement contributors rather than claiming an exhaustive ranking.`),
+        bullets: ranked.map(driver => `${driver.key} · ${currentLabel} ${formatMetric(largestMovement.metricId, driverCurrent(driver))}${hasPeriodComparison ? ` · ${changeLabel} ${formatMetric(largestMovement.metricId, driverChange(driver))}` : ''}`),
+      };
+    }
+    const priority = rankedByChange.slice(0, 5);
+    return {
+      title: t(`Segments to investigate first for ${metricName}`),
+      summary: t(`These segments are prioritized by the largest observed evidence-backed movement or contribution. Priority is an investigation order, not a causal or business-action recommendation.`),
+      bullets: priority.map((driver, index) => `${index + 1}. ${driver.dimension}: ${driver.key} · ${changeLabel} ${formatMetric(largestMovement.metricId, driverChange(driver))}`),
+    };
+  })();
   const option = {
+    ...generateDashboardChartOptions({
+      title: displayMetricLabel(primaryChartMetricIds[0] ?? ''),
+      chartType: baseDecisionVisualizationPlan.primaryVisualization.type === 'line' ? 'line' : baseDecisionVisualizationPlan.primaryVisualization.type === 'scatter' ? 'scatter' : 'bar',
+      rendererFamily: baseDecisionVisualizationPlan.visualizationPlan.rendererFamily,
+      patternId: baseDecisionVisualizationPlan.visualizationPlan.patternId,
+      colorSemantics: baseDecisionVisualizationPlan.visualizationPlan.patternRules?.colorSemantics ?? null,
+      data: baseDecisionVisualizationPlan.result.rows,
+      xAxisKey: baseDecisionVisualizationPlan.result.dimensionField,
+      seriesKey: primaryChartMetricIds[0],
+      seriesKeys: primaryChartMetricIds,
+      valueType: /(revenue|profit|cost|amount)/i.test(primaryChartMetricIds[0] ?? '') ? 'currency' : 'number',
+      colSpan: 20,
+    }, preferences, false),
     animation: false,
-    tooltip: { trigger: "axis" },
-    legend: { bottom: 0, textStyle: { color: "#475569" } },
-    grid: { left: 70, right: 28, top: 25, bottom: 58 },
-    xAxis: {
-      type: "category",
-      data: baseDecisionVisualizationPlan.result.rows.map((row) => String(row[baseDecisionVisualizationPlan.result.dimensionField] ?? '')),
-      axisLabel: { color: "#475569" },
-    },
-    yAxis: {
-      type: "value",
-      axisLabel: { color: "#64748b", formatter: (value: number) => formatMetric(largestMovement?.metricId ?? "", value) },
-      splitLine: { lineStyle: { color: "#e2e8f0" } },
-    },
-    series: metricIds.map((metricId, index) => ({
-      name: displayMetricLabel(metricId),
-      type: baseDecisionVisualizationPlan.primaryVisualization.type,
-      smooth: baseDecisionVisualizationPlan.primaryVisualization.type === 'line',
-      symbolSize: baseDecisionVisualizationPlan.primaryVisualization.type === 'line' ? 8 : undefined,
-      barMaxWidth: baseDecisionVisualizationPlan.primaryVisualization.type === 'line' ? undefined : 56,
-      data: rows.map((row) => Number(row[metricId] ?? 0)),
-      lineStyle: { width: 3 },
-      itemStyle: { color: ["#2563eb", "#059669", "#d97706"][index % 3] },
-    })),
   };
   const selectedEvidence = useMemo(() => {
     if (!chartSelection) return [];
@@ -283,7 +328,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
     setExportState("image"); setExportError("");
     try {
       if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
-      await saveAnalysisReportPngPages(deepExportRef.current, exportFileStem);
+      await saveAnalysisReportPngPages(deepExportRef.current, exportFileStem, { title: displayPerspectiveLabel, summary: followUpAnswer?.summary ?? effectiveDeepDiveBrief?.headline ?? `Governed multi-source analysis for ${displayPerspectiveLabel}.`, sourceNames: evidenceSources.map(source => source.sourceName) });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the image.")); }
     finally { setExportState("idle"); }
   };
@@ -291,27 +336,29 @@ export const PerspectiveCollectionResultCard: React.FC<{
     setExportState("pdf"); setExportError("");
     try {
       if (!deepExportRef.current) throw new Error(t("The analysis is not ready to export."));
-      await saveAnalysisReportPdf(deepExportRef.current, exportFileStem);
+      await saveAnalysisReportPdf(deepExportRef.current, exportFileStem, { title: displayPerspectiveLabel, summary: followUpAnswer?.summary ?? effectiveDeepDiveBrief?.headline ?? `Governed multi-source analysis for ${displayPerspectiveLabel}.`, sourceNames: evidenceSources.map(source => source.sourceName) });
     } catch (cause) { setExportError(cause instanceof Error ? cause.message : t("Could not export the PDF.")); }
     finally { setExportState("idle"); }
   };
 
-  const buildDecisionVisualizationPlan = (): DecisionVisualizationPlanV1 => {
+  const buildDecisionVisualizationPlan = (primaryMetricOnly = false): DecisionVisualizationPlanV1 => {
     const scopedEvidence = chartSelection ? selectedEvidence : evidenceSources;
     const selected = Boolean(chartSelection);
+    const plannedMetricIds = selected && chartSelection ? [chartSelection.metricId] : primaryMetricOnly ? primaryChartMetricIds : metricIds;
     return createDecisionVisualizationPlan({
       perspectiveId, rows, sourceCount, dimensionField: 'reporting_period',
-      metricIds: selected && chartSelection ? [chartSelection.metricId] : metricIds,
+      metricIds: plannedMetricIds,
       selectedScope: chartSelection ? { dimensionField: 'reporting_period', dimensionValue: chartSelection.period, metricId: chartSelection.metricId } : null,
       analyticalIntent: selected ? 'category_comparison' : hasPeriodComparison ? 'trend' : 'category_comparison',
       availableRoles: selected
         ? ['category','measure']
         : hasPeriodComparison
-          ? ['ordered_time','measure', ...(metricIds.length > 1 ? ['series' as const] : [])]
-          : ['category','measure', ...(metricIds.length > 1 ? ['series' as const] : [])],
+          ? ['ordered_time','measure', ...(plannedMetricIds.length > 1 ? ['series' as const] : [])]
+          : ['category','measure', ...(plannedMetricIds.length > 1 ? ['series' as const] : [])],
       cardinality: selected
         ? { points: 1, categories: 1, series: 1 }
-        : { points: rows.length, categories: distinctPeriodCount, series: metricIds.length },
+        : { points: rows.length, categories: distinctPeriodCount, series: plannedMetricIds.length },
+      domainProfile: multiFileDomainProfile,
       requiredSurfaces: ['preview','persistence','dashboard'],
       sourceRefs: scopedEvidence.map(source => ({
         sourceId: source.sourceId ?? null, sourceName: source.sourceName, role: source.role, period: source.period, sourceRowCount: source.sourceRowCount,
@@ -361,9 +408,10 @@ export const PerspectiveCollectionResultCard: React.FC<{
   };
 
   const createCollectionDashboard = () => {
-    const visualizationPlan = buildDecisionVisualizationPlan();
+    const visualizationPlan = buildDecisionVisualizationPlan(true);
     const scopedRows = visualizationPlan.result.rows as Row[];
     const scopedMetricIds = visualizationPlan.result.metricIds;
+    const dashboardMetricIds = chartSelection ? scopedMetricIds : metricIds;
     const scopeSources = chartSelection ? selectedEvidence : evidenceSources;
     const overviewFindings = subsetOverviews.flatMap(item => item.overview.findings);
     const overviewActions = subsetOverviews.flatMap(item => item.overview.recommendedActions);
@@ -426,8 +474,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
       } },
     }));
 
-    const latest = scopedRows[scopedRows.length - 1];
-    scopedMetricIds.forEach((metricId, index) => {
+    const latest = chartSelection ? scopedRows[scopedRows.length - 1] : rows[rows.length - 1];
+    dashboardMetricIds.forEach((metricId, index) => {
       const value = Number(latest?.[metricId]);
       if (!Number.isFinite(value)) return;
       const candidateId = `metric:${metricId}`;
@@ -628,7 +676,7 @@ export const PerspectiveCollectionResultCard: React.FC<{
 
         <section data-testid="collection-primary-visual" className="min-w-0">
           <div className="min-h-[430px] rounded-xl border border-slate-100 bg-slate-50/40 p-3">
-            <ReactECharts option={option} style={{ height: '390px', width: '100%' }} notMerge onEvents={{ click: (params: { dataIndex?: number; seriesIndex?: number }) => { const dataIndex = Number(params.dataIndex); const seriesIndex = Number(params.seriesIndex); if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !metricIds[seriesIndex]) return; setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ''), metricId: metricIds[seriesIndex] }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} />
+            <ReactECharts option={option} style={{ height: '390px', width: '100%' }} notMerge onEvents={{ click: (params: { dataIndex?: number; seriesIndex?: number }) => { const dataIndex = Number(params.dataIndex); const seriesIndex = Number(params.seriesIndex); if (!Number.isInteger(dataIndex) || !Number.isInteger(seriesIndex) || !primaryChartMetricIds[seriesIndex]) return; setChartSelection({ period: String(rows[dataIndex]?.reporting_period ?? ''), metricId: primaryChartMetricIds[seriesIndex] }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} />
             <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={t('Select a chart point to inspect evidence')}>
               {rows.flatMap(row => metricIds.map(metricId => { const period = String(row.reporting_period ?? ''); const active = chartSelection?.period === period && chartSelection.metricId === metricId; return <button key={`${period}:${metricId}`} type="button" data-testid={`collection-chart-point-${period}-${metricId}`} onClick={() => { setChartSelection({ period, metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); }} className={`rounded-md border px-2 py-1 text-[10px] font-medium ${active ? 'border-blue-500 bg-blue-50 text-blue-800' : 'border-slate-200 bg-white text-slate-500 hover:border-blue-300'}`}>{period} · {displayMetricLabel(metricId)}</button>; }))}
             </div>
@@ -636,7 +684,8 @@ export const PerspectiveCollectionResultCard: React.FC<{
         </section>
 
         {questions.length > 0 && <section data-testid="collection-explanation" className="border-t border-[var(--lb-divider)] pt-4">
-          <div className="space-y-1">{questions.map(question => <button key={question} type="button" onClick={() => { if (effectiveDeepDiveBrief) { setChartSelection(null); openDeepAnalysis('deep_perspective'); return; } if (!hasPeriodComparison && largestMovement) { setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} disabled={!effectiveDeepDiveBrief && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)} className="flex w-full items-center justify-between gap-3 border-b border-[var(--lb-divider)] px-1 py-2.5 text-left text-[12px] font-medium leading-5 text-slate-700 transition last:border-b-0 hover:bg-black/[0.025] disabled:cursor-default"><span>{question}</span><ChevronRight className="h-3.5 w-3.5 shrink-0 text-amber-600" /></button>)}</div>
+          <div className="mb-2 flex flex-wrap items-end justify-between gap-2"><div><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{t('Questions LightBI can answer next')}</p><p className="mt-1 text-[12px] text-slate-500">{canAnswerFollowUps ? t('Each question opens a different evidence-backed BA answer.') : t('A governed BA answer is not available for this metric yet; use source evidence instead.')}</p></div>{canAnswerFollowUps && <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-700">3 {t('BA paths')}</span>}</div>
+          <div className="divide-y divide-[var(--lb-divider)] border-y border-[var(--lb-divider)]">{questions.map((question, index) => <button key={question.kind} type="button" onClick={() => { if (canAnswerFollowUps) { setSelectedFollowUpKind(question.kind); setChartSelection(null); openDeepAnalysis('deep_perspective'); return; } if (!hasPeriodComparison && largestMovement) { setChartSelection({ period: firstPeriod, metricId: largestMovement.metricId }); setActiveEvidenceIndex(0); setAnalysisView('evidence_drill'); } }} disabled={!canAnswerFollowUps && (hasPeriodComparison || !largestMovement || evidenceSources.length === 0)} className="group flex w-full items-center gap-3 px-2 py-3.5 text-left transition hover:bg-blue-50/35 disabled:cursor-default disabled:opacity-55"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold text-slate-500">{String(index + 1).padStart(2, '0')}</span><span className="min-w-0 flex-1 text-[13px] font-semibold leading-5 text-slate-800">{question.label}</span><span className="hidden shrink-0 text-[10px] font-semibold uppercase tracking-wide text-blue-600 sm:inline">{canAnswerFollowUps ? t('Open BA answer') : t('Evidence')}</span><ChevronRight className="h-4 w-4 shrink-0 text-blue-600 transition group-hover:translate-x-0.5" /></button>)}</div>
         </section>}
 
         {movements.length > 1 && <section data-testid="collection-supporting-metrics" className="border-t border-[var(--lb-divider)] pt-4">
@@ -658,7 +707,15 @@ export const PerspectiveCollectionResultCard: React.FC<{
         <header className="sticky top-0 z-10 flex items-start gap-3 border-b border-[var(--lb-divider)] bg-white/95 px-5 py-4 backdrop-blur md:px-6"><button data-testid="collection-deep-perspective-back" type="button" onClick={() => leaveDeepAnalysis('decision_workspace')} className="mt-0.5 inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035]"><ArrowLeft className="h-4 w-4" />{t('Back')}</button><div className="min-w-0 flex-1"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700">{t('Deep analysis')}</p><h3 className="mt-1 text-lg font-semibold text-slate-950">{displayPerspectiveLabel}</h3><p className="mt-1 max-w-4xl text-xs leading-5 text-slate-500">{t(focusSubject ? 'Driver rankings use only exact Focus Subject matches from governed source evidence; the summary remains the full population.' : 'Driver rankings use the complete period sources behind this governed result. Observations remain separated from unsupported causal claims.')}</p></div><button data-testid="collection-deep-perspective-presentation-toggle" type="button" onClick={() => setAnalysisPresentationMode(sidePanelActive ? 'primary' : 'side_panel')} className="hidden shrink-0 items-center gap-1.5 border border-black/10 bg-white px-2.5 py-2 text-xs font-semibold text-black/60 hover:bg-black/[0.035] xl:inline-flex" title={t(sidePanelActive ? 'Return analysis to full view' : 'Move analysis to side panel')}>{sidePanelActive ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}<span>{t(sidePanelActive ? 'Full view' : 'Side panel')}</span></button></header>
         {renderCollectionActionBar(true)}
         {exportError && <p role="alert" className="border-t border-red-100 bg-red-50 px-5 py-2 text-xs text-red-700 md:px-6">{exportError}</p>}
-        <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="management-document" className={sidePanelActive ? "px-5 py-4 md:px-6" : "mx-auto w-full max-w-[1280px] px-6 py-5 lg:px-10"}><div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} compact={sidePanelActive} /></div></div>
+        <div ref={deepExportRef} data-testid="collection-deep-analysis-export-surface" data-report-plan="lightbi.analysis-report-plan.v1" data-layout="management-document" className={sidePanelActive ? "px-5 py-4 md:px-6" : "mx-auto w-full max-w-[1280px] px-6 py-5 lg:px-10"}>
+          {selectedFollowUpKind && followUpAnswer && <section data-testid="collection-followup-answer" data-report-section="true" data-report-role="executive_summary" data-report-keep-together="true" className="mb-5 border-y border-blue-200 bg-blue-50/30 px-4 py-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-700">{t('Answer to your selected question')}</p>
+            <h3 className="mt-1 text-[16px] font-semibold text-slate-950">{followUpAnswer.title}</h3>
+            <p className="mt-2 text-[13px] leading-6 text-slate-700">{followUpAnswer.summary}</p>
+            {followUpAnswer.bullets.length > 0 && <div className="mt-3 divide-y divide-blue-100 border-y border-blue-100">{followUpAnswer.bullets.map((bullet, index) => <p key={`${index}:${bullet}`} className="py-2 text-[12px] leading-5 text-slate-700">{bullet}</p>)}</div>}
+          </section>}
+          <div data-testid="governed-ba-deep-dive"><BusinessComparisonBriefCard brief={effectiveDeepDiveBrief} compact={sidePanelActive} /></div>
+        </div>
       </aside>}
     </section>
   );

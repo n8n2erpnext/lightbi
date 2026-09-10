@@ -5,6 +5,7 @@ import {
   createFocusSubjectSelection,
   deriveFocusSubjectCandidates,
   deriveFocusSubjectNarrative,
+  evaluateFocusSubjectActionCompatibility,
   resolveFocusAutoPerspectiveId,
   searchFocusSubjectOptions,
 } from "./focus-subject-analysis";
@@ -824,4 +825,28 @@ describe("Focus Subject cross-domain regression", () => {
     expect(waiting?.percentile).toBe(100);
   });
 
+});
+
+
+describe("Focus subject/action semantic compatibility", () => {
+  const productFocus = {
+    candidateId: "focus:product", canonicalId: "product", domain: "inventory" as const,
+    field: "Product", value: "Aqua 250L", displayLabel: "Aqua 250L", metricFields: ["Revenue"],
+    dimensionBindings: [
+      { canonicalId: "product", field: "Product", role: "dimension" as const, cardinality: 35 },
+      { canonicalId: "category", field: "Category", role: "dimension" as const, cardinality: 4 },
+      { canonicalId: "salesperson", field: "Salesperson", role: "dimension" as const, cardinality: 12 },
+    ],
+  };
+
+  it("rejects a Product focus when the selected question groups by Category on the same item-taxonomy axis", () => {
+    expect(evaluateFocusSubjectActionCompatibility(productFocus, { dimensions: ["Category"] })).toMatchObject({
+      compatible: false, reason: "conflicting_item_taxonomy", actionDimensionCanonicalIds: ["category"],
+    });
+  });
+
+  it("keeps same-dimension and cross-axis Focus analysis valid", () => {
+    expect(evaluateFocusSubjectActionCompatibility(productFocus, { dimensions: ["Product"] })?.reason).toBe("compatible_same_dimension");
+    expect(evaluateFocusSubjectActionCompatibility(productFocus, { dimensions: ["Salesperson"] })).toMatchObject({ compatible: true, reason: "compatible_cross_axis" });
+  });
 });

@@ -80,4 +80,17 @@ describe('DPR-6 Investigation visualization adapter', () => {
     const rankAction = { ...action('group_by'), opportunityName: 'Top customers by revenue', description: 'Rank top customers' };
     expect(resolveInvestigationVisualizationIntent(runtimeIntent('group_by'), rankAction)).toBe('ranking');
   });
+
+  it('recognizes natural contribution wording as ranking intent instead of generic category comparison', () => {
+    const rankAction = { ...action('group_by'), opportunityName: 'Which products contribute the most sales revenue?', description: 'Which products contribute the most sales revenue?', dimensions: ['product'], measures: ['sales_revenue'] };
+    const intent = { ...runtimeIntent('group_by'), dimensions: ['product'], measures: ['sales_revenue'] };
+    expect(resolveInvestigationVisualizationIntent(intent, rankAction)).toBe('ranking');
+  });
+
+  it('does not misclassify a categorical status distribution as a numeric histogram', () => {
+    const statusAction = { ...action('group_by'), id: 'action_status', opportunityName: 'Status breakdown', description: 'Status breakdown', actionType: 'distribution' as const, dimensions: ['status'], measures: [] };
+    const intent = { ...runtimeIntent('group_by'), id: 'intent_status', sourceActionId: 'action_status', type: 'distribution' as const, dimensions: ['status'], measures: [], expectedShape: 'bar_chart' as const };
+    expect(resolveInvestigationVisualizationIntent(intent, statusAction)).toBe('category_comparison');
+  });
+
 });

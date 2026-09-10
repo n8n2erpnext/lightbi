@@ -42,6 +42,36 @@ export type FocusPerspectiveCandidate = {
   matchedSignalIds: string[];
 };
 
+export type FocusSubjectActionCompatibility = {
+  compatible: boolean;
+  subjectCanonicalId: string;
+  actionDimensionCanonicalIds: string[];
+  reason: 'compatible_same_dimension' | 'compatible_cross_axis' | 'compatible_dimension_unresolved' | 'conflicting_item_taxonomy';
+};
+
+const ITEM_TAXONOMY_AXIS = new Set(['product', 'sku', 'item', 'category', 'brand']);
+
+export function evaluateFocusSubjectActionCompatibility(
+  subject: FocusSubjectSelection | null | undefined,
+  action: { dimensions: string[] },
+): FocusSubjectActionCompatibility | null {
+  if (!subject) return null;
+  const requested = new Set(action.dimensions.map(normalizedField));
+  const resolved = [...new Set((subject.dimensionBindings ?? [])
+    .filter(binding => requested.has(normalizedField(binding.field)) || requested.has(normalizedField(binding.canonicalId)))
+    .map(binding => binding.canonicalId))];
+  if (resolved.length === 0) {
+    return { compatible: true, subjectCanonicalId: subject.canonicalId, actionDimensionCanonicalIds: [], reason: 'compatible_dimension_unresolved' };
+  }
+  if (resolved.includes(subject.canonicalId)) {
+    return { compatible: true, subjectCanonicalId: subject.canonicalId, actionDimensionCanonicalIds: resolved, reason: 'compatible_same_dimension' };
+  }
+  if (ITEM_TAXONOMY_AXIS.has(subject.canonicalId) && resolved.some(id => ITEM_TAXONOMY_AXIS.has(id))) {
+    return { compatible: false, subjectCanonicalId: subject.canonicalId, actionDimensionCanonicalIds: resolved, reason: 'conflicting_item_taxonomy' };
+  }
+  return { compatible: true, subjectCanonicalId: subject.canonicalId, actionDimensionCanonicalIds: resolved, reason: 'compatible_cross_axis' };
+}
+
 export function resolveFocusAutoPerspectiveId(
   subject: FocusSubjectSelection | null | undefined,
   perspectives: FocusPerspectiveCandidate[],
