@@ -73,7 +73,7 @@ test('Windows native acceptance artifact is isolated from Production publication
   assert.match(nativeAcceptanceWorkflow, /LIGHTBI_RUNTIME_CHANNEL: internal/u);
   assert.doesNotMatch(nativeAcceptanceWorkflow, /VITE_LIGHTBI_DISTRIBUTION_URL:/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_PARENT_GENERATION_ID: g-2026-09-03-next-030/u);
-  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
+  assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_CONTROL_PLANE_COMMIT: 435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_TRUST_PHASE2A_HEAD: 10de4da8e551a46f93f7b62985a0a6e611581b8e/u);
   assert.match(nativeAcceptanceWorkflow, /VITE_LIGHTBI_RELEASE_UPDATE_CHANNEL: internal/u);
   assert.match(nativeAcceptanceWorkflow, /src\/lib\/native-runtime\.test\.ts/u);
@@ -197,7 +197,7 @@ test('NEXT eSigner workflow is exact-SHA branch gated and non-publishing', () =>
 
 test('NEXT eSigner workflow signs both runtime app and installer without gaining Production authority', () => {
   assert.match(nextEsignerWorkflow, /VITE_LIGHTBI_CHANNEL: internal/u);
-  assert.match(nextEsignerWorkflow, /LIGHTBI_SIGNED_CONTROL_PLANE: bb50b0d53542da5cd908e2237cbca368f7f87073/u);
+  assert.match(nextEsignerWorkflow, /LIGHTBI_SIGNED_CONTROL_PLANE: 435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b/u);
   assert.match(nextEsignerWorkflow, /SSL_COM_ESIGNER_EXPECTED_SUBJECT/u);
   assert.match(nextEsignerWorkflow, /certificateThumbprint = \$env:LIGHTBI_WINDOWS_PUBLISHER_THUMBPRINT/u);
   assert.match(nextEsignerWorkflow, /digestAlgorithm = 'sha256'/u);

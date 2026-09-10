@@ -36,7 +36,7 @@ jobs:
     env:
       LIGHTBI_SIGNED_VERSION: 0.9.2-next.r1p12.signed.${{ github.run_number }}
       LIGHTBI_SIGNED_GENERATION: g-actions-r1p12-signed-${{ github.run_id }}-${{ github.run_attempt }}
-      LIGHTBI_SIGNED_CONTROL_PLANE: bb50b0d53542da5cd908e2237cbca368f7f87073
+      LIGHTBI_SIGNED_CONTROL_PLANE: 435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b
       SSL_COM_ESIGNER_USERNAME: ${{ secrets.SSL_COM_ESIGNER_USERNAME }}
       SSL_COM_ESIGNER_PASSWORD: ${{ secrets.SSL_COM_ESIGNER_PASSWORD }}
       SSL_COM_ESIGNER_TOTP_SECRET: ${{ secrets.SSL_COM_ESIGNER_TOTP_SECRET }}
