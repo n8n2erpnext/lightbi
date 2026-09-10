@@ -1,15 +1,16 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-10T08:05:00+07:00",
-  "status": "dpr10_gate_e_final_web_native_acceptance_active",
-  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 37309 serving dpr10-gated-6be3422; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
+  "updatedAt": "2026-09-10T12:25:00+07:00",
+  "status": "dpr10_gate_e_web_accepted_native_e3_active",
+  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 1714808 serving dpr10-ownerfix-aa45aee1; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "b9827129f296bd1d99e4efdd1b63667479a3feda",
+    "head": "aa45aee12e4afc926c386106564deb6922d8b7c5",
     "remoteMatches": true,
     "worktreeClean": true,
-    "liveUiSource": "6be3422fb31c08e6642463d34c31d44740e1d8ed"
+    "liveUiSource": "aa45aee12e4afc926c386106564deb6922d8b7c5",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr10-ownerfix-aa45aee1"
   },
   "controlPlane": {
     "sourceCommit": "435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b",
@@ -20,11 +21,11 @@
     "productionAuthority": false
   },
   "dpr10": {
-    "state": "ACTIVE — Gates A–D implemented/source-green; Gate E exact Web/native acceptance pending",
-    "canonicalPlanSection": "23B",
-    "releaseEvidence": "/tmp/lightbi-final-release-suite.log => release_1_0_suite=passed; build 3828; governed 11 files/46 tests",
-    "liveGateD": "Revenue rich tooltip and Healthcare inferred/not-production-active probes accepted on 6be3422; 30-pattern source library; Map renderer pending",
-    "remainingGate": "final b982712 /app -> browser matrix -> exact Windows package -> installed runtime evidence -> signed TEST REL -> issuer/certificate/attestation continuity proof -> Account/native shell smoke -> owner UAT"
+    "state": "ACTIVE — final Web Gate E accepted on aa45aee1; exact Windows native E3/E4 and owner UAT pending",
+    "canonicalPlanSection": "23B.14",
+    "releaseEvidence": "release_1_0_suite=passed; build 3828; governed 11 files/49 tests; exact-live Chart Library 3/3 + Focus 1/1 + BA 1/1 + six-file/Step2 1/1 + intake modal 1/1 + export 1/1",
+    "liveGateE": "aa45aee1 on immutable dpr10-ownerfix-aa45aee1; 30 templates; Product->Category Focus clears; three Gross Profit BA answers; Online/Database opacity fixed; six-page A4 PNG/PDF report accepted",
+    "remainingGate": "exact Windows native acceptance -> installer + installed runtime provenance -> exact signed internal TEST REL -> issuer/certificate/attestation continuity proof -> Account/native File/Edit/View/Help smoke -> owner UAT"
   },
   "trustContainers": {
     "installationIssuer": "6f8d49919877",
@@ -32,16 +33,17 @@
     "signer": "c58c90a4604b",
     "proDelivery": "cb6395655a5d"
   },
-  "nextAction": "Read the 2026-09-10 Gate-E handoff. Verify exact state. Build immutable NEXT /app from Product b982712 with CP 435e38a, rotate only Gateway 5273, run final browser matrix, then trigger the exact Windows artifact and close signed TEST REL/issuer proof before giving one installer to owner. Do not touch Production/51xx.",
+  "nextAction": "Trigger a new Windows Native Acceptance run from exact Product aa45aee1. Do not reuse runs #12/#13. After SUCCESS, record installer and silently-installed LightBI.exe SHA/size provenance, then publish/sign the exact internal TEST REL through CP 435e38a and prove issuer/certificate/attestation/process continuity before owner UAT. Do not touch Production/51xx.",
   "blockers": [
+    "Exact Windows native E3/E4 machine proof is still required",
     "Owner UAT is required before DPR-10 closure",
     "Stable/Production promotion is separately owner-gated"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#150-2026-09-10-dpr-10-gate-d-chart-intelligence-is-source-green-gate-e-final-webnative-acceptance-is-active",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b-dpr-10-whole-product-coherence--native-shell-restoration-program--2026-09-09",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#151-2026-09-10-dpr-10-owner-defect-convergence-closes-final-web-gate-e-native-e3-is-active",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b14-execution-checkpoint--2026-09-10--final-web-gate-e-accepted-exact-native-e3-active",
     "docs/history/agent/handoffs/AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md"
   ]
 }
