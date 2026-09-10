@@ -1,9 +1,9 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
   "snapshotDate": "2026-09-10",
-  "generatedAt": "2026-09-10T01:10:00.000Z",
+  "generatedAt": "2026-09-10T11:35:53.575141Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "150abbbd1c8e0f448b1a75740ef8c6cafe3db59e",
+  "head": "268ab1b7c0911fee4de105dc752a9d3cc1f11b40",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
@@ -9935,8 +9935,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
       "extension": ".md",
-      "bytes": 159785,
-      "sha256": "99e79a6692a4ff3337bd8cec0da743301542e4b6c06ca91278c9a9daf87b0ef4",
+      "bytes": 170473,
+      "sha256": "777aa1b97cf2b9cb651b42cb5d0e27cc2c29db3525e74152d5ce5a6db43dbdcc",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04"
     },

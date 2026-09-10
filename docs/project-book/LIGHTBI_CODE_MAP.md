@@ -394,6 +394,18 @@ Important downstream files include:
 - Investigation deep-analysis/drill-through components — interactive evidence-bound follow-up.
 
 These modules are powerful downstream analytics, but canonical source/metric/runtime authority remains upstream.
+## 22A. Visual Narrative Composition owns presentation-set membership, not analytical truth
+
+At Product `6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220`, [`visual-narrative-composition.ts`](../../apps/desktop/src/lib/visual-narrative-composition.ts) and [`investigation-visual-narrative.ts`](../../apps/desktop/src/lib/investigation-visual-narrative.ts) sit downstream of governed execution and `DecisionVisualizationPlan`. They decide whether eligible visual results should remain single, be combined, be complementary or be rejected, and normalize visible composition to `1/3/5` units with the primary answer as the stable anchor. This layer does not create metric/evidence/runtime authority.
+
+[`domain-visual-playbooks.ts`](../../apps/desktop/src/lib/domain-visual-playbooks.ts) supplies official-domain presentation priors and legal combo/rejection guidance. [`domain-visual-profile.ts`](../../apps/desktop/src/lib/domain-visual-profile.ts) and the Micro Brain presentation advisor project domain, real selected perspective and chart-pattern retrieval advice into candidate ordering. MB rank may influence eligible presentation membership but cannot bypass deterministic suitability or authorize a metric, formula, join, source relationship, causal claim or renderer.
+
+[`VisualNarrativeCanvas.tsx`](../../apps/desktop/src/components/analysis/VisualNarrativeCanvas.tsx) materializes the selected units. [`visual-narrative-runtime.ts`](../../apps/desktop/src/lib/visual-narrative-runtime.ts) combines only aligned governed aggregate chart models; category/dimension mismatch fails closed. Generated Dashboard paths persist the same narrative membership and use `dashboard-composition-writer.ts` plus runtime explicit widget geometry so rejected/consumed members cannot reappear as independent widgets.
+
+Exactly two multi-file reporting periods are treated as comparison; trend remains an ordered-series candidate from three or more periods. This is presentation semantics only and does not change source separation, period authority or governed values.
+
+Exact NEXT runtime proof for this owner is Product `6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220` on Gateway 5273 PID `2436036`. Final browser acceptance proves one-chart terminal answers, full-row Dashboard packing, two-period comparison and perspective/authority separation without forcing chart diversity; Core/CP/Trust identities remain unchanged and Production/51xx is untouched.
+
 # Part VII — Advanced Mode
 
 ## 23. Advanced is a production route, not a side experiment

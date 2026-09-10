@@ -1,49 +1,41 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-10T12:25:00+07:00",
-  "status": "dpr10_gate_e_web_accepted_native_e3_active",
-  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 1714808 serving dpr10-ownerfix-aa45aee1; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
+  "updatedAt": "2026-09-10T18:35:00+07:00",
+  "status": "dpr10_visual_narrative_next_web_accepted_owner_uat_pending",
+  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 2436036 serving dpr10-visual-narrative-6ba98d9d; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "aa45aee12e4afc926c386106564deb6922d8b7c5",
+    "head": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
     "remoteMatches": true,
     "worktreeClean": true,
-    "liveUiSource": "aa45aee12e4afc926c386106564deb6922d8b7c5",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr10-ownerfix-aa45aee1"
+    "liveUiSource": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
+    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr10-visual-narrative-6ba98d9d"
   },
   "controlPlane": {
     "sourceCommit": "435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b",
-    "runtimeRoot": "/home/ubuntu/services/lightbi-control-plane-next034-435e38a",
     "pid": 1116289,
     "generation": "g-2026-09-05-next-034",
     "runtimeChannel": "internal",
     "productionAuthority": false
   },
   "dpr10": {
-    "state": "ACTIVE — final Web Gate E accepted on aa45aee1; exact Windows native E3/E4 and owner UAT pending",
-    "canonicalPlanSection": "23B.14",
-    "releaseEvidence": "release_1_0_suite=passed; build 3828; governed 11 files/49 tests; exact-live Chart Library 3/3 + Focus 1/1 + BA 1/1 + six-file/Step2 1/1 + intake modal 1/1 + export 1/1",
-    "liveGateE": "aa45aee1 on immutable dpr10-ownerfix-aa45aee1; 30 templates; Product->Category Focus clears; three Gross Profit BA answers; Online/Database opacity fixed; six-page A4 PNG/PDF report accepted",
-    "remainingGate": "exact Windows native acceptance -> installer + installed runtime provenance -> exact signed internal TEST REL -> issuer/certificate/attestation continuity proof -> Account/native File/Edit/View/Help smoke -> owner UAT"
+    "state": "ACTIVE — Visual Narrative source/live machine acceptance green; owner Web UAT pending before native E3/E4",
+    "canonicalPlanSection": "23B.15",
+    "releaseEvidence": "Visual Narrative 17 files/92 tests; exact-commit release_1_0_suite=passed; build 3832; governed 11 files/50 tests; LIVE_UAT=PASS",
+    "liveVisualNarrative": "Single Revenue one 220px answer visual; Single Dashboard 4 KPI full row + full-width hero; Multi two-period comparison 230px; Multi Dashboard KPI 7/7/6 + full-width hero; perspective probe preserves governed vs safe-descriptive authority"
   },
-  "trustContainers": {
-    "installationIssuer": "6f8d49919877",
-    "attestation": "ba78fa6bb2ce",
-    "signer": "c58c90a4604b",
-    "proDelivery": "cb6395655a5d"
-  },
-  "nextAction": "Trigger a new Windows Native Acceptance run from exact Product aa45aee1. Do not reuse runs #12/#13. After SUCCESS, record installer and silently-installed LightBI.exe SHA/size provenance, then publish/sign the exact internal TEST REL through CP 435e38a and prove issuer/certificate/attestation/process continuity before owner UAT. Do not touch Production/51xx.",
+  "nextAction": "Owner tests https://lightbi-next.thaiduy.digital/app on exact Product 6ba98d9d. Do not trigger native E3/E4 until owner accepts Web visual-story/layout behavior; after acceptance rebuild Windows native from this exact SHA. Do not touch Production/51xx.",
   "blockers": [
-    "Exact Windows native E3/E4 machine proof is still required",
-    "Owner UAT is required before DPR-10 closure",
-    "Stable/Production promotion is separately owner-gated"
+    "Owner Web UAT is required before native rebuild",
+    "Native Windows E3/E4 must be rebuilt from post-Web accepted exact Product SHA",
+    "Owner packaged UAT remains required for DPR-10 closure"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#151-2026-09-10-dpr-10-owner-defect-convergence-closes-final-web-gate-e-native-e3-is-active",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b14-execution-checkpoint--2026-09-10--final-web-gate-e-accepted-exact-native-e3-active",
-    "docs/history/agent/handoffs/AGENT_HANDOFF_DPR10_GATE_E_FINAL_ACCEPTANCE_2026-09-10.md"
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#152-2026-09-10-visual-narrative-composition-is-live-on-next-owner-web-uat-is-next",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b15-visual-narrative-composition--perspective-aware-chart-intelligence--2026-09-10",
+    "docs/project-book/LIGHTBI_CODE_MAP.md#22a-visual-narrative-composition-owns-presentation-set-membership-not-analytical-truth"
   ]
 }
