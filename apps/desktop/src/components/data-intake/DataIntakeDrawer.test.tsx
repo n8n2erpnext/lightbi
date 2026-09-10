@@ -2,7 +2,7 @@
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DataIntakeDrawer } from './DataIntakeDrawer';
+import { DATA_INTAKE_PANEL_MOTION, DataIntakeDrawer } from './DataIntakeDrawer';
 
 vi.mock('./GoogleSheetsStep', () => ({ GoogleSheetsStep: () => <div data-testid="online-intake-content">Online intake content</div> }));
 vi.mock('./DatabaseStep', () => ({ DatabaseStep: () => <div data-testid="database-intake-content">Database intake content</div> }));
@@ -12,6 +12,12 @@ vi.mock('./WarehouseStep', () => ({ WarehouseStep: () => null }));
 afterEach(cleanup);
 
 describe('DataIntakeDrawer native-safe layering', () => {
+  it('animates the intake panel to fully opaque instead of leaving content invisible', () => {
+    expect(DATA_INTAKE_PANEL_MOTION.initial.opacity).toBe(0);
+    expect(DATA_INTAKE_PANEL_MOTION.animate.opacity).toBe(1);
+    expect(DATA_INTAKE_PANEL_MOTION.exit.opacity).toBe(0);
+  });
+
   it('keeps Online Link content above a non-blurring backdrop', () => {
     render(<DataIntakeDrawer request={{ sourceType: 'online_link' } as any} onClose={vi.fn()} />);
     expect(screen.getByTestId('online-intake-content')).toBeTruthy();

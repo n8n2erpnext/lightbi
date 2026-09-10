@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+export const DATA_INTAKE_PANEL_MOTION = {
+  initial: { y: -24, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+  exit: { y: -24, opacity: 0 },
+} as const;
 import { X } from 'lucide-react';
 import type { DataIntakeRequest } from '../../lib/data-intake';
 import { homeGuidance } from '../../content/home-guidance';
@@ -96,9 +102,9 @@ export function DataIntakeDrawer({ request, onClose, onSourceInspected }: DataIn
 
         {/* Sliding Drawer */}
         <motion.div
-          initial={{ y: -24, opacity: 0 }}
-          animate={{ y: 0 }}
-          exit={{ y: -24, opacity: 0 }}
+          initial={DATA_INTAKE_PANEL_MOTION.initial}
+          animate={DATA_INTAKE_PANEL_MOTION.animate}
+          exit={DATA_INTAKE_PANEL_MOTION.exit}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           data-testid="data-intake-panel"
           className="relative z-10 w-full max-w-[var(--lb-dialog-width)] overflow-hidden rounded-[var(--lb-radius-strong)] border border-[var(--lb-divider)] bg-white shadow-2xl"
