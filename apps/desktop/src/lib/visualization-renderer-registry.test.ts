@@ -16,9 +16,12 @@ describe('DPR-6 renderer registry', () => {
   it('marks only actually implemented surfaces available', () => {
     expect(rendererSupportsSurfaces('trend_line', ['preview','persistence','dashboard'])).toBe(true);
     expect(rendererSupportsSurfaces('relationship_scatter', ['preview','persistence','dashboard'])).toBe(true);
-    expect(rendererSupportsSurfaces('composition_donut', ['persistence','dashboard'])).toBe(true);
-    expect(rendererSupportsSurfaces('composition_donut', ['preview'])).toBe(false);
-    expect(rendererSupportsSurfaces('distribution_histogram', ['dashboard'])).toBe(false);
+    expect(rendererSupportsSurfaces('composition_donut', ['preview','persistence','dashboard'])).toBe(true);
+    expect(rendererSupportsSurfaces('distribution_histogram', ['preview','persistence','dashboard'])).toBe(true);
+    expect(rendererSupportsSurfaces('distribution_box', ['preview','persistence','dashboard'])).toBe(true);
+    expect(rendererSupportsSurfaces('matrix_heatmap', ['preview','persistence','dashboard'])).toBe(true);
+    expect(rendererSupportsSurfaces('flow_sankey', ['preview','persistence','dashboard'])).toBe(true);
+    expect(rendererSupportsSurfaces('geospatial_map', ['preview','persistence','dashboard'])).toBe(false);
     expect(VISUALIZATION_RENDERER_CAPABILITIES_V1.scatter.persistedChartType).toBe('Scatter');
   });
 });
