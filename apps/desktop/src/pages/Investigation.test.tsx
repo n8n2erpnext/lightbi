@@ -284,6 +284,7 @@ const supportingTimeAction: AnalysisAction = {
   id: 'action:support-time',
   opportunityName: 'Money over time',
   label: 'Money over time',
+  description: 'Revenue over time',
   actionType: 'trend',
   dimensions: ['time.date'],
 };
@@ -304,22 +305,25 @@ const supportingTimePlan: RuntimePlanPreview = {
 const supportingItemAction: AnalysisAction = {
   ...analysisAction,
   id: 'action:support-item',
-  opportunityName: 'Activity volume by item',
-  label: 'Activity volume by item',
+  opportunityName: 'Revenue share by channel',
+  label: 'Revenue share by channel',
+  description: 'Revenue share by channel',
   actionType: 'group_by',
-  measures: ['record_count'],
+  dimensions: ['sales.channel'],
+  measures: ['sales_revenue'],
 };
 const supportingItemIntent: RuntimeIntent = {
   ...runtimeIntent,
   id: 'intent:support-item',
   sourceActionId: supportingItemAction.id,
-  measures: ['record_count'],
+  dimensions: ['sales.channel'],
+  measures: ['sales_revenue'],
 };
 const supportingItemPlan: RuntimePlanPreview = {
   ...runtimePlanPreview,
   id: 'runtime-plan:support-item',
   sourceIntentId: supportingItemIntent.id,
-  expectedOutput: { shape: 'bar_chart', dimensions: ['item.product'], measures: ['record_count'] },
+  expectedOutput: { shape: 'bar_chart', dimensions: ['sales.channel'], measures: ['sales_revenue'] },
 };
 
 function session(overrides: Partial<InvestigationSession> = {}): InvestigationSession {
@@ -413,8 +417,8 @@ describe('Investigation canonical consumer boundary', () => {
       }
       return {
         id: 'support-item-result', sourceSqlPreviewId: 'sql:support-item', status: 'executed',
-        columns: ['item.product', 'record_count'],
-        rows: [{ 'item.product': 'Philips FC', record_count: 52 }], rowCount: 1, maxRows: 100,
+        columns: ['sales.channel', 'sales_revenue'],
+        rows: [{ 'sales.channel': 'Retail', sales_revenue: 52 }], rowCount: 1, maxRows: 100,
         warnings: [], blockedReasons: [], source: 'governed_duckdb_execution',
       };
     });
@@ -633,7 +637,7 @@ describe('Investigation canonical consumer boundary', () => {
     render(<Investigation />);
 
     const timeChart = await screen.findByTestId('supporting-chart-renderer:Money over time');
-    const itemChart = await screen.findByTestId('supporting-chart-renderer:Activity volume by item');
+    const itemChart = await screen.findByTestId('supporting-chart-renderer:Revenue share by channel');
 
     fireEvent.click(timeChart);
     await waitFor(() => expect(mockedDrillThrough).toHaveBeenCalled());
@@ -649,10 +653,41 @@ describe('Investigation canonical consumer boundary', () => {
     await waitFor(() => expect(mockedDrillThrough).toHaveBeenCalledTimes(2));
     call = mockedDrillThrough.mock.calls[mockedDrillThrough.mock.calls.length - 1][0];
     expect(call.runtimePlan.id).toBe(supportingItemPlan.id);
-    expect(call.point.dimensionField).toBe('item.product');
+    expect(call.point.dimensionField).toBe('sales.channel');
     fireEvent.click(await screen.findByTestId('analyze-selected-rows'));
     await waitFor(() => expect(screen.getByTestId('filtered-deep-analysis-scope')).toBeDefined());
-    expect(screen.getAllByText('Activity volume by item').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Revenue share by channel').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('materializes a requested support capability beyond the legacy first-six execution pool', async () => {
+    const supports = Array.from({ length: 7 }, (_, index) => {
+      const suffix = index + 1;
+      const action: AnalysisAction = {
+        ...supportingItemAction,
+        id: `action:request-${suffix}`,
+        opportunityName: `Requested support ${suffix}`,
+        label: `Requested support ${suffix}`,
+        description: `Requested support ${suffix}`,
+        confidenceScore: suffix === 7 ? 100 : 60 - index,
+      };
+      const intent: RuntimeIntent = {
+        ...supportingItemIntent,
+        id: `intent:request-${suffix}`,
+        sourceActionId: action.id,
+      };
+      const plan: RuntimePlanPreview = {
+        ...supportingItemPlan,
+        id: `runtime-plan:request-${suffix}`,
+        sourceIntentId: intent.id,
+      };
+      return { analysisAction: action, runtimeIntent: intent, runtimePlanPreview: plan };
+    });
+    mockedSession.mockReturnValue(session({ supportingAnalyses: supports }));
+    render(<Investigation />);
+    await waitFor(() => expect(mockedDescriptive).toHaveBeenCalledTimes(6));
+    const executedIntentIds = mockedDescriptive.mock.calls.map(call => call[0].preparation.runtimePlan.sourceIntentId);
+    expect(executedIntentIds).toContain('intent:request-7');
+    expect(executedIntentIds).not.toContain('intent:request-6');
   });
 
   it('contains no backend, JavaScript sandbox, or mock preview invocation', () => {

@@ -18,6 +18,7 @@ const governed = [
   ['DPR-10 MB advisory determinism contract', ['exec','node','--test','scripts/dpr10-mb-advisory-contract.test.mjs']],
   ['DPR-10 native-UAT convergence contract', ['exec','node','--test','scripts/dpr10-native-uat-convergence.test.mjs']],
   ['CPR-0 chart-presentation actuation debt', ['--dir','apps/desktop','exec','vitest','run','src/lib/chart-presentation-cpr0-actuation.test.ts']],
+  ['CPR-2 presentation capability request actuation', ['--dir','apps/desktop','exec','vitest','run','src/lib/presentation-capability-inventory.test.ts','src/pages/Investigation.test.tsx']],
   ['DPR-10 cross-domain presentation acceptance', ['--dir','apps/desktop','exec','vitest','run',
     'src/lib/dpr10-cross-domain-acceptance.test.ts',
     'src/lib/question-perspective-intelligence.test.ts',

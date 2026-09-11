@@ -37,6 +37,7 @@ import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/s
 import type { DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
 import { buildInvestigationDecisionVisualizationPlan } from '../lib/investigation-visualization-plan';
 import { buildInvestigationVisualNarrativePlan } from '../lib/investigation-visual-narrative';
+import { buildPresentationCapabilityInventory, planPresentationStoryRequests, resolveRequestedSupportingAnalyses } from '../lib/presentation-capability-inventory';
 import { createSingleSourceDeepAnalysisWorkbookPlan } from '../lib/analysis-workbook';
 import { createInvestigationPersistenceActions } from '../lib/investigation-persistence-actions';
 import { createInvestigationChartActions } from '../lib/investigation-chart-actions';
@@ -242,16 +243,24 @@ export const Investigation: React.FC = () => {
       setSupportingCharts([]);
       return;
     }
-    const candidates = session.supportingAnalyses
-      // The perspective bundle has already ranked and scoped these actions.
-      // Restricting support charts to the old `universal:` prefix silently
-      // discarded newer registry-driven actions (shipment backlog, aging,
-      // value exposure, etc.) and left Easy Mode with one trivial chart.
-      .filter(item => item.analysisAction.id !== session.analysisAction.id)
-      .filter(item => item.runtimePlanPreview.status !== 'blocked')
-      // Execute a bounded candidate pool first. Set membership is decided only
-      // after governed results exist, by the visual narrative composer.
-      .slice(0, 6);
+    const capabilityInventory = buildPresentationCapabilityInventory({
+      primaryAction: session.analysisAction,
+      primaryRuntimeIntent: session.runtimeIntent,
+      supportingAnalyses: session.supportingAnalyses,
+    });
+    const storyRequestPlan = planPresentationStoryRequests({
+      inventory: capabilityInventory,
+      primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+      budget: 6,
+    });
+    // Execute a bounded role-aware request plan over capabilities that already
+    // exist in the governed workspace. Presentation planning may choose a
+    // companion beyond the old first-six order, but cannot create metrics,
+    // formulas, joins, or mutate Understanding.
+    const candidates = resolveRequestedSupportingAnalyses({
+      supportingAnalyses: session.supportingAnalyses,
+      requestPlan: storyRequestPlan,
+    });
     if (candidates.length === 0) {
       setSupportingCharts([]);
       return;
