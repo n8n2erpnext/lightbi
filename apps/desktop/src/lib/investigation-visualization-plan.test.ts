@@ -42,7 +42,7 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(plan?.result.metricIds).toEqual(['cost','revenue']);
     expect(plan?.visualizationPlan.patternId).toBe('relationship_scatter');
     expect(plan?.visualizationPlan.rendererFamily).toBe('scatter');
-    expect(plan?.visualizationPlan.governance.mbAuthority).toBe('advisory_only');
+    expect(plan?.visualizationPlan.governance.mbAuthority).toBe('presentation_vote_within_legal_set');
   });
 
   it('maps a real numeric distribution to the histogram family instead of category bars', () => {
@@ -156,7 +156,7 @@ describe('DPR-6 Investigation visualization adapter', () => {
     });
     expect(plan?.visualizationPlan.analyticalIntent).toBe('risk_concentration');
     expect(plan?.visualizationPlan.patternId).toBe('concentration_pareto');
-    expect(plan?.visualizationPlan.governance).toMatchObject({ metricAuthority: 'upstream_only', mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true });
+    expect(plan?.visualizationPlan.governance).toMatchObject({ metricAuthority: 'upstream_only', mbAuthority: 'presentation_vote_within_legal_set', deterministicSuitabilityFinal: true });
   });
 
   it('keeps the full governed high-cardinality result while planning a bounded Top-N ranking presentation', () => {

@@ -47,7 +47,7 @@ describe('DPR-6 investigation chart persistence', () => {
       expect.stringMatching(/caus/i),
     ]));
     expect(savedPlan.visualizationPlan.governance).toMatchObject({
-      metricAuthority: 'upstream_only', mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true,
+      metricAuthority: 'upstream_only', mbAuthority: 'presentation_vote_within_legal_set', deterministicSuitabilityFinal: true,
     });
   });
 });

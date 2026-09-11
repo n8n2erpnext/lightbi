@@ -34,7 +34,7 @@ function item(input: {
         schemaVersion: 'lightbi.visualization-plan.v1', planId: `visual:${input.id}`,
         analyticalIntent: actionType === 'trend' ? 'trend' : 'category_comparison', patternId: 'category_compare',
         rendererFamily: (input.renderer ?? chartType) as any, status: 'planned', candidates: [], requiredSurfaces: ['preview'], patternRules: null,
-        governance: { metricAuthority: 'upstream_only', evidenceAuthority: 'upstream_only', mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true, retrievalRankIsConfidence: false },
+        governance: { metricAuthority: 'upstream_only', evidenceAuthority: 'upstream_only', mbAuthority: 'presentation_vote_within_legal_set', deterministicSuitabilityFinal: true, retrievalRankIsConfidence: false },
       },
       primaryVisualization: { type: chartType, xField: input.dimension, seriesFields: [input.metric] },
       governance: { resultAuthority: 'governed_metric_results', evidencePolicy: 'source_bound', rawMultiSourceJoinAllowed: false },

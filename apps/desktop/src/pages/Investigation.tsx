@@ -251,6 +251,7 @@ export const Investigation: React.FC = () => {
     const storyRequestPlan = planPresentationStoryRequests({
       inventory: capabilityInventory,
       primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+      perspectiveId: selectedPerspectiveId,
       budget: 6,
     });
     // Execute a bounded role-aware request plan over capabilities that already

@@ -213,7 +213,16 @@ test('DPR-10 Gate D exposes the canonical 30-chart library and preserves officia
   assert.match(domainProfile, /selectionSource: officialPrior\.length > 0 \? 'official_domain_prior' : 'inferred_domain_advice'/);
   assert.match(domainProfile, /candidateLibraryScope: 'canonical_30_patterns'/);
   assert.match(planner, /deterministicSuitabilityFinal: true/);
-  assert.match(planner, /mbAuthority: 'advisory_only'/);
+  assert.match(planner, /mbAuthority: 'presentation_vote_within_legal_set'/);
+  assert.match(planner, /ballotTrace/);
+  assert.match(planner, /createPresentationBallot/);
+  const ballot = await read('apps/desktop/src/lib/presentation-ballot.ts');
+  assert.match(ballot, /deterministicAuthority: 'hard_veto_only'/);
+  assert.match(ballot, /mbMayChooseWithinLegalSet: true/);
+  assert.match(ballot, /mayAuthorizeMetric: false/);
+  assert.match(ballot, /mayAuthorizeFormula: false/);
+  assert.match(ballot, /mayAuthorizeJoin: false/);
+  assert.match(ballot, /mayMutateUnderstanding: false/);
   assert.match(investigationPlan, /resolveInvestigationVisualizationIntent/);
   assert.match(planner, /if \(type === 'distribution'\) return 'distribution';/);
   assert.match(investigationPlan, /analyticalIntent === 'distribution'/);

@@ -54,6 +54,6 @@ describe('Gate D official / inferred / shape-only selection contract', () => {
     expect(plan.status).toBe('planned');
     expect(plan.patternId).toBe('distribution_box');
     expect(plan.candidates[0]).toMatchObject({ patternId: 'distribution_box', fromDomainPrior: true, eligible: true, rendererAvailable: true });
-    expect(plan.governance).toMatchObject({ mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true });
+    expect(plan.governance).toMatchObject({ mbAuthority: 'presentation_vote_within_legal_set', deterministicSuitabilityFinal: true });
   });
 });

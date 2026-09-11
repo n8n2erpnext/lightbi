@@ -11,6 +11,7 @@ import {
 } from './visualization-ontology';
 import { evaluateVisualizationSuitability, type VisualizationSuitabilityInputV1 } from './visualization-suitability';
 import { officialDomainPatternOrderForIntent } from './domain-chart-sets';
+import { createPresentationBallot, type PresentationBallotTraceV1 } from './presentation-ballot';
 import {
   rendererCapabilityForPattern,
   rendererSupportsSurfaces,
@@ -49,6 +50,8 @@ export type GovernedVisualizationCandidateV1 = {
   suitabilityReasons: string[];
   rendererAvailable: boolean;
   fromDomainPrior: boolean;
+  fromMbPrior: boolean;
+  fromOfficialDomainPrior: boolean;
 };
 
 export type GovernedVisualizationPlanV1 = {
@@ -61,6 +64,7 @@ export type GovernedVisualizationPlanV1 = {
   candidates: GovernedVisualizationCandidateV1[];
   requiredSurfaces: VisualizationRendererSurfaceV1[];
   presentationShaping?: VisualizationPresentationShapingV1 | null;
+  ballotTrace: PresentationBallotTraceV1;
   patternRules: null | {
     colorSemantics: VisualizationColorSemanticsV1[];
     labelRules: string[];
@@ -72,7 +76,7 @@ export type GovernedVisualizationPlanV1 = {
   governance: {
     metricAuthority: 'upstream_only';
     evidenceAuthority: 'upstream_only';
-    mbAuthority: 'advisory_only';
+    mbAuthority: 'presentation_vote_within_legal_set';
     deterministicSuitabilityFinal: true;
     retrievalRankIsConfidence: false;
   };
@@ -113,12 +117,11 @@ function candidateOrder(input: GovernedVisualizationPlanInputV1): VisualizationP
   const defaults = DEFAULT_PATTERN_ORDER[input.analyticalIntent] ?? intentPatterns;
   const officialDomainId = input.officialDomainId ?? input.domainProfile?.domainId;
   const officialDomain = officialDomainPatternOrderForIntent(officialDomainId, input.analyticalIntent);
-  const domain = (input.domainProfile?.preferredPatternIds ?? [])
-    .filter(patternId => VISUALIZATION_PATTERN_BY_ID_V1.get(patternId)?.intents.includes(input.analyticalIntent));
-  // MB advice is ranked for this exact question/perspective. It may reorder only
-  // patterns already compatible with the analytical intent; deterministic
-  // suitability and renderer capability remain the admission authority below.
-  return uniquePatterns([...domain, ...officialDomain, ...defaults, ...intentPatterns]);
+  const mbVote = input.domainProfile?.preferredPatternIds ?? [];
+  // CPR-3 evaluates MB proposals even when they are later hard-vetoed. This
+  // keeps rejection reasons auditable instead of silently filtering a vote
+  // before suitability/renderer checks can explain why it lost.
+  return uniquePatterns([...mbVote, ...officialDomain, ...defaults, ...intentPatterns]);
 }
 export function createGovernedVisualizationPlan(
   input: GovernedVisualizationPlanInputV1,
@@ -132,16 +135,14 @@ export function createGovernedVisualizationPlan(
       }
     : input.cardinality;
   const officialDomainId = input.officialDomainId ?? input.domainProfile?.domainId;
-  const domainPrior = new Set([
-    ...(input.domainProfile?.preferredPatternIds ?? []),
-    ...officialDomainPatternOrderForIntent(officialDomainId, input.analyticalIntent),
-  ]);
+  const mbPrior = input.domainProfile?.preferredPatternIds ?? [];
+  const officialDomainPrior = officialDomainPatternOrderForIntent(officialDomainId, input.analyticalIntent);
+  const domainPrior = new Set([...mbPrior, ...officialDomainPrior]);
   const queue = candidateOrder(input).map(patternId => ({ patternId, fallback: false }));
   const visited = new Set<VisualizationPatternIdV1>();
   const candidates: GovernedVisualizationCandidateV1[] = [];
-  let selected: VisualizationPatternIdV1 | null = null;
 
-  while (queue.length > 0 && !selected) {
+  while (queue.length > 0) {
     const next = queue.shift()!;
     if (visited.has(next.patternId)) continue;
     visited.add(next.patternId);
@@ -164,10 +165,31 @@ export function createGovernedVisualizationPlan(
       suitabilityReasons: suitability.blockingReasons,
       rendererAvailable,
       fromDomainPrior: domainPrior.has(next.patternId),
+      fromMbPrior: mbPrior.includes(next.patternId),
+      fromOfficialDomainPrior: officialDomainPrior.includes(next.patternId),
     });
-    if (suitability.eligible && rendererAvailable) selected = next.patternId;
-    else definition.fallbacks.forEach(patternId => queue.push({ patternId, fallback: true }));
+    if (!suitability.eligible || !rendererAvailable) definition.fallbacks.forEach(patternId => queue.push({ patternId, fallback: true }));
   }
+
+  const defaults = DEFAULT_PATTERN_ORDER[input.analyticalIntent] ?? VISUALIZATION_PATTERN_LIBRARY_V1
+    .filter(pattern => pattern.intents.includes(input.analyticalIntent))
+    .map(pattern => pattern.id);
+  const ballotTrace = createPresentationBallot({
+    stage: 'post_execution',
+    options: candidates.map(candidate => ({
+      optionId: candidate.patternId,
+      legal: candidate.eligible && candidate.rendererAvailable,
+      hardVetoReasons: [
+        ...candidate.suitabilityReasons,
+        ...(candidate.rendererAvailable ? [] : ['renderer_surface_unavailable']),
+      ],
+    })),
+    mbPreferredOptionIds: mbPrior,
+    domainPreferredOptionIds: officialDomainPrior,
+    defaultOptionIds: defaults,
+    limit: 1,
+  });
+  const selected = (ballotTrace.selectedOptionIds[0] as VisualizationPatternIdV1 | undefined) ?? null;
 
   const definition = selected ? VISUALIZATION_PATTERN_BY_ID_V1.get(selected)! : null;
   const renderer = selected ? rendererCapabilityForPattern(selected) : null;
@@ -194,6 +216,7 @@ export function createGovernedVisualizationPlan(
     candidates,
     requiredSurfaces: [...requiredSurfaces],
     presentationShaping: input.presentationShaping ?? null,
+    ballotTrace,
     patternRules: definition ? {
       colorSemantics: [...definition.colorSemantics],
       labelRules: [...definition.labelRules],
@@ -204,7 +227,7 @@ export function createGovernedVisualizationPlan(
     } : null,
     governance: {
       metricAuthority: 'upstream_only', evidenceAuthority: 'upstream_only',
-      mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true,
+      mbAuthority: 'presentation_vote_within_legal_set', deterministicSuitabilityFinal: true,
       retrievalRankIsConfidence: false,
     },
   };

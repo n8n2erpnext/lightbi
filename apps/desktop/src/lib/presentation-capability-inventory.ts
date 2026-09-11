@@ -5,6 +5,8 @@ import { officialDomainComplementRoles, officialDomainStoryOrder } from './domai
 import { resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
 import type { VisualizationAnalyticalIntentV1 } from './visualization-ontology';
 import type { VisualNarrativeStoryRoleV1 } from './visual-narrative-composition';
+import { adviseMicroBrainPresentation, type MicroBrainPresentationAdviceV1, type MicroBrainPresentationQueryV1 } from './understanding-core/micro-brain/presentation-advisor';
+import { createPresentationBallot, microBrainStoryRoleOrder, type PresentationBallotTraceV1 } from './presentation-ballot';
 
 export const PRESENTATION_CAPABILITY_INVENTORY_VERSION = 'lightbi.presentation-capability-inventory.v1' as const;
 export const PRESENTATION_STORY_REQUEST_VERSION = 'lightbi.presentation-story-request.v1' as const;
@@ -30,6 +32,7 @@ export type PresentationCapabilityCandidateV1 = {
 export type PresentationCapabilityInventoryV1 = {
   schemaVersion: typeof PRESENTATION_CAPABILITY_INVENTORY_VERSION;
   primaryActionId: string;
+  primaryQuestion: string;
   primaryAnalyticalIntent: VisualizationAnalyticalIntentV1;
   candidates: PresentationCapabilityCandidateV1[];
   governance: {
@@ -42,6 +45,7 @@ export type PresentationCapabilityInventoryV1 = {
 };
 
 export type PresentationStoryRequestReasonV1 =
+  | 'mb_requested_role'
   | 'domain_requested_role'
   | 'role_diversity'
   | 'bounded_fallback';
@@ -60,6 +64,8 @@ export type PresentationStoryRequestPlanV1 = {
   requestedRoles: VisualNarrativeStoryRoleV1[];
   budget: number;
   selections: PresentationStoryRequestSelectionV1[];
+  ballotTrace: PresentationBallotTraceV1;
+  microBrain: { brainVersion: string; indexVersion: string; conceptIds: string[] };
   governance: {
     bounded: true;
     candidatesMustAlreadyExist: true;
@@ -105,6 +111,7 @@ export function buildPresentationCapabilityInventory(input: {
   return {
     schemaVersion: PRESENTATION_CAPABILITY_INVENTORY_VERSION,
     primaryActionId: input.primaryAction.id,
+    primaryQuestion: input.primaryAction.description || input.primaryAction.opportunityName,
     primaryAnalyticalIntent,
     candidates,
     governance: {
@@ -120,12 +127,35 @@ export function buildPresentationCapabilityInventory(input: {
 export function planPresentationStoryRequests(input: {
   inventory: PresentationCapabilityInventoryV1;
   primaryDomain?: string | null;
+  perspectiveId?: string | null;
   budget?: number;
+  advisor?: (query: MicroBrainPresentationQueryV1) => MicroBrainPresentationAdviceV1;
 }): PresentationStoryRequestPlanV1 {
   const budget = Math.max(1, Math.min(8, Math.trunc(input.budget ?? 6)));
   const ready = input.inventory.candidates.filter(candidate => candidate.runtimeReady);
   const requestedRoles = officialDomainComplementRoles(input.primaryDomain, input.inventory.primaryAnalyticalIntent);
   const storyOrder = officialDomainStoryOrder(input.primaryDomain).filter(role => role !== 'answer');
+  const legalRoles = [...new Set(ready.map(candidate => candidate.storyRole))];
+  const advisor = input.advisor ?? adviseMicroBrainPresentation;
+  const advice = advisor({
+    domainId: input.primaryDomain ?? undefined,
+    perspectiveId: input.perspectiveId ?? undefined,
+    analyticalIntent: input.inventory.primaryAnalyticalIntent,
+    userQuestion: input.inventory.primaryQuestion,
+    semanticSignals: [...new Set(ready.flatMap(candidate => [...candidate.dimensions, ...candidate.measures]))],
+    availableRoles: legalRoles,
+    limit: 12,
+  });
+  const mbRoles = microBrainStoryRoleOrder(advice);
+  const domainRoles = [...new Set([...requestedRoles, ...storyOrder])];
+  const ballotTrace = createPresentationBallot({
+    stage: 'pre_execution',
+    options: legalRoles.map(optionId => ({ optionId, legal: true })),
+    mbPreferredOptionIds: mbRoles,
+    domainPreferredOptionIds: domainRoles,
+    defaultOptionIds: legalRoles,
+    limit: Math.min(budget, legalRoles.length),
+  });
   const selected = new Map<string, PresentationStoryRequestSelectionV1>();
 
   const addBestForRole = (role: VisualNarrativeStoryRoleV1, reason: PresentationStoryRequestReasonV1) => {
@@ -137,8 +167,14 @@ export function planPresentationStoryRequests(input: {
     selected.set(candidate.actionId, { actionId: candidate.actionId, storyRole: candidate.storyRole, reason, sourceIndex: candidate.sourceIndex });
   };
 
-  requestedRoles.forEach(role => addBestForRole(role, 'domain_requested_role'));
-  storyOrder.forEach(role => addBestForRole(role, 'role_diversity'));
+  ballotTrace.selectedOptionIds.forEach(role => addBestForRole(
+    role as VisualNarrativeStoryRoleV1,
+    mbRoles.includes(role as VisualNarrativeStoryRoleV1)
+      ? 'mb_requested_role'
+      : requestedRoles.includes(role as VisualNarrativeStoryRoleV1)
+        ? 'domain_requested_role'
+        : 'role_diversity',
+  ));
 
   ready
     .filter(candidate => !selected.has(candidate.actionId))
@@ -160,6 +196,12 @@ export function planPresentationStoryRequests(input: {
     requestedRoles: [...requestedRoles],
     budget,
     selections: [...selected.values()],
+    ballotTrace,
+    microBrain: {
+      brainVersion: advice.brainVersion,
+      indexVersion: advice.indexVersion,
+      conceptIds: advice.candidates.map(candidate => candidate.hit.conceptId),
+    },
     governance: {
       bounded: true,
       candidatesMustAlreadyExist: true,
