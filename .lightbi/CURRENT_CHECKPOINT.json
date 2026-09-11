@@ -1,8 +1,8 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-11T14:26:43+07:00",
-  "status": "dpr10_visual_narrative_semantic_remediation_source_green_next_deploy_pending",
-  "activeRuntime": "NEXT Core 5272 PID 3376963; public Gateway 5273 PID 2436036 still serves Product 6ba98d9d; Control Plane 5274 PID 1116289; private audit Gateway 5293 PID 216483 serves exact remediation dist from Product 1ad549ac; Production/51xx untouched",
+  "updatedAt": "2026-09-11T18:52:39+07:00",
+  "status": "dpr10_chart_presentation_plane_rebuild_planned_owner_web_uat_failed",
+  "activeRuntime": "NEXT Core 5272 PID 3376963; public Gateway 5273 PID 800669 still serves rejected-for-chart-UAT immutable Product 1ad549ac from dpr10-visual-remediation-1ad549ac; Control Plane 5274 PID 1116289 / 435e38a; Trust unchanged; Production/51xx untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
@@ -10,37 +10,39 @@
     "head": "1ad549ac4a1b7a2b256ad7fe7df261d1a1647762",
     "worktreeClean": true,
     "modifiedFiles": 0,
-    "liveUiSource": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
+    "liveUiSource": "1ad549ac4a1b7a2b256ad7fe7df261d1a1647762",
     "auditOrigin": "http://127.0.0.1:5293/app/"
   },
   "dpr10": {
-    "state": "ACTIVE — §23B.16 VN-R1..R10 source/private-browser remediation green; immutable NEXT deploy + exact-live owner Web UAT pending",
-    "canonicalPlanSection": "23B.16",
+    "state": "ACTIVE — exact NEXT 1ad549ac owner Web UAT FAIL for chart behavior; §23B.17 Chart Presentation Plane Rebuild planned; Understanding/Data frozen; native E3/E4 blocked",
+    "canonicalPlanSection": "23B.17",
     "completed": [
-      "canonical Single exact candidate 126/126 executed; 0 fail/timeout/overflow/pageerror",
-      "synthetic 14/14 oracle-compliant; 13 executable + S08 truthful abstention; 0 oracle violation",
-      "Multi R10 valid 34/34 across 7 combinations; 7/7 Data Trust; 0 fail/overflow/pageerror/duplicate follow-up",
-      "Accounting-only Profitability executes governed gross-profit period partitions without cross-period joins",
-      "modified regression aggregate 11 files / 110 tests PASS",
-      "root test:release-1.0 PASS; build 3832; governed 11 files / 50 tests; release_1_0_suite=passed",
-      "Product committed and pushed at 1ad549ac4a1b7a2b256ad7fe7df261d1a1647762"
+      "source/Git root-cause audit confirmed dead/unwired official domain chart sets, split domain knowledge systems, late MB actuation, early intent lock, unused storyOrder/complement signal, 1ad complementarity regression, late combo discovery, 1/3/5 normalization collapse and module-level false-confidence tests",
+      "owner chart requirements consolidated: real 1/3/5, first-class combo, domain-standard chart policies, material MB vote, consistent default colors, 4-6 palette presets, chart click/filter/BA Step 2 affordance",
+      "scope locked to Chart Presentation Plane only; Understanding/Data truth is frozen",
+      "canonical §23B.17 CPR-0..CPR-8 implementation and acceptance plan authored"
     ],
     "pending": [
-      "immutable NEXT 5273 deployment of exact Product 1ad549ac",
-      "exact-live representative Single + synthetic safety + Multi pair/full-six rerun",
-      "owner Web UAT on exact immutable candidate",
-      "only after owner Web acceptance, resume native E3/E4"
+      "CPR-0 semantic-freeze snapshots and failing actuation/wiring proofs; no behavior change yet",
+      "CPR-1 unify official domain presentation policy and prove runtime actuation",
+      "CPR-2 capability inventory + role-aware candidate request planner",
+      "CPR-3 material MB voting authority + trace",
+      "CPR-4 planned 1/3/5 story composition",
+      "CPR-5 first-class combo planning",
+      "CPR-6 palette/theme/drill interaction closeout",
+      "CPR-7 broad source-driven E2E acceptance",
+      "CPR-8 exact immutable NEXT owner Web UAT; only after explicit acceptance resume native E3/E4"
     ]
   },
-  "nextAction": "Deploy exact Product 1ad549ac4a1b7a2b256ad7fe7df261d1a1647762 immutably to NEXT Gateway 5273 without touching Production/51xx; verify manifest/root identity and run representative exact-live Single, synthetic safety, Multi pair/full-six, then hand public NEXT Web candidate to owner. Do not trigger native E3/E4 before owner Web acceptance.",
+  "nextAction": "Begin §23B.17 CPR-0 only: freeze current Understanding/Data contract outputs and add diagnostic/failing end-to-end proofs that current official-domain policy and MB advice do not actuate runtime presentation sufficiently. Do not change Understanding/Data logic, do not start CPR-1 before CPR-0 evidence is captured, do not touch Production/51xx or native E3/E4.",
   "blockers": [
-    "public NEXT still serves predecessor 6ba98d9d",
-    "owner Web UAT has not yet accepted Product 1ad549ac"
+    "owner Web UAT rejected Product 1ad549ac chart behavior",
+    "native E3/E4 is blocked until rebuilt chart presentation passes exact NEXT owner acceptance"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_NARRATIVE_AUDIT_REMEDIATION_2026-09-11.md",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b16-visual-narrative-semantic-remediation--audit-driven-implementation-gate--2026-09-10"
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b17-chart-presentation-plane-rebuild--owner-uat-reset-and-architecture-correction--2026-09-11",
+    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#154-2026-09-11-owner-web-uat-rejects-1ad549ac-chart-behavior-chart-presentation-plane-rebuild-is-active"
   ]
 }

@@ -1,6 +1,6 @@
 # Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04
 
-Status: **DPR-9 CLOSED; DPR-10 NATIVE UAT #12 FAILED — WHOLE-PRODUCT COHERENCE + NATIVE SHELL RESTORATION ACTIVE**
+Status: **DPR-10 ACTIVE — EXACT NEXT `1ad549ac...` OWNER WEB UAT FAILED FOR CHART BEHAVIOR; §23B.17 CHART PRESENTATION PLANE REBUILD ACTIVE; NATIVE E3/E4 BLOCKED**
 Date: 2026-09-04
 Amended: 2026-09-05 — owner added design-system/i18n hardening and Frappe UI reference direction.
 Amended: 2026-09-06 — owner elevated Frappe Books as a primary product-UX study source and added a canonical chart-pattern/visual-grammar library direction.
@@ -21,9 +21,10 @@ Amended: 2026-09-08 — DPR-8 foundation chunk source/live-closed at Product `e0
 Amended: 2026-09-08 — DPR-8 Understanding chunk source/live-closed at Product `900d7aa...`: the first live candidate `524747c...` passed functional browser checks but failed the explicit section-17 above-fold CTA acceptance, so closure was withheld; the bounded density follow-up keeps the primary Analyze CTA inside a 1440x900 desktop viewport while preserving semantic/evidence authority. DPR-8 remains active; Home / New Brief is the first remaining unmigrated bounded target in section 17.
 Amended: 2026-09-08 — DPR-8 Home / New Brief chunk source/live-closed at Product `eeaf446...`: the question prompt remains the command surface, quick suggestions remain compact actions/pills, source-entry and session-history card stacks are flattened into calm rows/list structure, and live desktop/compact browser acceptance preserves responsive behavior. DPR-8 remains active; Decision Workspace is the next bounded target in section 17.
 Amended: 2026-09-09 — owner UAT of exact Windows run #12 / Product `4848c0c...` rejected DPR-10 closure and re-baselined the remaining work as one whole-product coherence program: restore native File/Edit/View/Help shell, close signed installation-trust release orchestration, restore multi-file history visibility, make Deep BA/Step 2 side docking explicit-user-only, eliminate residual legacy card/rounding language across all routes/dialogs, expand the existing governed chart ontology into real ECharts renderer/palette/template coverage, and make Dashboard visualization composition semantically varied rather than uniformly Bar/Row.
+Amended: 2026-09-11 — owner Web UAT of exact NEXT Product `1ad549ac...` rejected chart/presentation acceptance despite green automated suites. §23B.17 reopens only the Chart Presentation Plane: Understanding/data semantics remain frozen; the rebuild gives MB/domain policy material voting power inside the legal presentation space, restores official-domain chart-set wiring, makes 1/3/5 a planned story contract, plans combo candidates before execution, and replaces module-level false-confidence tests with end-to-end actuation/oracle gates.
 Scope: Question/Perspective, narrative, visualization, Dashboard, evidence, export and product UI-surface refactor.
 Authority: design/implementation plan; not runtime or metric authority.
-Code-audit snapshot: current clean Product worktree is `codex/dpr0-contract-freeze` at `4848c0cc5d22ef6b14236e823ab4ef497cb75e0f`. DPR-0 through DPR-9 are closed; DPR-10 remains active because exact Windows run #12 failed owner native UAT. The current §23B audit re-read the native menu/titlebar configuration, installation-trust identity path, session-history restore path, Deep BA/Step 2 dock state, route/dialog legacy-surface inventory, ECharts renderer registry and visualization ontology from this exact Product head before re-baselining closure work.
+Code-audit snapshot: current Product branch is `codex/dpr0-contract-freeze` at exact live NEXT source `1ad549ac4a1b7a2b256ad7fe7df261d1a1647762`. DPR-0 through DPR-9 remain closed; DPR-10 is active. Owner Web UAT rejected chart behavior on this exact candidate after source/release/live machine gates passed. The §23B.17 root-cause audit re-read current visualization planning/composition, official-domain chart-set/playbook, MB presentation-advice, supporting-candidate generation, renderer registry and Git history `6be3422f -> 6ba98d9d -> 1ad549ac` before re-baselining the chart-only rebuild. Understanding/Data semantics are explicitly frozen.
 Supersedes: none.
 
 Repository target when implementation is authorized: public LightBI product successor.
@@ -1325,6 +1326,169 @@ The remediation pipeline is mandatory and ordered: `selected question -> governe
 **VN-R10 — Multi-file systematic closeout.** After Single/synthetic gates pass, execute the already-inventoried Multi matrix across 7 file sets (Sales pair, Accounting pair, Logistics pair, three cross-domain 4-file sets, full 6-file set) and all executable perspectives. Validate primary chart, period mode, follow-up BA answers, supporting metrics, source separation and generated Dashboard composition. Multi fixes must reuse the same semantic/complementarity grammar; do not create a second intelligence system.
 
 **VN-R1..R10 source/browser closure — 2026-09-11.** Product `1ad549ac4a1b7a2b256ad7fe7df261d1a1647762` (`fix(dpr10): harden visual narrative semantics`) closes this remediation at source + private-browser level. Fresh exact-candidate evidence: canonical Single `126/126` executed across the six tracked ERP files with `0` fail, `0` timeout, `0` overflow and `0` pageerror; only the two expected governed-delivery count answers remained intentionally no-visual. Controlled synthetic benchmark remained `14/14` oracle-compliant (`13` executable + S08 truthful abstention), `0` oracle violation. Multi R10 completed all `34/34` executable perspectives across the seven declared file combinations with `0` fail, `0` overflow, `0` pageerror and no duplicate follow-up label/answer; all `7/7` Data Trust cases stayed on the trust surface. The Accounting-only Profitability defect found by the repaired harness was fixed by executing governed `gross_profit` as independent Accounting period partitions with `no_cross_period_row_join`; existing Sales↔Accounting relationship-gated execution remains unchanged when Sales is present. Strict MB A/B remained non-degrading and the release contract still proves deterministic bounded `advisory_only` behavior; no MB metric/formula/join authority was added. Final broad remediation aggregate PASSed `11 files / 110 tests`; i18n coverage and registry gates PASSed after cataloging the new visible copy; the release-authoritative root suite PASSed source-size over `557` production modules, production build `3832` modules, governed regression `11 files / 50 tests`, and ended `release_1_0_suite=passed`. Hard-code/private-port scans and `git diff --check` were clean. Product was committed and pushed on `codex/dpr0-contract-freeze` at the exact SHA above. This is **not** owner Web acceptance: public NEXT 5273 still serves predecessor `6ba98d9d...` until immutable deployment of `1ad549ac4a1b7a2b256ad7fe7df261d1a1647762` and exact-live representative reruns. Native E3/E4 remains blocked until owner accepts that Web candidate; Production/51xx remains untouched.
+
+**Immutable NEXT exact-live acceptance — 2026-09-11.** Exact Product `1ad549ac4a1b7a2b256ad7fe7df261d1a1647762` was rebuilt from a clean worktree (`3832` modules) and copied into immutable `/home/ubuntu/services/lightbi-next-web/dpr10-visual-remediation-1ad549ac` with directories `0555`, files `0444`, and a `lightbi.next-ui-build.v1` manifest. A final-precedence EnvironmentFile changes only `LIGHTBI_INTERNAL_WEB_ROOT`; Gateway 5273 rotated `2436036 -> 800669` while Core 5272 remained `3376963`, Control Plane 5274 remained `1116289`, and Trust containers remained `6f8d49919877` installation issuer / `ba78fa6bb2ce` attestation / `c58c90a4604b` signer / `cb6395655a5d` PRO delivery. Direct and public `/app` return HTTP 200 and the public manifest identifies exact UI source `1ad549ac...`, NEXT generation `g-2026-09-05-next-034`, and CP `435e38a...`. Exact-live Chromium PASSed the Visual Narrative/Dashboard matrix: Single Revenue stayed one 220px answer visual with no filler support; its Dashboard packed four KPI widgets plus one full-width hero; full-six Executive Overview stayed two-period `comparison` at 230px and its Dashboard packed `7/7/6` KPI columns plus a full-width hero; Revenue versus Operations preserved different governed/safe-descriptive questions with no overflow/pageerror. Repaired Multi R10 exact-live probes PASSed Accounting pair `4/4` and full-six `7/7`, including the Accounting-only Profitability fix, all analytical follow-ups distinct, Data Trust on its own surface, and zero overflow/pageerror. Representative synthetic safety also PASSed: S08 Inventory Value remained `question_not_executable_or_not_exposed` with no visible Inventory Value/Exposure, Unit Price, Quantity or record-count surrogate; S09A/S09B materialized `target_combo`. A broad public synthetic replay was treated as diagnostic only because its legacy run-button harness can race visible/hidden execution controls on the public route; the authoritative pre-deploy synthetic gate remains the clean exact-worktree `14/14` oracle benchmark. This exact-live acceptance is engineering evidence, **not owner Web acceptance**. Owner Web UAT on `https://lightbi-next.thaiduy.digital/app/` is now the only remaining Web gate; native E3/E4 stays blocked until owner acceptance, and Production/51xx remains untouched.
+
+
+### 23B.17 Chart Presentation Plane Rebuild — owner UAT reset and architecture correction — 2026-09-11
+
+**Status: ACTIVE DESIGN/IMPLEMENTATION PLAN. Owner Web UAT of exact NEXT Product `1ad549ac4a1b7a2b256ad7fe7df261d1a1647762` is FAIL for chart behavior.** The machine/release gates from §23B.16 remain valid evidence for the defects they actually measured, but they are not acceptance authority for the chart experience. Native E3/E4 remains blocked. Production/51xx remains untouched.
+
+#### 23B.17.1 Scope lock — chart/presentation only
+
+This rebuild is intentionally narrower than §23B.16. It must **not reopen the Understanding/Data plane**, which the owner considers temporarily stable enough to freeze while chart behavior is repaired.
+
+Frozen inputs include semantic binding, canonical metric/dimension identity, source role, domain-understanding output, normalization, source/evidence binding, governed answerability, formula authority, SQL generation, aggregation semantics, relationship/join authority, multi-source governance, trust, canonical source boundary, MB semantic recovery and numeric results. The chart rebuild may consume these outputs but may not reinterpret or strengthen them.
+
+The permitted mutation boundary begins only after a governed/canonical answer capability exists: `governed understood result -> presentation capability inventory -> domain/MB story ballot -> requested legal presentation analyses -> deterministic legality/suitability veto -> final presentation ballot -> 1/3/5 composition + legal combinations -> renderer/theme/interactions`.
+
+Regression contract: for the same tracked file/question before and after this work, semantic metric IDs, dimension IDs, governed totals, source/evidence refs, answerability and source-separation contracts must remain byte-equivalent or contract-equivalent. A chart patch that changes Understanding/Data truth without a separately approved correctness defect is a hard FAIL.
+
+#### 23B.17.2 Owner-visible failures that triggered the rebuild
+
+The exact live candidate showed real semantic improvements over Production Beta but failed the requested presentation behavior. Repeated question changes still produced predominantly line-wave or ordinary bar visuals; compound/combo stories were rarely visible; 1/3/5 behaved effectively as 1 almost everywhere; horizontal ranked bars used a pale teal treatment that looked unrelated to the darker default chart language; the explicit interaction affordance telling users to click a chart to filter/drill into BA Step 2 disappeared; Display Options had no user-selectable chart palette presets. A raw internal reason code was also observed on the business surface and remains presentation debt.
+
+These are owner acceptance failures even when individual charts are technically valid. The requirement is not decorative variety: the rendered visual family, story composition and interactions must materially reflect the selected question, perspective, domain and available governed evidence.
+
+#### 23B.17.3 Root-cause ledger — confirmed from current source and Git history
+
+**RC-1 — Official domain chart sets were implemented but not wired into Product runtime.** Commit `6be3422f` created `domain-chart-sets.ts`, including `OFFICIAL_DOMAIN_CHART_SETS_V1` for the six official domains and `selectOfficialDomainChartTrio()`. Current source search shows no Product runtime import/call site; the module is effectively tested knowledge rather than execution authority.
+
+**RC-2 — Two overlapping domain-presentation knowledge systems drifted.** `domain-chart-sets.ts` and later `domain-visual-playbooks.ts` describe related primary/support/combo/domain knowledge with separate schemas and consumers. Research could therefore be encoded, unit-tested and still not control the path the user sees.
+
+**RC-3 — MB enters after the candidate space is already constrained.** `Investigation.tsx` derives support from upstream `session.supportingAnalyses`, excludes blocked items and truncates the pool with `.slice(0, 6)` before Visual Narrative planning. MB cannot request a missing companion analysis if it was never admitted into that pool.
+
+**RC-4 — Analytical intent locks the pattern family too early.** `visualization-planner.ts` filters MB/domain preferences to patterns compatible with the already-selected intent, then takes the first eligible renderer-capable pattern and stops. For `trend`, line remains first in both default and several domain orders, producing the observed line dominance even when richer legal stories exist.
+
+**RC-5 — Domain story knowledge exists without runtime actuation.** `storyOrder` is declared per official domain but has no runtime consumer. `officialComplementToPrimary` is computed in the narrative adapter, but current composition no longer treats that flag as an admission reason.
+
+**RC-6 — The latest semantic-hardening remediation regressed domain complement admission.** Commit `6ba98d9d` originally allowed `candidate.officialComplementToPrimary` and evidence-role support through `isComplementary()`. Commit `1ad549ac` replaced this with `complementarityToPrimary()` to reject duplicate/weak charts; the new rule effectively requires metric overlap or a legal combination, thereby removing legitimate domain-approved driver/composition/risk companions. The anti-noise fix over-corrected and collapsed many valid 3/5 stories to 1.
+
+**RC-7 — Combo is discovered too late and by coincidence.** Domain combo recipes are evaluated only after two independently materialized analysis items already exist and align in source/grain/dimension. MB/domain cannot first request `Revenue + Quantity`, `Profit + Margin`, `Volume + Cost`, or another known legal pair and ask the governed executor to produce the companion result.
+
+**RC-8 — 1/3/5 was implemented as post-filter normalization, not a story plan.** If two non-combinable units survive, the current composer demotes one and returns 1; four normalize to 3. Because candidate admission is already restrictive, the legal-count check can PASS while virtually every real question renders one chart. This contradicts the owner requirement that 1/3/5 be an actual narrative composition capability.
+
+**RC-9 — Rich renderer families still sit on coarse legacy chart abstractions.** The renderer registry has 30 semantic families, but several persistence/preview paths reduce many rich families to base `Bar`/`Line`/`Table` types. Pattern metadata can recover richer rendering on some surfaces, but the coarse base abstraction increases the chance of visual convergence and must not become the selection authority.
+
+**RC-10 — Tests proved isolated modules, not runtime wiring.** Unit tests construct idealized candidate sets by hand, so 3/5 and combo behavior passes without proving that a real source/question can generate those candidates. `domain-chart-sets.test.ts` proves the chart-set module exists, not that runtime consumes it. Release suites therefore produced false confidence while owner UAT still saw line/bar dominance and one-chart stories.
+
+**RC-11 — MB audits measured knowledge quality, not actuation authority.** Independent audits correctly showed MB understands chart/domain/perspective relationships. The missing proof was whether changing MB advice can materially change a legal rendered result. A no-op advisor could therefore score well in retrieval audits while having little Product effect.
+
+#### 23B.17.4 Correct authority model — MB must have a real vote without touching truth
+
+The old rule `MB is advisory_only` was interpreted too weakly: MB could recommend but deterministic code could silently ignore the recommendation for almost every presentation decision. The corrected contract separates **truth authority** from **presentation voting authority**.
+
+Hard deterministic governance remains the veto layer for illegality: missing metric/evidence, unauthorized formula/join, incompatible grain/unit, invalid time semantics, unsupported renderer surface, unsafe causality, invalid cardinality/normalization or source-boundary violation. MB can never override those vetoes.
+
+Inside the set of legal/evidence-backed presentation options, however, Domain Policy + MB must have **material voting power** over primary pattern, companion roles, requested companion analyses, combo proposals, story order and target visual count. The deterministic layer may reject an illegal vote, but it must not silently replace all legal MB/domain choices with a fixed first-match default.
+
+Required principle: **deterministic governance decides what must not be rendered; Domain Policy + MB decide what should be rendered among legal alternatives.** MB remains unable to invent facts, but its presence must be observable in presentation behavior.
+
+#### 23B.17.5 One canonical official-domain presentation policy
+
+Retire the split-brain design between `domain-chart-sets` and `domain-visual-playbooks`. Their durable information is to be reconciled into one versioned `OfficialDomainPresentationPolicy` (name may vary in code, responsibility may not).
+
+Each of the six official domains — Revenue, Finance, Inventory, Operations, Customer, Performance — must own one policy containing at least: `storyOrder`, intent-to-primary-pattern preferences, allowed companion roles, chart-set/templates, legal combination recipes, evidence/capability prerequisites, fallbacks, negative/abstain rules, color/label defaults where domain semantics matter, and provenance/research basis.
+
+Adding a future official domain should add/extend one Domain Presentation Policy rather than patching core planner branches. Inferred/open-world domains may use MB advice but must not become official merely because presentation knowledge exists.
+
+#### 23B.17.6 Presentation Capability Inventory — consume Understanding, never redo it
+
+Create a presentation-facing capability manifest derived only from existing governed/canonical outputs. It describes what can legally be requested for presentation without re-running semantic understanding: available governed quantities, dimensions, ordered time grains, source scopes, compatible units, safe descriptive actions, target/reference evidence, legal same-source relationships and already-authorized transformations.
+
+This inventory is a read-only projection. It may not create a new metric, reinterpret a physical field, authorize a formula/join or change source/evidence authority. Its purpose is to let the Story Planner know which presentation requests are feasible before it chooses a story.
+
+#### 23B.17.7 Two-stage MB/Domain ballot
+
+Add an explicit pre-execution `PresentationStoryBallot` over question + perspective + official-domain policy + capability inventory. The ballot should carry at least: desired primary role/pattern candidates, companion story roles, requested governed presentation analyses, preferred story order, proposed legal combination pairs, target visual count `1|3|5`, constraints/abstentions and provenance/rationale.
+
+The executor materializes only requests that already exist inside the capability/authority boundary. After execution and deterministic legality/suitability vetoes, run a second `FinalPresentationBallot` over the surviving legal candidates. The final ballot chooses/ranks primary and complements and may select a legal combined presentation.
+
+Every rejected MB/domain vote must retain a machine-readable rejection reason. The Product must be able to answer: `MB preferred X; X was rejected because prerequisite Y was missing/incompatible`. Silent no-op advice is no longer acceptable.
+
+#### 23B.17.8 Candidate-request planning before execution
+
+Do not make MB choose from only the first six upstream support analyses. Story planning must be able to request companion analyses from the frozen capability inventory before the support pool is finalized.
+
+Example: for Revenue over time, Domain/MB may request `Revenue by product` as driver, `Revenue by channel` as composition and `Quantity over the same ordered time grain` as a potential Revenue×Volume combination. Each request is then executed through the existing governed/safe execution lane. If a requested capability does not exist, the story records degradation instead of fabricating it.
+
+The bounded-work requirement remains: candidate requests need a deterministic budget and priority policy, but the budget is applied **after** story roles are proposed, not by blindly slicing the preexisting list before MB can act.
+
+#### 23B.17.9 1/3/5 becomes a planned narrative contract
+
+Supersede the §23B.16 interpretation that `1/3/5` is only final layout normalization. The Story Planner must set a justified target count from the actual question/domain/evidence richness:
+
+- `1` — one strong visual fully answers the question or no distinct legal complement exists;
+- `3` — primary answer + two distinct evidence-backed companion roles form a useful analytical story;
+- `5` — primary answer + four distinct companion roles are justified by evidence and information value.
+
+The runtime should attempt to materialize the planned roles. If the target is 3 or 5 but prerequisites fail, it may degrade to a lower legal count only with explicit `degradedFrom`, missing role/capability and rejection reasons. If required legal companions exist and the result still collapses to 1, acceptance treats that as a planner/wiring defect.
+
+1/3/5 is not a decorative quota: duplicate, unrelated or weak charts remain forbidden. The change is that count is planned from story value before execution rather than discovered accidentally after aggressive filtering.
+
+#### 23B.17.10 Combo/compound stories become first-class planned presentations
+
+Combo planning moves before independent chart materialization. Official recipes may request same-grain pairs/groups such as Actual+Target, Revenue+Volume, Profit+Margin, Revenue+Cost, Volume+Cost, Volume+SLA or other policy-owned relationships.
+
+The executor computes each governed measure independently under existing authority. A combination gate then verifies source scope, grain/dimension alignment, unit/axis semantics, time basis and renderer support. PASS produces one semantic combination unit (`combo_bar_line`, grouped compare, stacked/100%, etc. as appropriate). FAIL degrades to separate legal visuals or a single answer and records why. No recipe may invent formulas or joins.
+
+#### 23B.17.11 Renderer, palette and interaction requirements from owner UAT
+
+Chart-family visual tokens must use one coherent default palette; horizontal ranked bars may not use a pale disconnected color merely because the renderer family is `row`. Family-specific semantics may alter categorical/diverging/status colors, but ordinary single-series charts inherit the selected palette consistently.
+
+Display Options must gain approximately 4–6 curated chart palette presets. At minimum include the LightBI default plus several restrained categorical/analytical alternatives with accessible contrast. The selected palette applies consistently across supported chart families and persists through the existing user-preference boundary. Palette selection is presentation state only and cannot change data/metric semantics.
+
+Restore an explicit interaction affordance beneath/adjacent to interactive analysis charts telling the user that clicking a data point/bar filters/drills the selected evidence and can continue into BA Step 2. Hover/keyboard/accessibility behavior must communicate the same capability. Do not expose raw internal reason codes on the normal business surface; translate them to user-facing limitation copy while retaining technical codes in Evidence/Advanced.
+
+#### 23B.17.12 Acceptance gates — tests must prove actuation, not existence
+
+**Gate C0 — semantic freeze.** Snapshot representative Understanding/Data contracts before chart work. After each chart phase, assert metric/dimension IDs, governed totals, answerability, source refs, source separation and evidence authority are unchanged for unchanged fixtures.
+
+**Gate C1 — official-domain runtime wiring.** Change a controlled legal preference in the canonical Domain Presentation Policy and prove the real runtime selected presentation changes accordingly. A domain-policy module that can change without changing eligible runtime output fails this gate.
+
+**Gate C2 — MB actuation.** For a fixture with two or more legal presentation alternatives, controlled MB ballot A and ballot B must produce the expected different presentation choice while governed truth stays identical. If MB advice changes and rendered output cannot change in any legal case, MB wiring fails.
+
+**Gate C3 — candidate-request actuation.** Prove MB/domain can request a companion analysis not already present in the old first-six support pool, the governed executor materializes it legally, and the story can admit it without altering Understanding.
+
+**Gate C4 — 1/3/5 real-oracle coverage.** Maintain tracked real/synthetic cases with expected `1`, `3` and `5` stories. The suite must fail if every case collapses to 1. Every admitted companion needs a distinct story role and evidence-backed inclusion rationale; every degradation from planned count needs an explicit reason.
+
+**Gate C5 — combo oracles.** Real/synthetic tracked cases must prove at least Actual+Target plus representative Revenue/Operations/Finance legal compound stories. The test starts from source/question/capabilities and must not hand-construct the final combo candidates.
+
+**Gate C6 — domain presentation E2E.** For each of the six official domains, run source/question -> runtime Story Planner -> governed materialization -> final ballot -> rendered chart. Assert primary/allowed/forbidden families and domain companion roles from the canonical policy. Do not accept a test that only calls policy helper functions.
+
+**Gate C7 — anti-dominance without fake diversity.** Track family distribution across the acceptance corpus. A corpus dominated by one default family despite heterogeneous oracle intents triggers review/failure, but no arbitrary Bar/Line/Donut quota is allowed. Case-level semantic oracle remains authoritative.
+
+**Gate C8 — palette/theme.** Default palette is coherent across line/column/horizontal bar/combo/support charts; each configured palette changes all compatible families without changing numeric/evidence output; accessibility/contrast checks pass.
+
+**Gate C9 — chart drill/BA Step 2.** Real browser test clicks a rendered point/bar, observes the exact selected evidence filter/drill state and opens BA Step 2 with the established selected-subject contract. Helper text is visible and localized.
+
+**Gate C10 — owner-observable browser matrix.** Re-run broad Single/Multi/synthetic fixtures on exact immutable NEXT and capture chart-family, planned/achieved count, combo status, MB/domain ballot trace and screenshots. Automated PASS cannot close the chart phase until owner Web UAT explicitly accepts the exact candidate.
+
+#### 23B.17.13 Implementation sequence — do not skip ahead
+
+**CPR-0 — freeze and failing proofs.** Mark `1ad549ac...` owner UAT FAIL for chart acceptance; freeze Understanding/Data contract snapshots; add failing/diagnostic tests proving current domain-chart-set no-op, MB no-op/weak actuation, one-chart collapse, line dominance and missing owner interactions/palette. Do not alter Product behavior yet.
+
+**CPR-1 — unify domain presentation policy.** Reconcile and replace the split `domain-chart-sets` + `domain-visual-playbooks` ownership with one runtime-consumed policy. Preserve research provenance, negative rules and official-domain boundary. Gate C1 must pass before continuing.
+
+**CPR-2 — capability inventory + request planner.** Add the read-only Presentation Capability Inventory and Story Request Planner without changing Understanding outputs. Replace blind pre-MB `.slice(0,6)` behavior with a bounded role-aware request budget. Gate C0 + C3 must pass.
+
+**CPR-3 — MB voting authority + trace.** Add the two-stage ballot and rejection trace. MB may materially choose/rank presentation inside the legal set; deterministic code retains only hard veto authority. Gate C2 must pass with unchanged governed truth.
+
+**CPR-4 — story composition + 1/3/5.** Plan target roles/count before execution, materialize legal companions, record degradation and remove the old `2 -> silently demote -> 1` behavior as the default normalization strategy. Gate C4 must pass on source-driven fixtures.
+
+**CPR-5 — first-class compound/combo planning.** Move combination recipes into the pre-execution story plan, add legal compatibility checks and source-driven combo oracles. Gate C5 must pass.
+
+**CPR-6 — renderer/theme/interaction closeout.** Normalize default family colors, implement 4–6 Display Options palette presets, restore click-to-filter/BA-Step-2 affordance, localize business-facing messages and keep internal codes in Evidence/Advanced. Gates C8/C9 must pass.
+
+**CPR-7 — broad end-to-end acceptance.** Run all six official domains, canonical Single, controlled synthetic oracle set, Multi matrix, MB A/B actuation and semantic-freeze regression. Report planned vs achieved 1/3/5, chart-family distribution, combo frequency where expected and all rejected-vote reasons. No module-only result may substitute for runtime evidence.
+
+**CPR-8 — exact immutable NEXT owner UAT.** Build exact committed SHA, deploy by UI-only immutable Gateway 5273 rotation, rerun representative/browser matrix and hand the exact public NEXT candidate to the owner. Native E3/E4 stays blocked until explicit owner acceptance. Production/51xx remains untouched.
+
+#### 23B.17.14 Definition of Done
+
+This rebuild is not complete because test counts are green. It closes only when: Understanding/Data invariants remain unchanged; the official-domain policy demonstrably controls runtime; MB advice demonstrably changes legal presentation choices in actuation tests; real fixtures produce justified 1/3/5 stories instead of universal 1; required combo cases materialize as compound visuals or truthfully explain missing prerequisites; question changes produce semantically different families when warranted rather than default line/bar convergence; palette and drill/BA-Step-2 UX are restored; exact immutable NEXT browser evidence is green; and the owner explicitly accepts the visual behavior.
+
+The key anti-regression statement is: **a future audit may not conclude that MB/domain knowledge is correct while Product output ignores it without causing an acceptance failure. Knowledge quality and actuation are separate gates, and both are mandatory.**
 
 No Windows/native E3/E4 candidate may supersede Web UAT until VN-R1..R10 are source-green and the new immutable NEXT Web candidate is owner-reviewed. Production/51xx remains separately owner-gated and untouched.
 
