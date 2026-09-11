@@ -129,7 +129,7 @@ const composition = support({
   actionType: 'group_by', dimension: 'Channel', metric: 'sales_revenue', confidence: 92,
 });
 const change = support({
-  id: 'order-volume-trend', label: 'Order volume over time', description: 'How is order volume changing over time?',
+  id: 'order-activity-trend', label: 'Order activity over time', description: 'How is order activity changing over time?',
   actionType: 'trend', dimension: 'OrderDate', metric: 'order_count', confidence: 90,
 });
 const risk = support({

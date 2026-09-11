@@ -1,7 +1,7 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
-import { officialDomainComplementRoles, officialDomainStoryOrder } from './domain-visual-playbooks';
+import { matchOfficialDomainCombinationRecipe, officialDomainComplementRoles, officialDomainStoryOrder } from './domain-visual-playbooks';
 import { resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
 import type { VisualizationAnalyticalIntentV1 } from './visualization-ontology';
 import type { VisualNarrativeLayoutCountV1, VisualNarrativeStoryRoleV1 } from './visual-narrative-composition';
@@ -34,6 +34,8 @@ export type PresentationCapabilityInventoryV1 = {
   primaryActionId: string;
   primaryQuestion: string;
   primaryAnalyticalIntent: VisualizationAnalyticalIntentV1;
+  primaryDimensions: string[];
+  primaryMeasures: string[];
   candidates: PresentationCapabilityCandidateV1[];
   governance: {
     authority: 'presentation_read_only';
@@ -45,10 +47,22 @@ export type PresentationCapabilityInventoryV1 = {
 };
 
 export type PresentationStoryRequestReasonV1 =
+  | 'domain_combination_recipe'
   | 'mb_requested_role'
   | 'domain_requested_role'
   | 'role_diversity'
   | 'bounded_fallback';
+
+export type PresentationCombinationRequestV1 = {
+  recipeId: string;
+  companionActionId: string;
+  companionStoryRole: VisualNarrativeStoryRoleV1;
+  presentation: 'grouped_compare' | 'combo_bar_line';
+  allowExplicitMultiUnit: boolean;
+  rationale: string;
+  sharedDeclaredDimension: string;
+  requiresPostExecutionAlignment: true;
+};
 
 export type PresentationStoryRequestSelectionV1 = {
   actionId: string;
@@ -64,6 +78,7 @@ export type PresentationStoryRequestPlanV1 = {
   requestedRoles: VisualNarrativeStoryRoleV1[];
   targetLayoutCount: VisualNarrativeLayoutCountV1;
   targetCompanionRoles: VisualNarrativeStoryRoleV1[];
+  combinationRequest: PresentationCombinationRequestV1 | null;
   budget: number;
   selections: PresentationStoryRequestSelectionV1[];
   ballotTrace: PresentationBallotTraceV1;
@@ -74,6 +89,19 @@ export type PresentationStoryRequestPlanV1 = {
     understandingMutationAllowed: false;
   };
 };
+
+function normalizePresentationKey(value: string | null | undefined): string {
+  return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function sharedDeclaredDimension(primaryDimensions: readonly string[], candidateDimensions: readonly string[]): string | null {
+  const candidateByKey = new Map(candidateDimensions.map(value => [normalizePresentationKey(value), value] as const));
+  for (const dimension of primaryDimensions) {
+    const match = candidateByKey.get(normalizePresentationKey(dimension));
+    if (match) return match;
+  }
+  return null;
+}
 
 export function presentationStoryRoleForIntent(intent: string): VisualNarrativeStoryRoleV1 {
   if (['target_attainment', 'period_comparison'].includes(intent)) return 'comparison';
@@ -115,6 +143,8 @@ export function buildPresentationCapabilityInventory(input: {
     primaryActionId: input.primaryAction.id,
     primaryQuestion: input.primaryAction.description || input.primaryAction.opportunityName,
     primaryAnalyticalIntent,
+    primaryDimensions: [...input.primaryRuntimeIntent.dimensions],
+    primaryMeasures: [...input.primaryRuntimeIntent.measures],
     candidates,
     governance: {
       authority: 'presentation_read_only',
@@ -138,6 +168,38 @@ export function planPresentationStoryRequests(input: {
   const requestedRoles = officialDomainComplementRoles(input.primaryDomain, input.inventory.primaryAnalyticalIntent);
   const storyOrder = officialDomainStoryOrder(input.primaryDomain).filter(role => role !== 'answer');
   const legalRoles = [...new Set(ready.map(candidate => candidate.storyRole))];
+  const primaryRecipeText = [
+    input.inventory.primaryQuestion,
+    ...input.inventory.primaryDimensions,
+    ...input.inventory.primaryMeasures,
+  ].filter(Boolean).join(' ');
+  const combinationCandidate = [...ready]
+    .sort((a, b) => b.confidenceScore - a.confidenceScore || a.sourceIndex - b.sourceIndex || a.actionId.localeCompare(b.actionId))
+    .map(candidate => {
+      const sharedDimension = sharedDeclaredDimension(input.inventory.primaryDimensions, candidate.dimensions);
+      if (!sharedDimension) return null;
+      const recipe = matchOfficialDomainCombinationRecipe({
+        domainId: input.primaryDomain,
+        primaryText: primaryRecipeText,
+        companionText: [candidate.label, ...candidate.dimensions, ...candidate.measures].filter(Boolean).join(' '),
+      });
+      return recipe ? { candidate, recipe, sharedDimension } : null;
+    })
+    .find((value): value is NonNullable<typeof value> => Boolean(value)) ?? null;
+  const combinationRequest: PresentationCombinationRequestV1 | null = combinationCandidate ? {
+    recipeId: combinationCandidate.recipe.id,
+    companionActionId: combinationCandidate.candidate.actionId,
+    companionStoryRole: combinationCandidate.candidate.storyRole,
+    presentation: combinationCandidate.recipe.presentation,
+    allowExplicitMultiUnit: combinationCandidate.recipe.allowExplicitMultiUnit,
+    rationale: combinationCandidate.recipe.rationale,
+    sharedDeclaredDimension: combinationCandidate.sharedDimension,
+    requiresPostExecutionAlignment: true,
+  } : null;
+  const visualReady = combinationRequest
+    ? ready.filter(candidate => candidate.actionId !== combinationRequest.companionActionId)
+    : ready;
+  const visualLegalRoles = [...new Set(visualReady.map(candidate => candidate.storyRole))];
   const advisor = input.advisor ?? adviseMicroBrainPresentation;
   const advice = advisor({
     domainId: input.primaryDomain ?? undefined,
@@ -158,24 +220,34 @@ export function planPresentationStoryRequests(input: {
     defaultOptionIds: legalRoles,
     limit: Math.min(budget, legalRoles.length),
   });
-  const legalRoleSet = new Set(legalRoles);
+  const visualRoleSet = new Set(visualLegalRoles);
   const preferredRoleSet = new Set<VisualNarrativeStoryRoleV1>([
-    ...mbRoles.filter(role => legalRoleSet.has(role)),
-    ...requestedRoles.filter(role => legalRoleSet.has(role)),
+    ...mbRoles.filter(role => visualRoleSet.has(role)),
+    ...requestedRoles.filter(role => visualRoleSet.has(role)),
   ]);
-  const ballotRoles = ballotTrace.selectedOptionIds.map(role => role as VisualNarrativeStoryRoleV1);
+  const ballotRoles = ballotTrace.selectedOptionIds
+    .map(role => role as VisualNarrativeStoryRoleV1)
+    .filter(role => visualRoleSet.has(role));
   const preferredRoles = ballotRoles.filter(role => preferredRoleSet.has(role));
-  // Five visuals require an explicit domain/MB story with four companion roles.
-  // In the absence of that strong signal, two distinct ready roles may still
-  // justify a conservative three-visual story; generic diversity never plans 5.
+  // A planned compound companion is absorbed into the primary visual unit. It
+  // must be requested for execution but must not consume one of the 1/3/5
+  // standalone companion slots. Five visuals still require four non-combo roles.
   const targetLayoutCount: VisualNarrativeLayoutCountV1 = preferredRoles.length >= 4
     ? 5
-    : preferredRoles.length >= 2 || legalRoles.length >= 2
+    : preferredRoles.length >= 2 || visualLegalRoles.length >= 2
       ? 3
       : 1;
   const targetRoleSource = preferredRoles.length >= 2 ? preferredRoles : ballotRoles;
   const targetCompanionRoles = targetRoleSource.slice(0, targetLayoutCount === 5 ? 4 : targetLayoutCount === 3 ? 2 : 0);
   const selected = new Map<string, PresentationStoryRequestSelectionV1>();
+  if (combinationCandidate && budget > 0) {
+    selected.set(combinationCandidate.candidate.actionId, {
+      actionId: combinationCandidate.candidate.actionId,
+      storyRole: combinationCandidate.candidate.storyRole,
+      reason: 'domain_combination_recipe',
+      sourceIndex: combinationCandidate.candidate.sourceIndex,
+    });
+  }
 
   const addBestForRole = (role: VisualNarrativeStoryRoleV1, reason: PresentationStoryRequestReasonV1) => {
     if (selected.size >= budget) return;
@@ -215,6 +287,7 @@ export function planPresentationStoryRequests(input: {
     requestedRoles: [...requestedRoles],
     targetLayoutCount,
     targetCompanionRoles,
+    combinationRequest,
     budget,
     selections: [...selected.values()],
     ballotTrace,

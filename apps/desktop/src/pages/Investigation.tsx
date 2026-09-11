@@ -451,6 +451,12 @@ export const Investigation: React.FC = () => {
         storyTarget: presentationStoryRequestPlan ? {
           layoutCount: presentationStoryRequestPlan.targetLayoutCount,
           companionRoles: [...presentationStoryRequestPlan.targetCompanionRoles],
+          combinationRequest: presentationStoryRequestPlan.combinationRequest ? {
+            recipeId: presentationStoryRequestPlan.combinationRequest.recipeId,
+            companionCandidateId: presentationStoryRequestPlan.combinationRequest.companionActionId,
+            presentation: presentationStoryRequestPlan.combinationRequest.presentation,
+            allowExplicitMultiUnit: presentationStoryRequestPlan.combinationRequest.allowExplicitMultiUnit,
+          } : null,
           source: 'pre_execution_story_plan',
         } : null,
         items: [

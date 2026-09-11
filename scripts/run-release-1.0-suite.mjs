@@ -21,6 +21,7 @@ const governed = [
   ['CPR-2 presentation capability request actuation', ['--dir','apps/desktop','exec','vitest','run','src/lib/presentation-capability-inventory.test.ts','src/pages/Investigation.test.tsx']],
   ['CPR-3 MB presentation voting actuation', ['--dir','apps/desktop','exec','vitest','run','src/lib/chart-presentation-cpr3-actuation.test.ts']],
   ['CPR-4 story composition 1/3/5 actuation', ['--dir','apps/desktop','exec','vitest','run','src/lib/chart-presentation-cpr4-story.test.ts','src/lib/visual-narrative-composition.test.ts','src/lib/investigation-visual-narrative.test.ts']],
+  ['CPR-5 first-class compound planning actuation', ['--dir','apps/desktop','exec','vitest','run','src/lib/chart-presentation-cpr5-combo.test.ts','src/lib/visual-narrative-runtime.test.ts']],
   ['DPR-10 cross-domain presentation acceptance', ['--dir','apps/desktop','exec','vitest','run',
     'src/lib/dpr10-cross-domain-acceptance.test.ts',
     'src/lib/question-perspective-intelligence.test.ts',

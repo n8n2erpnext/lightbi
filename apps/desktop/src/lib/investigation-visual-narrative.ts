@@ -148,15 +148,18 @@ export function buildInvestigationVisualNarrativePlan(input: {
   const candidates = input.items.map(item => baseCandidate(item, input.primaryDomain));
   const primary = candidates.find(candidate => candidate.isPrimary)!;
   const primaryText = textForRecipe(primaryItem);
+  const requestedCombination = input.storyTarget?.combinationRequest ?? null;
 
   for (const item of input.items.filter(candidate => !candidate.isPrimary)) {
+    if (requestedCombination && item.id !== requestedCombination.companionCandidateId) continue;
     const candidate = candidates.find(value => value.id === item.id)!;
     const recipe = matchOfficialDomainCombinationRecipe({
       domainId: input.primaryDomain,
       primaryText,
       companionText: textForRecipe(item),
     });
-    if (!recipe || !visualNarrativeModelsCanAlign(primaryItem.chartModel, item.chartModel)) continue;
+    if (!recipe || (requestedCombination && recipe.id !== requestedCombination.recipeId)) continue;
+    if (!visualNarrativeModelsCanAlign(primaryItem.chartModel, item.chartModel)) continue;
     const groupId = `${recipe.id}:${String(primary.grainId ?? '')}:${primary.sourceScopeKey}`;
     const explicitUnitLabel = recipe.allowExplicitMultiUnit || primary.unitFamily === candidate.unitFamily;
     primary.combination = {

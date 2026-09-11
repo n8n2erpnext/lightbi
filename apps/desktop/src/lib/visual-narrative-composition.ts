@@ -15,10 +15,25 @@ export type VisualNarrativeComplementarityV1 =
   | 'same_metric_new_intent' | 'evidence_detail' | 'official_domain_complement';
 
 
+export type VisualNarrativeStoryCombinationRequestV1 = {
+  recipeId: string;
+  companionCandidateId: string;
+  presentation: 'grouped_compare' | 'combo_bar_line';
+  allowExplicitMultiUnit: boolean;
+};
+
 export type VisualNarrativeStoryTargetV1 = {
   layoutCount: VisualNarrativeLayoutCountV1;
   companionRoles: VisualNarrativeStoryRoleV1[];
+  combinationRequest?: VisualNarrativeStoryCombinationRequestV1 | null;
   source: 'pre_execution_story_plan' | 'derived_from_materialized_candidates';
+};
+
+export type VisualNarrativeCombinationTraceV1 = {
+  requestedRecipeId: string | null;
+  companionCandidateId: string | null;
+  status: 'not_requested' | 'materialized' | 'rejected';
+  reason: null | 'candidate_not_materialized' | 'candidate_not_admitted' | 'compatibility_failed';
 };
 
 export type VisualNarrativeDegradationV1 = {
@@ -72,7 +87,7 @@ export type VisualNarrativeUnitV1 = {
 export type VisualNarrativeRejectionReasonV1 =
   | 'evidence_required' | 'duplicate_question' | 'duplicate_story'
   | 'duplicate_information' | 'not_complementary' | 'visual_budget_exceeded'
-  | 'story_target_degraded' | 'story_target_exceeded';
+  | 'story_target_degraded' | 'story_target_exceeded' | 'combination_not_materialized';
 
 export type VisualNarrativeCompositionPlanV1 = {
   schemaVersion: typeof VISUAL_NARRATIVE_COMPOSITION_VERSION;
@@ -81,6 +96,7 @@ export type VisualNarrativeCompositionPlanV1 = {
   layoutMode: 'single' | 'hero_plus_two' | 'hero_plus_four';
   target: VisualNarrativeStoryTargetV1;
   degradation: VisualNarrativeDegradationV1;
+  combination: VisualNarrativeCombinationTraceV1;
   units: VisualNarrativeUnitV1[];
   rejected: Array<{ candidateId: string; reason: VisualNarrativeRejectionReasonV1 }>;
   governance: {
@@ -274,6 +290,7 @@ export function createVisualNarrativeCompositionPlan(input: {
   const target: VisualNarrativeStoryTargetV1 = input.storyTarget ?? {
     layoutCount: derivedLayoutCount,
     companionRoles: admittedSupports.slice(0, derivedLayoutCount === 5 ? 4 : derivedLayoutCount === 3 ? 2 : 0).map(candidate => candidate.storyRole),
+    combinationRequest: null,
     source: 'derived_from_materialized_candidates',
   };
   const targetRoleRank = new Map(
@@ -294,31 +311,67 @@ export function createVisualNarrativeCompositionPlan(input: {
   const candidateById = new Map(eligible.map(candidate => [candidate.id, candidate] as const));
   let units: VisualNarrativeUnitV1[] = [];
   const supports = eligible.slice(1);
-  const targetSupportSlots = target.layoutCount - 1;
+  const requestedCombination = target.combinationRequest ?? null;
+  const requestedCombinationInputCandidate = requestedCombination
+    ? input.candidates.find(candidate => candidate.id === requestedCombination.companionCandidateId) ?? null
+    : null;
+  const requestedCombinationCandidate = requestedCombination
+    ? supports.find(candidate => candidate.id === requestedCombination.companionCandidateId) ?? null
+    : null;
+  const requestedCombinationMaterialized = Boolean(
+    requestedCombinationCandidate && canCombine(primary, requestedCombinationCandidate),
+  );
+  const combination: VisualNarrativeCombinationTraceV1 = !requestedCombination
+    ? { requestedRecipeId: null, companionCandidateId: null, status: 'not_requested', reason: null }
+    : !requestedCombinationInputCandidate || !requestedCombinationInputCandidate.evidenceBacked
+      ? { requestedRecipeId: requestedCombination.recipeId, companionCandidateId: requestedCombination.companionCandidateId, status: 'rejected', reason: 'candidate_not_materialized' }
+      : !requestedCombinationCandidate
+        ? { requestedRecipeId: requestedCombination.recipeId, companionCandidateId: requestedCombination.companionCandidateId, status: 'rejected', reason: 'candidate_not_admitted' }
+        : requestedCombinationMaterialized
+          ? { requestedRecipeId: requestedCombination.recipeId, companionCandidateId: requestedCombination.companionCandidateId, status: 'materialized', reason: null }
+          : { requestedRecipeId: requestedCombination.recipeId, companionCandidateId: requestedCombination.companionCandidateId, status: 'rejected', reason: 'compatibility_failed' };
 
+  const standaloneSupports = requestedCombination
+    ? supports.filter(candidate => candidate.id !== requestedCombination.companionCandidateId)
+    : supports;
+  const plannedPrimaryUnit = requestedCombinationMaterialized && requestedCombinationCandidate
+    ? combinedUnit(primary, requestedCombinationCandidate)
+    : singleUnit(primary);
+  if (requestedCombination && requestedCombinationCandidate && !requestedCombinationMaterialized) {
+    rejected.push({ candidateId: requestedCombinationCandidate.id, reason: 'combination_not_materialized' });
+  }
+
+  const targetSupportSlots = target.layoutCount - 1;
   if (target.layoutCount === 1) {
-    const combination = supports.find(candidate => canCombine(primary, candidate));
-    if (combination) {
-      units = [combinedUnit(primary, combination)];
-      for (const candidate of supports) {
-        if (candidate.id !== combination.id) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+    if (requestedCombination) {
+      units = [plannedPrimaryUnit];
+      for (const candidate of standaloneSupports) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+    } else {
+      // Compatibility fallback for callers that have not supplied a pre-execution
+      // combination request. CPR-5 runtime paths always carry the request.
+      const legacyCombination = supports.find(candidate => canCombine(primary, candidate));
+      if (legacyCombination) {
+        units = [combinedUnit(primary, legacyCombination)];
+        for (const candidate of supports) {
+          if (candidate.id !== legacyCombination.id) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+        }
+      } else {
+        units = [singleUnit(primary)];
+        for (const candidate of supports) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
       }
-    } else {
-      units = [singleUnit(primary)];
-      for (const candidate of supports) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
     }
-  } else if (supports.length >= targetSupportSlots) {
-    const chosen = supports.slice(0, targetSupportSlots);
-    units = [singleUnit(primary), ...chosen.map(singleUnit)];
-    for (const candidate of supports.slice(targetSupportSlots)) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+  } else if (standaloneSupports.length >= targetSupportSlots) {
+    const chosen = standaloneSupports.slice(0, targetSupportSlots);
+    units = [plannedPrimaryUnit, ...chosen.map(singleUnit)];
+    for (const candidate of standaloneSupports.slice(targetSupportSlots)) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
   } else {
-    const legalLowerCount: VisualNarrativeLayoutCountV1 = supports.length >= 2 ? 3 : 1;
+    const legalLowerCount: VisualNarrativeLayoutCountV1 = standaloneSupports.length >= 2 ? 3 : 1;
     if (legalLowerCount === 3) {
-      units = [singleUnit(primary), ...supports.slice(0, 2).map(singleUnit)];
-      for (const candidate of supports.slice(2)) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
+      units = [plannedPrimaryUnit, ...standaloneSupports.slice(0, 2).map(singleUnit)];
+      for (const candidate of standaloneSupports.slice(2)) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
     } else {
-      units = [singleUnit(primary)];
-      for (const candidate of supports) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
+      units = [plannedPrimaryUnit];
+      for (const candidate of standaloneSupports) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
     }
   }
 
@@ -352,6 +405,7 @@ export function createVisualNarrativeCompositionPlan(input: {
     layoutMode: layoutMode(count),
     target,
     degradation,
+    combination,
     units,
     rejected,
     governance: {
