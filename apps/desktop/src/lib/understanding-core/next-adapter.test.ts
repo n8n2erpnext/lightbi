@@ -35,4 +35,18 @@ describe("understanding-core next adapter", () => {
     expect(adapted.profile.detectedDomains).toContain("customer");
     expect(adapted.profile.detectedDomains).toContain("performance");
   });
+  it("routes explicit Actual-versus-Target semantics to Performance instead of Operations", () => {
+    const core = createUnderstandingCoreResult({
+      columns: ["Date", "Team", "Actual", "Target"],
+      rows: Array.from({ length: 20 }, (_, index) => ({
+        Date: `2026-06-${String((index % 10) + 1).padStart(2, "0")}`, Team: `T${index % 3}`, Actual: 80 + index, Target: 100
+      }))
+    });
+    const adapted = adaptCoreToUnderstandingNext(core);
+    const paired = adapted.recommendedQuestions.find(question => question.id === "actual_vs_target");
+    expect(paired?.domain).toBe("performance");
+    expect(paired?.executionScope).not.toBe("not_supported");
+    expect(paired?.measures).toEqual(["Actual", "Target"]);
+  });
+
 });

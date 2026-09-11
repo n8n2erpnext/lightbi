@@ -96,7 +96,9 @@ export function resolveUniversalQuestionContext(input: UnderstandingCoreInput, s
 
   const cost = first(signals, byId("money.cost"));
 
-  const profit = first(signals, byId("money.profit")) ?? first(signals, byId("money.margin"));
+  const margin = first(signals, byId("money.margin"));
+
+  const profit = first(signals, byId("money.profit")) ?? margin;
 
   const receivable = first(signals, byId("money.receivable")) ?? first(signals, byId("money.debt"));
 
@@ -185,6 +187,8 @@ export function resolveUniversalQuestionContext(input: UnderstandingCoreInput, s
 
   const stockMovementQuantity = hasExplicitQuantityMovement || hasInventoryContext ? quantity : undefined;
 
+  const inventoryOnHand = first(signals, byId("inventory.on_hand"));
+
   const paymentMethod = first(signals, byId("money.payment_method"));
 
   const payments = signals.filter(signal =>
@@ -225,7 +229,13 @@ export function resolveUniversalQuestionContext(input: UnderstandingCoreInput, s
 
   const previousOutcome = first(signals, byId("engagement.previous_outcome"));
 
-  const indicator = first(signals, byId("indicator.metric"));
+  const actualIndicator = first(signals, byId("indicator.actual"));
+
+  const targetIndicator = first(signals, byId("indicator.target"));
+
+  const achievementIndicator = first(signals, byId("indicator.achievement"));
+
+  const indicator = first(signals, byId("indicator.metric")) ?? actualIndicator ?? targetIndicator ?? achievementIndicator;
 
   const secondaryIndicator = signals.find(signal => signal.family === "indicator" && signal.role === "measure" && signal.physicalColumn !== indicator?.physicalColumn);
 
@@ -252,7 +262,7 @@ export function resolveUniversalQuestionContext(input: UnderstandingCoreInput, s
 
   const indicatorDimension = actor ?? team ?? countryOrRegion ?? location ?? item ?? status;
 
-  return { signals, scope, money, revenue, cost, profit, receivable, payable, balance, time, location, itemIdentifierColumns, item, itemCategory, itemBrand, itemUnit, isActorSignal, actor, customer, customerContext, customerGeography, customerProfileDimension, vendor, documentType, status, approvalStatus, reconciliationStatus, quantity, receivedQty, issuedQty, soldQty, returnedQty, orderedQty, hasExplicitQuantityMovement, hasInventoryContext, stockMovementQuantity, paymentMethod, payments, carrier, driver, vehicle, route, shipment, currentLocation, serviceGroup, deliveryStatus, deliveryFee, quality, engagementOutcome, engagementSegment, contactChannel, campaignAttempts, previousContacts, previousOutcome, indicator, secondaryIndicator, economicIndicator, infrastructureIndicator, countryOrRegion, participant, team, coach, role, activity, lineup, indicatorDimension };
+  return { signals, scope, money, revenue, cost, profit, margin, receivable, payable, balance, time, location, itemIdentifierColumns, item, itemCategory, itemBrand, itemUnit, isActorSignal, actor, customer, customerContext, customerGeography, customerProfileDimension, vendor, documentType, status, approvalStatus, reconciliationStatus, quantity, receivedQty, issuedQty, soldQty, returnedQty, orderedQty, hasExplicitQuantityMovement, hasInventoryContext, stockMovementQuantity, inventoryOnHand, paymentMethod, payments, carrier, driver, vehicle, route, shipment, currentLocation, serviceGroup, deliveryStatus, deliveryFee, quality, engagementOutcome, engagementSegment, contactChannel, campaignAttempts, previousContacts, previousOutcome, indicator, actualIndicator, targetIndicator, achievementIndicator, secondaryIndicator, economicIndicator, infrastructureIndicator, countryOrRegion, participant, team, coach, role, activity, lineup, indicatorDimension };
 }
 
 export type UniversalQuestionContext = ReturnType<typeof resolveUniversalQuestionContext>;

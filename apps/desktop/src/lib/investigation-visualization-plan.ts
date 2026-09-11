@@ -28,11 +28,13 @@ export function resolveInvestigationVisualizationIntent(
   const hasRank = /\b(rank|ranking|top|bottom|highest|lowest|largest|smallest|most|least|leader|contribute|contributes|contributed|contributing|contributor|contributors)\b/.test(text);
   const hasControlLimit = /\b(control limit|ucl|lcl|upper limit|lower limit|process control)\b/.test(text);
   const hasPareto = /\b(pareto|80\s*\/\s*20|cumulative contribution)\b/.test(text);
+  const hasPartToWhole = /\b(mix|share|split|composition|part[- ]?to[- ]?whole|proportion|percentage of|percent of)\b|co cau|ty trong|phan bo/.test(text);
 
   if ((base === 'relationship' || base === 'category_comparison' || base === 'trend') && hasTarget && hasActual) return 'target_attainment';
   if ((base === 'category_comparison' || base === 'relationship') && hasVariance) return 'variance';
   if ((base === 'category_comparison' || base === 'distribution') && hasPareto) return 'pareto';
   if ((base === 'category_comparison' || base === 'distribution') && /\b(concentration|concentrated|dependency|dependence|exposure|over[- ]?reliance)\b/.test(text)) return 'risk_concentration';
+  if ((base === 'category_comparison' || base === 'distribution') && hasPartToWhole) return 'composition';
   if ((base === 'category_comparison' || base === 'distribution') && hasRank) return 'ranking';
   // A categorical distribution such as Status/Channel mix is not a numeric
   // distribution. Without an explicit numeric observation, histogram/boxplot
@@ -65,8 +67,9 @@ function perspectiveRankedIntentCandidates(input: {
   selectedPerspectiveId?: string | null;
 }): VisualizationAnalyticalIntentV1[] {
   const base = resolveInvestigationVisualizationIntent(input.runtimeIntent, input.analysisAction);
+  const rawBase = analyticalIntentFromRuntimeIntentType(input.runtimeIntent.type);
   const hints = questionIntentHints(input.runtimeIntent, input.analysisAction).filter(intent => intent !== base);
-  if (hints.length === 0) return [base];
+  if (hints.length === 0) return [...new Set([base, rawBase])];
   const advice = adviseMicroBrainPresentation({
     domainId: input.primaryDomain ?? undefined,
     perspectiveId: input.selectedPerspectiveId ?? undefined,
@@ -80,7 +83,7 @@ function perspectiveRankedIntentCandidates(input: {
     }
     return Number.MAX_SAFE_INTEGER;
   };
-  return [...hints].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).concat(base);
+  return [...new Set([...hints].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).concat(base, rawBase))];
 }
 
 function evidenceRolesForIntent(input: {
@@ -88,16 +91,20 @@ function evidenceRolesForIntent(input: {
   runtimeIntent: RuntimeIntent;
   metricCount: number;
   hasDimension: boolean;
+  partToWholeValidated?: boolean;
 }): VisualizationEvidenceRoleV1[] {
   const { intent, metricCount, hasDimension } = input;
   if (intent === 'trend') return ['ordered_time','measure', ...(metricCount > 1 ? ['series' as const] : [])];
   if (intent === 'quality_control') return ['ordered_time','measure','control_limit'];
   if (intent === 'relationship') return ['entity_key','measure','comparison_measure', ...(metricCount > 2 ? ['size_measure' as const] : [])];
   if (intent === 'distribution') return ['numeric_observation', ...(hasDimension ? ['category' as const] : [])];
+  if (intent === 'composition') return input.partToWholeValidated && hasDimension
+    ? ['category','part_measure','denominator']
+    : ['category','measure'];
   if (intent === 'target_attainment') {
     return input.runtimeIntent.type === 'trend'
       ? ['ordered_time','measure','target']
-      : ['measure','target'];
+      : hasDimension ? ['category','measure','target'] : ['measure','target'];
   }
   if (intent === 'variance') return hasDimension ? ['category','signed_measure'] : ['measure','benchmark'];
   if (intent === 'risk_concentration') return hasDimension ? ['category','measure'] : ['measure'];
@@ -119,11 +126,14 @@ export function buildInvestigationDecisionVisualizationPlan(
 ): DecisionVisualizationPlanV1 | null {
   const { chartModel, runtimeIntent, analysisAction } = input;
   if (!chartModel || chartModel.status !== 'ready' || chartModel.rows.length === 0) return null;
-  const intentCandidates = perspectiveRankedIntentCandidates({
+  let intentCandidates = perspectiveRankedIntentCandidates({
     runtimeIntent, analysisAction,
     primaryDomain: input.primaryDomain,
     selectedPerspectiveId: input.selectedPerspectiveId,
   });
+  if (runtimeIntent.type === 'trend' && chartModel.rows.length === 2) {
+    intentCandidates = [...new Set<VisualizationAnalyticalIntentV1>(['period_comparison', ...intentCandidates.filter(intent => intent !== 'trend'), 'trend'])];
+  }
   for (const analyticalIntent of intentCandidates) {
     const hasDimension = runtimeIntent.dimensions.length > 0 && Boolean(chartModel.xField);
     const measureAsAxis = analyticalIntent === 'relationship' || (analyticalIntent === 'distribution' && !hasDimension);
@@ -132,10 +142,37 @@ export function buildInvestigationDecisionVisualizationPlan(
       ? (analyticalIntent === 'relationship' ? chartModel.seriesFields[0] : chartModel.yField || chartModel.seriesFields[0])
       : chartModel.xField;
     if (!xField) continue;
-    const metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
+    let metricIds = [...new Set([...(chartModel.seriesFields ?? []), chartModel.yField]
       .filter((value): value is string => Boolean(value && (xFieldRole === 'measure' || value !== xField))))];
+    if (analyticalIntent === 'composition') {
+      const basePartMeasure = runtimeIntent.measures.find(measure =>
+        measure !== xField && chartModel.rows.some(row => row[measure] != null)
+      );
+      if (basePartMeasure) metricIds = [basePartMeasure];
+      else if (chartModel.yField && chartModel.yField !== xField) metricIds = [chartModel.yField];
+    }
     if (metricIds.length === 0) continue;
-    const availableRoles = evidenceRolesForIntent({ intent: analyticalIntent, runtimeIntent, metricCount: metricIds.length, hasDimension });
+    const partToWholeValidated = analyticalIntent === 'composition' && hasDimension && metricIds.length === 1
+      && chartModel.rows.length > 0
+      && chartModel.rows.every(row => {
+        const value = Number(row[metricIds[0]]);
+        return Number.isFinite(value) && value >= 0;
+      })
+      && chartModel.rows.some(row => Number(row[metricIds[0]]) > 0);
+    const availableRoles = evidenceRolesForIntent({
+      intent: analyticalIntent, runtimeIntent, metricCount: metricIds.length, hasDimension, partToWholeValidated,
+    });
+    const categoryCount = xFieldRole === 'dimension'
+      ? new Set(chartModel.rows.map(row => String(row[xField] ?? ''))).size
+      : undefined;
+    const presentationShaping = analyticalIntent === 'ranking' && xFieldRole === 'dimension'
+      && metricIds.length >= 1 && (categoryCount ?? 0) > 25
+      ? {
+          kind: 'top_n' as const, limit: 15, sourceCategoryCount: categoryCount!,
+          omittedCategoryCount: categoryCount! - 15, sortMetricId: metricIds[0],
+          sortDirection: 'desc' as const, reason: 'high_cardinality_ranking' as const,
+        }
+      : null;
     const domainProfile = input.primaryDomain ? buildDomainVisualProfile(input.primaryDomain, {
       perspectiveId: input.selectedPerspectiveId ?? undefined,
       analyticalIntent,
@@ -149,12 +186,10 @@ export function buildInvestigationDecisionVisualizationPlan(
         availableRoles: [...availableRoles],
         cardinality: {
           points: chartModel.rows.length,
-          categories: xFieldRole === 'dimension'
-            ? new Set(chartModel.rows.map(row => String(row[xField] ?? ''))).size
-            : undefined,
+          categories: categoryCount,
           series: metricIds.length,
         },
-        requiredSurfaces: ['preview','persistence','dashboard'], domainProfile,
+        requiredSurfaces: ['preview','persistence','dashboard'], domainProfile, presentationShaping,
       });
     } catch {
       // A presentation hint never overrides deterministic suitability. Try the

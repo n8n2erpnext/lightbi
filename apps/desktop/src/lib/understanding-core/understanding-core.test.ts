@@ -46,6 +46,28 @@ describe("understanding-core universal signal ontology", () => {
     expect(result.questions.find(question => question.id === "customer_or_patient_value")?.action).toBeUndefined();
   });
 
+  it("does not treat Salesperson as revenue and binds actor value to an actual business-value measure", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["Salesperson", "Store", "Product", "NetRevenue", "UnitPrice", "VATRate", "GrossProfit"],
+      makeRows(80, index => ({
+        Salesperson: `NV${String((index % 8) + 1).padStart(3, "0")}`,
+        Store: `S${index % 4}`,
+        Product: `P${index % 12}`,
+        NetRevenue: 1000000 + index * 10000,
+        UnitPrice: 120000 + index * 500,
+        VATRate: 0.08,
+        GrossProfit: 250000 + index * 2000
+      }))
+    ));
+
+    const actorQuestion = result.questions.find(question => question.id === "actor_value");
+    expect(actorQuestion?.action?.dimensions).toEqual(["Salesperson"]);
+    expect(actorQuestion?.action?.measures).toEqual(["NetRevenue"]);
+    expect(result.questions.find(question => question.id === "item_value")?.action?.measures).toEqual(["NetRevenue"]);
+    expect(result.questions.find(question => question.id === "money_by_location")?.action?.measures).toEqual(["NetRevenue"]);
+    expect(result.signals.some(signal => signal.id === "money.revenue" && signal.physicalColumn === "Salesperson")).toBe(false);
+  });
+
   it("applies the same money questions to B2B invoices through vendor/customer/document signals", () => {
     const result = createUnderstandingCoreResult(input(
       ["Invoice Date", "Invoice No", "Customer", "Supplier", "Region", "Amount Due", "VAT"],
@@ -124,7 +146,7 @@ describe("understanding-core universal signal ontology", () => {
     expect(result.signals.map(signal => signal.id)).toContain("money.profit");
     expect(result.signals.map(signal => signal.id)).toContain("money.margin");
     expect(questionIds(result)).toContain("profit_or_margin");
-    expect(result.questions.find(question => question.id === "profit_or_margin")?.action?.actionKind).toBe("group_by");
+    expect(result.questions.find(question => question.id === "profit_or_margin")?.action?.actionKind).toBe("trend");
   });
 
   it("detects receivable, payable, debt, and balance review for accounting-like exports", () => {
@@ -407,6 +429,38 @@ describe("understanding-core universal signal ontology", () => {
     expect(questionIds(result)).not.toContain("sla_by_route");
   });
 
+  it("keeps on-hand quantity separate from inventory aging buckets", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["SKU", "Warehouse", "Inventory", "Stock Age", "Aging Bucket"],
+      makeRows(120, index => ({
+        SKU: `SKU-${index % 20}`, Warehouse: `WH-${index % 4}`,
+        Inventory: 10 + (index % 50), "Stock Age": 1 + (index % 150),
+        "Aging Bucket": ["0-30", "31-60", "61-90", "90+"][index % 4]
+      }))
+    ));
+    expect(result.signals.some(signal => signal.id === "inventory.on_hand" && signal.physicalColumn === "Inventory")).toBe(true);
+    expect(result.signals.some(signal => signal.id === "inventory.age_bucket" && signal.physicalColumn === "Aging Bucket")).toBe(true);
+    const aging = result.questions.find(question => question.id === "inventory_aging_backlog");
+    expect(aging?.action?.dimensions).toEqual(["Aging Bucket"]);
+    expect(aging?.action?.measures).toEqual(["Inventory"]);
+    expect(aging?.action?.measureAggregations).toEqual({ Inventory: "SUM" });
+    expect(aging?.label).toBe("Inventory aging by on-hand quantity");
+  });
+
+  it("never substitutes unit price for inventory value exposure", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["SKU", "Warehouse", "Inventory", "Unit Price", "Stock Age"],
+      makeRows(100, index => ({
+        SKU: `SKU-${index % 20}`, Warehouse: `WH-${index % 4}`, Inventory: 5 + (index % 40),
+        "Unit Price": 100000 + index * 1000, "Stock Age": 1 + (index % 120)
+      }))
+    ));
+    const question = result.questions.find(item => item.id === "inventory_value_exposure");
+    expect(question).toBeTruthy();
+    expect(question?.action).toBeUndefined();
+    expect(question?.blockedReasons.join(' ')).toMatch(/unit price is not a substitute/i);
+  });
+
   it("never treats a numeric shipment identifier as an additive measure", () => {
     const result = createUnderstandingCoreResult(input(
       ["Ngày Báo Cáo", "Mã Phiếu Gửi", "Trạng Thái", "Bưu Cục Hiện Tại", "Mã Dịch vụ", "Ngày Tạo Đơn", "Tiền COD", "Trọng lượng", "Tiền Cước"],
@@ -582,4 +636,80 @@ describe("understanding-core universal signal ontology", () => {
     const adapted = adaptCoreToUnderstandingNext(result);
     expect(adapted.recommendedQuestions.find(question => question.id === "catalog_composition_by_category")?.domain).toBe("inventory");
   });
+
+  it("keeps actual and target as distinct governed indicator signals and exposes one paired question", () => {
+    const columns = ["Date", "Team", "Actual", "Target"];
+    const rows = makeRows(40, index => ({
+      Date: `2026-05-${String((index % 20) + 1).padStart(2, "0")}`,
+      Team: `Team ${index % 4}`,
+      Actual: 80 + (index % 9),
+      Target: 100,
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+    expect(result.signals.some(signal => signal.id === "indicator.actual" && signal.physicalColumn === "Actual")).toBe(true);
+    expect(result.signals.some(signal => signal.id === "indicator.target" && signal.physicalColumn === "Target")).toBe(true);
+    const paired = result.questions.find(question => question.id === "actual_vs_target");
+    expect(paired?.action).toMatchObject({ actionKind: "trend", dimensions: ["Date"], measures: ["Actual", "Target"] });
+    expect(paired?.action?.measureAggregations).toEqual({ Actual: "AVG", Target: "AVG" });
+  });
+
+  it("keeps profit and margin as distinct finance companions on a time grain", () => {
+    const columns = ["Date", "Branch", "Revenue", "Cost", "Gross Profit", "Margin"];
+    const rows = makeRows(40, index => ({
+      Date: `2026-05-${String((index % 20) + 1).padStart(2, "0")}`,
+      Branch: `B${index % 4}`,
+      Revenue: 10000 + index * 100,
+      Cost: 6000 + index * 50,
+      "Gross Profit": 4000 + index * 50,
+      Margin: 40 + (index % 3),
+    }));
+    const result = createUnderstandingCoreResult(input(columns, rows));
+    const profit = result.questions.find(question => question.id === "profit_or_margin")?.action;
+    const margin = result.questions.find(question => question.id === "margin_performance_context")?.action;
+    expect(profit).toMatchObject({ actionKind: "trend", dimensions: ["Date"], measures: ["Gross Profit"] });
+    expect(profit?.measureAggregations).toEqual({ "Gross Profit": "SUM" });
+    expect(margin).toMatchObject({ actionKind: "trend", dimensions: ["Date"], measures: ["Margin"] });
+    expect(margin?.measureAggregations).toEqual({ Margin: "AVG" });
+  });
+  it("uses shipment record volume with carrier cost instead of treating shipment identity as an additive measure", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["Delivery ID", "Date", "Carrier", "Delivery Status", "Route", "Delivery Fee"],
+      makeRows(120, index => ({
+        "Delivery ID": `D-${index}`, Date: `2026-06-${String((index % 28) + 1).padStart(2, "0")}`, Carrier: `C${index % 4}`,
+        "Delivery Status": index % 3 ? "Delivered" : "In Progress", Route: `R${index % 6}`, "Delivery Fee": 10000 + index
+      }))
+    ));
+    const action = result.questions.find(question => question.id === "carrier_cost_impact")?.action;
+    expect(action?.measures).toEqual(expect.arrayContaining(["Delivery Fee", "record_count"]));
+    expect(action?.measures).not.toContain("Delivery ID");
+  });
+
+  it("accepts Reporting Period as a usable period dimension for revenue analysis", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["Reporting Period", "Category", "Revenue", "Orders"],
+      makeRows(80, index => ({
+        "Reporting Period": index < 40 ? "2026-05" : "2026-06", Category: `C${index % 5}`, Revenue: 1000 + index, Orders: `O-${index}`
+      }))
+    ));
+    expect(result.signals.some(signal => signal.id === "time.period" && signal.physicalColumn === "Reporting Period" && signal.usableForDefaultQuestion)).toBe(true);
+    const trend = result.questions.find(question => question.id === "money_over_time")?.action;
+    expect(trend).toMatchObject({ actionKind: "trend", dimensions: ["Reporting Period"] });
+  });
+
+  it("keeps Target alongside Actual for performance-by-team at the same governed grain", () => {
+    const result = createUnderstandingCoreResult(input(
+      ["Date", "Team", "Actual", "Target"],
+      makeRows(48, index => ({
+        Date: `2026-06-${String((index % 24) + 1).padStart(2, "0")}`,
+        Team: ["North", "South", "Central", "Online"][index % 4],
+        Actual: 80 + (index % 17),
+        Target: 100
+      }))
+    ));
+    const byTeam = result.questions.find(question => question.id === "performance_indicator_by_business_dimension")?.action;
+    expect(byTeam?.dimensions).toEqual(["Team"]);
+    expect(byTeam?.measures).toEqual(["Actual", "Target"]);
+    expect(byTeam?.measureAggregations).toEqual({ Actual: "AVG", Target: "AVG" });
+  });
+
 });

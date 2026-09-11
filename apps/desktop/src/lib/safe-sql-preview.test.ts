@@ -100,11 +100,14 @@ describe('Safe SQL Preview', () => {
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
     expect(sqlPreview.sql).toContain('DATE \'1899-12-30\'');
-    expect(sqlPreview.sql).toContain("STRFTIME(CAST(CASE");
+    expect(sqlPreview.sql).toContain('__lightbi_time_policy');
+    expect(sqlPreview.sql).toContain("WHEN DATE_DIFF('day'");
+    expect(sqlPreview.sql).toContain("THEN 'week'");
+    expect(sqlPreview.sql).toContain('AS "__lightbi_time_grain__"');
     expect(sqlPreview.sql).toContain('AS "Report_Date"');
     expect(sqlPreview.sql).toContain('CAST(COUNT("shipment") AS INTEGER) AS "Shipment"');
-    expect(sqlPreview.sql).toContain('GROUP BY STRFTIME(CAST(CASE WHEN TRY_CAST(CAST("report_date" AS VARCHAR) AS DOUBLE)');
-    expect(sqlPreview.sql).toContain('ORDER BY STRFTIME(CAST(CASE WHEN TRY_CAST(CAST("report_date" AS VARCHAR) AS DOUBLE)');
+    expect(sqlPreview.sql).toContain('GROUP BY CASE WHEN __lightbi_time_grain');
+    expect(sqlPreview.sql).toContain('ORDER BY CASE WHEN __lightbi_time_grain');
   });
 
   it('trend plan produces SUM when metadata permits', () => {
@@ -132,7 +135,10 @@ describe('Safe SQL Preview', () => {
     const sqlPreview = createSafeSqlPreview(plan);
     expect(sqlPreview.status).toBe('ready');
     expect(sqlPreview.sql).toContain('DATE \'1899-12-30\'');
-    expect(sqlPreview.sql).toContain("STRFTIME(CAST(CASE");
+    expect(sqlPreview.sql).toContain('__lightbi_time_policy');
+    expect(sqlPreview.sql).toContain("WHEN DATE_DIFF('day'");
+    expect(sqlPreview.sql).toContain("THEN 'week'");
+    expect(sqlPreview.sql).toContain('AS "__lightbi_time_grain__"');
     expect(sqlPreview.sql).toContain('"ngày xuất"');
     expect(sqlPreview.sql).toContain('AS "Ngày xuất"');
     expect(sqlPreview.sql).toContain('AS "Tổng tiền"');

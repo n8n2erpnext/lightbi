@@ -2,7 +2,7 @@ import type { QuestionCandidate, UniversalSignal } from './contracts';
 import { candidate, makeAction, first, firstAny, byId, type UniversalQuestionContext } from './question-engine-shared';
 
 export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[], context: UniversalQuestionContext): void {
-  const { signals, scope, money, cost, time, location, item, itemCategory, itemBrand, itemUnit, actor, customer, vendor, documentType, status, approvalStatus, reconciliationStatus, quantity, carrier, driver, vehicle, route, shipment, currentLocation, serviceGroup, deliveryStatus, deliveryFee } = context;
+  const { signals, scope, revenue, cost, time, location, item, itemCategory, itemBrand, itemUnit, actor, customer, vendor, documentType, status, approvalStatus, reconciliationStatus, quantity, inventoryOnHand, carrier, driver, vehicle, route, shipment, currentLocation, serviceGroup, deliveryStatus, deliveryFee } = context;
 
   const carrierMeasures = [
       deliveryFee,
@@ -11,6 +11,10 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
     ].filter((signal, index, list): signal is UniversalSignal =>
       Boolean(signal) && list.findIndex(item => item?.physicalColumn === signal?.physicalColumn) === index
     );
+  const carrierMeasureColumns = [...new Set([
+    ...carrierMeasures.map(signal => signal.physicalColumn),
+    ...(carrier ? ['record_count'] : []),
+  ])];
 
   questions.push(candidate({
       id: "shipment_backlog_by_status",
@@ -94,7 +98,7 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
   questions.push(candidate({
       id: "carrier_cost_impact",
       label: "Carrier cost impact",
-      prompt: "How do carriers compare by delivery fee, fulfilled volume, and operational cost exposure?",
+      prompt: "How do carriers compare by delivery fee, source-record workload, and operational cost exposure?",
       lens: "Delivery and logistics",
       intent: "ranking",
       requiredFamilies: ["entity", "money"],
@@ -106,12 +110,12 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
         "Carrier cost impact",
         "group_by",
         carrier ? [carrier.physicalColumn] : [],
-        carrierMeasures.map(signal => signal.physicalColumn),
+        carrierMeasureColumns,
         scope
       ),
       blockedReasons: [
         ...(!carrier ? ["A carrier/logistics provider field is required."] : []),
-        ...(carrierMeasures.length === 0 ? ["A delivery fee, quantity, or cost measure is required."] : [])
+        ...(carrierMeasureColumns.length === 0 ? ["A delivery fee, quantity, cost, or governed shipment-record volume is required."] : [])
       ]
     }));
 
@@ -318,10 +322,10 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
       requiredFamilies: ["money", "item"],
       requiredSignals: ["money.*", "item.*"],
       optionalSignals: ["time.*", "location.*"],
-      evidence: [money, item].filter(Boolean).flatMap(signal => signal!.evidence),
-      action: makeAction("item_value", "Value by item", "group_by", item ? [item.physicalColumn] : [], money ? [money.physicalColumn] : [], scope),
+      evidence: [revenue, item].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction("item_value", "Value by item", "group_by", item ? [item.physicalColumn] : [], revenue ? [revenue.physicalColumn] : [], scope),
       blockedReasons: [
-        ...(!money ? ["A usable money measure is required."] : []),
+        ...(!revenue ? ["A usable business-value measure is required."] : []),
         ...(!item ? ["A product/service/medicine/item dimension is required."] : [])
       ]
     }));
@@ -356,10 +360,10 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
       requiredFamilies: ["money", "entity"],
       requiredSignals: ["money.*", "entity.employee|doctor|driver"],
       optionalSignals: ["time.*", "location.*"],
-      evidence: [money, actor].filter(Boolean).flatMap(signal => signal!.evidence),
-      action: makeAction("actor_value", "Value by actor", "group_by", actor ? [actor.physicalColumn] : [], money ? [money.physicalColumn] : [], scope),
+      evidence: [revenue, actor].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction("actor_value", "Value by actor", "group_by", actor ? [actor.physicalColumn] : [], revenue ? [revenue.physicalColumn] : [], scope),
       blockedReasons: [
-        ...(!money ? ["A usable money measure is required."] : []),
+        ...(!revenue ? ["A usable business-value measure is required."] : []),
         ...(!actor ? ["An employee/doctor/driver/user dimension is required."] : [])
       ]
     }));
@@ -373,10 +377,10 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
       requiredFamilies: ["money", "entity"],
       requiredSignals: ["money.*", "entity.customer|patient"],
       optionalSignals: ["time.*", "location.*"],
-      evidence: [money, customer].filter(Boolean).flatMap(signal => signal!.evidence),
-      action: makeAction("customer_or_patient_value", "Value by customer or patient", "group_by", customer ? [customer.physicalColumn] : [], money ? [money.physicalColumn] : [], scope),
+      evidence: [revenue, customer].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction("customer_or_patient_value", "Value by customer or patient", "group_by", customer ? [customer.physicalColumn] : [], revenue ? [revenue.physicalColumn] : [], scope),
       blockedReasons: [
-        ...(!money ? ["A usable money measure is required."] : []),
+        ...(!revenue ? ["A usable business-value measure is required."] : []),
         ...(!customer ? ["A usable customer/patient dimension is required."] : [])
       ]
     }));
@@ -401,25 +405,34 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
 
   const inventoryValueLocation = inventoryLocation ?? firstAny(signals, byId("location.current")) ?? firstAny(signals, byId("location.warehouse"));
 
-  const inventoryMoney = first(signals, byId("money.cod")) ?? money;
+  const inventoryMoney = first(signals, byId("money.cod"))
+    ?? first(signals, byId("money.receivable"))
+    ?? first(signals, byId("money.fee"))
+    ?? first(signals, signal => signal.family === "money"
+      && /(?:declared|insured|inventory|stock)\s*(?:value|amount)|(?:value|amount)\s*(?:at\s*risk|exposure)/i.test(signal.physicalColumn));
 
+  const inventoryAgingUsesOnHand = Boolean(inventoryOnHand);
   questions.push(candidate({
       id: "inventory_aging_backlog",
-      label: "Inventory aging and backlog risk",
-      prompt: "Which aging bucket, current location, or status contains the most backlog?",
+      label: inventoryAgingUsesOnHand ? "Inventory aging by on-hand quantity" : "Inventory aging record coverage",
+      prompt: inventoryAgingUsesOnHand
+        ? "Which aging bucket contains the largest governed on-hand inventory quantity?"
+        : "Which aging bucket contains the most source records? Quantity exposure is unavailable without a governed on-hand measure.",
       lens: "Inventory aging",
       intent: "ranking",
       requiredFamilies: ["inventory"],
       requiredSignals: ["inventory.age_bucket|inventory.age|status.stock"],
-      optionalSignals: ["location.current", "money.cod", "quantity.weight"],
-      evidence: [inventoryAgeBucket, inventoryLocation].filter(Boolean).flatMap(signal => signal!.evidence),
+      optionalSignals: ["inventory.on_hand", "location.current", "money.cod", "quantity.weight"],
+      evidence: [inventoryAgeBucket, inventoryOnHand, inventoryLocation].filter(Boolean).flatMap(signal => signal!.evidence),
       action: makeAction(
         "inventory_aging_backlog",
-        "Inventory aging and backlog risk",
+        inventoryAgingUsesOnHand ? "Inventory aging by on-hand quantity" : "Inventory aging record coverage",
         "group_by",
         inventoryAgeBucket ? [inventoryAgeBucket.physicalColumn] : [],
-        ["record_count"],
-        scope
+        inventoryOnHand ? [inventoryOnHand.physicalColumn] : ["record_count"],
+        scope,
+        undefined,
+        inventoryOnHand ? { [inventoryOnHand.physicalColumn]: "SUM" } : undefined
       ),
       blockedReasons: inventoryAgeBucket ? [] : ["An inventory age bucket or stock-status field is required."]
     }));
@@ -431,7 +444,7 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
       lens: "Inventory value exposure",
       intent: "ranking",
       requiredFamilies: ["money", "inventory"],
-      requiredSignals: ["money.cod|money.receivable|money.revenue", "location.current|location.warehouse|item.*"],
+      requiredSignals: ["money.cod|money.receivable|money.fee|explicit_inventory_value", "location.current|location.warehouse|item.*"],
       optionalSignals: ["inventory.age_bucket", "quantity.weight", "status.stock"],
       evidence: [inventoryMoney, inventoryValueLocation, item].filter(Boolean).flatMap(signal => signal!.evidence),
       action: makeAction(
@@ -443,7 +456,7 @@ export function appendUniversalQuestionsSecondary(questions: QuestionCandidate[]
         scope
       ),
       blockedReasons: [
-        ...(!inventoryMoney ? ["A COD/receivable/revenue measure is required."] : []),
+        ...(!inventoryMoney ? ["A governed COD, receivable, fee, declared-value, or inventory-value measure is required; unit price is not a substitute."] : []),
         ...(!inventoryValueLocation && !item ? ["A current location, warehouse, service, or item dimension is required."] : [])
       ]
     }));

@@ -8,6 +8,9 @@ export type VisualNarrativeLayoutCountV1 = 1 | 3 | 5;
 export type VisualNarrativeWidthIntentV1 = 'half' | 'wide' | 'full';
 export type VisualNarrativeHeightIntentV1 = 'compact' | 'standard' | 'tall';
 export type VisualNarrativePresentationV1 = 'single' | 'grouped_compare' | 'combo_bar_line';
+export type VisualNarrativeComplementarityV1 =
+  | 'primary_answer' | 'legal_combination' | 'same_metric_new_dimension'
+  | 'same_metric_new_intent' | 'evidence_detail';
 
 export type VisualNarrativeCombinationHintV1 = {
   groupId: string;
@@ -35,6 +38,7 @@ export type VisualNarrativeCandidateV1 = {
   officialComplementToPrimary?: boolean;
   advisoryRankPrior?: number;
   combination?: VisualNarrativeCombinationHintV1 | null;
+  complementarityToPrimary?: VisualNarrativeComplementarityV1;
 };
 
 export type VisualNarrativeUnitV1 = {
@@ -48,10 +52,11 @@ export type VisualNarrativeUnitV1 = {
   widthIntent: VisualNarrativeWidthIntentV1;
   heightIntent: VisualNarrativeHeightIntentV1;
   reason: string;
+  reasonForInclusion: VisualNarrativeComplementarityV1;
 };
 export type VisualNarrativeRejectionReasonV1 =
   | 'evidence_required' | 'duplicate_question' | 'duplicate_story'
-  | 'not_complementary' | 'layout_normalization' | 'visual_budget_exceeded';
+  | 'duplicate_information' | 'not_complementary' | 'layout_normalization' | 'visual_budget_exceeded';
 
 export type VisualNarrativeCompositionPlanV1 = {
   schemaVersion: typeof VISUAL_NARRATIVE_COMPOSITION_VERSION;
@@ -84,6 +89,22 @@ function metricsOverlap(left: VisualNarrativeCandidateV1, right: VisualNarrative
   return metricKey(right).some(metric => a.has(metric));
 }
 
+function metricsEquivalent(left: VisualNarrativeCandidateV1, right: VisualNarrativeCandidateV1): boolean {
+  const a = metricKey(left);
+  const b = metricKey(right);
+  return a.length > 0 && a.join('|') === b.join('|');
+}
+
+function sameInformationShape(left: VisualNarrativeCandidateV1, right: VisualNarrativeCandidateV1): boolean {
+  return normalize(left.dimensionField) === normalize(right.dimensionField)
+    && metricsEquivalent(left, right);
+}
+
+function sameMetricIntent(left: VisualNarrativeCandidateV1, right: VisualNarrativeCandidateV1): boolean {
+  return metricsEquivalent(left, right)
+    && normalize(left.analyticalIntent) === normalize(right.analyticalIntent);
+}
+
 function sameStory(left: VisualNarrativeCandidateV1, right: VisualNarrativeCandidateV1): boolean {
   return left.storyRole === right.storyRole
     && normalize(left.dimensionField) === normalize(right.dimensionField)
@@ -100,12 +121,27 @@ function canCombine(left: VisualNarrativeCandidateV1, right: VisualNarrativeCand
     && (!left.combination.explicitUnitLabel || !right.combination.explicitUnitLabel)) return false;
   return true;
 }
-function isComplementary(primary: VisualNarrativeCandidateV1, candidate: VisualNarrativeCandidateV1): boolean {
-  if (metricsOverlap(primary, candidate)) return true;
-  if (canCombine(primary, candidate)) return true;
-  if (candidate.officialComplementToPrimary) return true;
-  if (candidate.storyRole === 'evidence') return true;
-  return false;
+function complementarityToPrimary(
+  primary: VisualNarrativeCandidateV1,
+  candidate: VisualNarrativeCandidateV1,
+): VisualNarrativeComplementarityV1 | null {
+  if (canCombine(primary, candidate)) return 'legal_combination';
+  if (!metricsOverlap(primary, candidate)) return null;
+  const sameIntent = normalize(primary.analyticalIntent) === normalize(candidate.analyticalIntent);
+  const sameDimension = normalize(primary.dimensionField) === normalize(candidate.dimensionField);
+
+  // Changing only the grouping dimension is not new analytical information.
+  // A Product/Brand/Category trio over the same record_count metric and the
+  // same category-comparison intent is one story repeated three ways.
+  if (metricsEquivalent(primary, candidate) && sameIntent) return null;
+
+  if (!sameDimension) {
+    return candidate.storyRole === 'evidence' ? 'evidence_detail' : 'same_metric_new_dimension';
+  }
+  if (!metricsEquivalent(primary, candidate)) {
+    return candidate.storyRole === 'evidence' ? 'evidence_detail' : 'same_metric_new_intent';
+  }
+  return null;
 }
 
 function heightIntent(candidate: VisualNarrativeCandidateV1): VisualNarrativeHeightIntentV1 {
@@ -129,6 +165,7 @@ function singleUnit(candidate: VisualNarrativeCandidateV1): VisualNarrativeUnitV
     widthIntent: candidate.isPrimary ? 'full' : 'half',
     heightIntent: heightIntent(candidate),
     reason: candidate.isPrimary ? 'Direct visual answer and stable narrative anchor.' : 'Distinct evidence-backed complementary visual.',
+    reasonForInclusion: candidate.complementarityToPrimary ?? (candidate.isPrimary ? 'primary_answer' : 'same_metric_new_dimension'),
   };
 }
 function combinedUnit(left: VisualNarrativeCandidateV1, right: VisualNarrativeCandidateV1): VisualNarrativeUnitV1 {
@@ -147,6 +184,7 @@ function combinedUnit(left: VisualNarrativeCandidateV1, right: VisualNarrativeCa
     widthIntent: left.isPrimary || right.isPrimary ? 'full' : 'half',
     heightIntent: [heightIntent(left), heightIntent(right)].includes('tall') ? 'tall' : 'standard',
     reason: 'Combined because governed visual layers share source scope, grain and dimension, with explicit unit semantics.',
+    reasonForInclusion: 'legal_combination',
   };
 }
 
@@ -165,13 +203,15 @@ export function createVisualNarrativeCompositionPlan(input: {
   if (!primary.evidenceBacked || primary.evidenceRefs.length === 0) throw new Error('VISUAL_NARRATIVE_PRIMARY_EVIDENCE_REQUIRED');
 
   const rejected: VisualNarrativeCompositionPlanV1['rejected'] = [];
-  const eligible: VisualNarrativeCandidateV1[] = [primary];
+  primary.complementarityToPrimary = 'primary_answer';
+  const deterministicallyAdmitted: VisualNarrativeCandidateV1[] = [primary];
   const seenQuestions = new Set([normalize(primary.managementQuestion)]);
+  // Semantic admission is deliberately independent of Micro Brain ordering.
+  // MB may rank already-admitted presentation choices, but it may never make an
+  // unrelated or duplicate visual eligible.
   const others = input.candidates
     .filter(candidate => candidate.id !== primary.id)
-    .sort((a, b) => (b.advisoryRankPrior ?? 0) - (a.advisoryRankPrior ?? 0)
-      || b.decisionImportance - a.decisionImportance
-      || a.id.localeCompare(b.id));
+    .sort((a, b) => b.decisionImportance - a.decisionImportance || a.id.localeCompare(b.id));
 
   for (const candidate of others) {
     if (!candidate.evidenceBacked || candidate.evidenceRefs.length === 0) {
@@ -183,17 +223,35 @@ export function createVisualNarrativeCompositionPlan(input: {
       rejected.push({ candidateId: candidate.id, reason: 'duplicate_question' });
       continue;
     }
-    if (eligible.some(existing => sameStory(existing, candidate))) {
+    if (deterministicallyAdmitted.some(existing => sameStory(existing, candidate))) {
       rejected.push({ candidateId: candidate.id, reason: 'duplicate_story' });
       continue;
     }
-    if (!isComplementary(primary, candidate)) {
+    if (deterministicallyAdmitted.some(existing => sameInformationShape(existing, candidate))) {
+      rejected.push({ candidateId: candidate.id, reason: 'duplicate_information' });
+      continue;
+    }
+    if (deterministicallyAdmitted.some(existing => sameMetricIntent(existing, candidate))) {
+      rejected.push({ candidateId: candidate.id, reason: 'duplicate_information' });
+      continue;
+    }
+    const relation = complementarityToPrimary(primary, candidate);
+    if (!relation) {
       rejected.push({ candidateId: candidate.id, reason: 'not_complementary' });
       continue;
     }
+    candidate.complementarityToPrimary = relation;
     seenQuestions.add(question);
-    eligible.push(candidate);
+    deterministicallyAdmitted.push(candidate);
   }
+
+  const eligible = [
+    primary,
+    ...deterministicallyAdmitted.slice(1).sort((a, b) =>
+      (b.advisoryRankPrior ?? 0) - (a.advisoryRankPrior ?? 0)
+      || b.decisionImportance - a.decisionImportance
+      || a.id.localeCompare(b.id)),
+  ];
 
   let units = eligible.slice(0, 5).map(singleUnit);
   for (const candidate of eligible.slice(5)) {

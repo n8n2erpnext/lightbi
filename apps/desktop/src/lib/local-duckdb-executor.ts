@@ -125,15 +125,21 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
     
     // 5. Convert Arrow Table back to JS objects
     let totalMalformedDropped = 0;
+    let adaptiveTemporalGrain: string | null = null;
     
     const columns = arrowResult.schema.fields
       .map(f => f.name)
-      .filter(name => !name.startsWith('__malformed_'));
+      .filter(name => !name.startsWith('__malformed_') && name !== '__lightbi_time_grain__');
       
     const rows = arrowResult.toArray().map((row: any) => {
       const jsonRow = row.toJSON();
       
       for (const key of Object.keys(jsonRow)) {
+        if (key === '__lightbi_time_grain__') {
+          if (adaptiveTemporalGrain == null && jsonRow[key] != null) adaptiveTemporalGrain = String(jsonRow[key]);
+          delete jsonRow[key];
+          continue;
+        }
         if (key.startsWith('__malformed_')) {
           if (typeof jsonRow[key] === 'number') {
             totalMalformedDropped += jsonRow[key];
@@ -152,6 +158,9 @@ export async function executeLocalDuckDB(input: LocalDuckDBInput): Promise<DuckD
     }
     if (totalMalformedDropped > 0) {
       warnings.push(`Guarded SUM detected ${totalMalformedDropped} malformed values skipped during SUM aggregation.`);
+    }
+    if (adaptiveTemporalGrain) {
+      warnings.push(`Adaptive temporal grain selected from full-file span: ${adaptiveTemporalGrain}.`);
     }
     
     return {

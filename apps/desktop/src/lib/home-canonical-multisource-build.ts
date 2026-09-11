@@ -95,9 +95,13 @@ export async function executeHomeCanonicalMultiSourceBuild(
           sales: ["executive_overview", "sales_performance", "period_comparison"].includes(perspectiveId),
           logistics: ["executive_overview", "fulfillment_operations", "period_comparison"].includes(perspectiveId),
           profitability: ["executive_overview", "profitability", "finance_accounting"].includes(perspectiveId),
+          accountingPeriodComparison: perspectiveId === "period_comparison",
         };
 
-        const executeRolePeriods = async (role: "sales" | "logistics", metricId: "sales_revenue" | "delivery_count") => {
+        const executeRolePeriods = async (
+          role: "sales" | "accounting" | "logistics",
+          metricId: "sales_revenue" | "gross_profit" | "delivery_count",
+        ) => {
           const roleMembers = members.filter((item) => item.draft.role === role);
           if (roleMembers.length === 0) return;
           const built = buildCanonicalPeriodPartitionWorkspace({
@@ -113,46 +117,55 @@ export async function executeHomeCanonicalMultiSourceBuild(
 
         if (requestedCapabilities.sales) await executeRolePeriods("sales", "sales_revenue");
         if (requestedCapabilities.logistics) await executeRolePeriods("logistics", "delivery_count");
+        if (requestedCapabilities.accountingPeriodComparison) await executeRolePeriods("accounting", "gross_profit");
 
         if (requestedCapabilities.profitability) {
-          const periods = [...new Set(members.flatMap((item) =>
-            item.draft.periodStart ? [item.draft.periodStart.slice(0, 7)] : []))].sort();
-          for (const period of periods) {
-            const pair = members.filter((item) =>
-              item.draft.periodStart?.slice(0, 7) === period
-              && (item.draft.role === "sales" || item.draft.role === "accounting"));
-            if (pair.length !== 2 || !pair.some((item) => item.draft.role === "sales") || !pair.some((item) => item.draft.role === "accounting")) continue;
-            const built = await buildCanonicalMultiSourceDataset({
-              multiSourceDatasetId: `perspective:${perspectiveId}:gross-profit:${period}`,
-              members: pair.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: true })),
-            });
-            if (built.status !== "valid") throw new Error(built.blockers.join(", "));
-            const analysis = built.dataset.analyses.find((item) => item.metricId === "gross_profit" && item.state === "ready");
-            if (!analysis) throw new Error(built.dataset.analyses.flatMap((item) => item.blockers).join(", ") || "Gross profit is not ready.");
-            const handoff = prepareCanonicalMultiSourceInvestigationHandoff(built.dataset, analysis.analysisId);
-            if (!handoff || handoff.queryPlanning.state !== "planned" || !handoff.sourceBoundary) throw new Error("Gross-profit execution plan is unavailable.");
-            const result = await executeCanonicalMultiSourceMetric({
-              dataset: built.dataset,
-              handoff,
-              request: {
-                schemaVersion: "lightbi.governed-metric-execution-request.v1",
-                requestId: `easy-perspective:${perspectiveId}:${period}`,
-                plan: handoff.queryPlanning.plan,
-                rows: [],
-                runtimeSource: handoff.sourceBoundary.runtimeSource,
-                expectedRuntimeBinding: handoff.sourceBoundary.runtimeSource.binding,
-                artifactIdentity: handoff.artifactIdentity,
-                expectedSourceRowCount: handoff.sourceBoundary.sourceRowCount,
-                groundTruth: {
-                  state: "unavailable",
-                  value: null,
-                  tolerance: null,
-                  provenance: "easy_mode_no_external_ground_truth",
+          const hasSales = members.some((item) => item.draft.role === "sales");
+          const hasAccounting = members.some((item) => item.draft.role === "accounting");
+          if (hasAccounting && !hasSales) {
+            // Direct accounting gross-profit evidence is already governed source-locally.
+            // Compare period partitions independently; do not invent a Sales relationship.
+            await executeRolePeriods("accounting", "gross_profit");
+          } else {
+            const periods = [...new Set(members.flatMap((item) =>
+              item.draft.periodStart ? [item.draft.periodStart.slice(0, 7)] : []))].sort();
+            for (const period of periods) {
+              const pair = members.filter((item) =>
+                item.draft.periodStart?.slice(0, 7) === period
+                && (item.draft.role === "sales" || item.draft.role === "accounting"));
+              if (pair.length !== 2 || !pair.some((item) => item.draft.role === "sales") || !pair.some((item) => item.draft.role === "accounting")) continue;
+              const built = await buildCanonicalMultiSourceDataset({
+                multiSourceDatasetId: `perspective:${perspectiveId}:gross-profit:${period}`,
+                members: pair.map((item) => ({ artifact: item.artifact, overlay: item.overlay, required: true })),
+              });
+              if (built.status !== "valid") throw new Error(built.blockers.join(", "));
+              const analysis = built.dataset.analyses.find((item) => item.metricId === "gross_profit" && item.state === "ready");
+              if (!analysis) throw new Error(built.dataset.analyses.flatMap((item) => item.blockers).join(", ") || "Gross profit is not ready.");
+              const handoff = prepareCanonicalMultiSourceInvestigationHandoff(built.dataset, analysis.analysisId);
+              if (!handoff || handoff.queryPlanning.state !== "planned" || !handoff.sourceBoundary) throw new Error("Gross-profit execution plan is unavailable.");
+              const result = await executeCanonicalMultiSourceMetric({
+                dataset: built.dataset,
+                handoff,
+                request: {
+                  schemaVersion: "lightbi.governed-metric-execution-request.v1",
+                  requestId: `easy-perspective:${perspectiveId}:${period}`,
+                  plan: handoff.queryPlanning.plan,
+                  rows: [],
+                  runtimeSource: handoff.sourceBoundary.runtimeSource,
+                  expectedRuntimeBinding: handoff.sourceBoundary.runtimeSource.binding,
+                  artifactIdentity: handoff.artifactIdentity,
+                  expectedSourceRowCount: handoff.sourceBoundary.sourceRowCount,
+                  groundTruth: {
+                    state: "unavailable",
+                    value: null,
+                    tolerance: null,
+                    provenance: "easy_mode_no_external_ground_truth",
+                  },
                 },
-              },
-            });
-            if (result.status !== "executed") throw new Error(result.blockers.join(", "));
-            multiSourceExecutions.push({ period, dataset: built.dataset, result });
+              });
+              if (result.status !== "executed") throw new Error(result.blockers.join(", "));
+              multiSourceExecutions.push({ period, dataset: built.dataset, result });
+            }
           }
         }
 

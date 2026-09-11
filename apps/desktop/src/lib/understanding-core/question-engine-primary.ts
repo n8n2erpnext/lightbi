@@ -2,7 +2,12 @@ import type { QuestionCandidate, UniversalSignal } from './contracts';
 import { candidate, makeAction, positiveRateMeasure, first, byId, type UniversalQuestionContext } from './question-engine-shared';
 
 export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], context: UniversalQuestionContext): void {
-  const { signals, scope, money, revenue, cost, profit, receivable, payable, balance, time, location, item, actor, customer, customerContext, customerGeography, customerProfileDimension, vendor, documentType, status, receivedQty, issuedQty, soldQty, returnedQty, orderedQty, stockMovementQuantity, paymentMethod, payments, quality, engagementOutcome, engagementSegment, contactChannel, campaignAttempts, previousContacts, previousOutcome, indicator, secondaryIndicator, economicIndicator, infrastructureIndicator, countryOrRegion, participant, team, coach, role, activity, lineup, indicatorDimension } = context;
+  const { signals, scope, money, revenue, cost, profit, margin, receivable, payable, balance, time, location, item, actor, customer, customerContext, customerGeography, customerProfileDimension, vendor, documentType, status, receivedQty, issuedQty, soldQty, returnedQty, orderedQty, stockMovementQuantity, paymentMethod, payments, quality, engagementOutcome, engagementSegment, contactChannel, campaignAttempts, previousContacts, previousOutcome, indicator, actualIndicator, targetIndicator, secondaryIndicator, economicIndicator, infrastructureIndicator, countryOrRegion, participant, team, coach, role, activity, lineup, indicatorDimension } = context;
+  const pairedPerformanceMeasures = actualIndicator && targetIndicator
+    ? [actualIndicator.physicalColumn, targetIndicator.physicalColumn]
+    : indicator ? [indicator.physicalColumn] : [];
+  const pairedPerformanceAggregations = Object.fromEntries(pairedPerformanceMeasures.map(measure => [measure, "AVG" as const]));
+
 
   if (quality.some(signal => signal.id === "quality.formula_error" || signal.id === "quality.technical_column")) {
       const columns = quality.map(signal => signal.physicalColumn);
@@ -194,6 +199,34 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       blockedReasons: location ? [] : ["A branch, area, warehouse, route, or location field is required."]
     }));
 
+  const actualTargetDimension = time ?? indicatorDimension;
+  questions.push(candidate({
+      id: "actual_vs_target",
+      label: "Actual versus target performance",
+      prompt: "How does the actual result compare with the target across time or the most relevant business group?",
+      lens: "Target attainment",
+      intent: time ? "trend" : "ranking",
+      requiredFamilies: ["indicator"],
+      requiredSignals: ["indicator.actual", "indicator.target"],
+      optionalSignals: ["time.*", "entity.*", "location.*", "item.*"],
+      evidence: [actualIndicator, targetIndicator, actualTargetDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction(
+        "actual_vs_target",
+        "Actual versus target performance",
+        time ? "trend" : "group_by",
+        actualTargetDimension ? [actualTargetDimension.physicalColumn] : [],
+        actualIndicator && targetIndicator ? [actualIndicator.physicalColumn, targetIndicator.physicalColumn] : [],
+        scope,
+        undefined,
+        actualIndicator && targetIndicator ? { [actualIndicator.physicalColumn]: "AVG", [targetIndicator.physicalColumn]: "AVG" } : undefined
+      ),
+      blockedReasons: [
+        ...(!actualIndicator ? ["An explicit actual/result measure is required."] : []),
+        ...(!targetIndicator ? ["An explicit target/goal measure is required."] : []),
+        ...(!actualTargetDimension ? ["A time or business grouping dimension is required."] : [])
+      ]
+    }));
+
   questions.push(candidate({
       id: "indicator_over_time",
       label: "Indicator over time",
@@ -255,16 +288,16 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       requiredFamilies: ["indicator", "entity"],
       requiredSignals: ["indicator.*", "entity.manager|entity.employee|entity.team|entity.department"],
       optionalSignals: ["time.*", "location.*"],
-      evidence: [indicator, actor, team, time].filter(Boolean).flatMap(signal => signal!.evidence),
+      evidence: [indicator, actualIndicator, targetIndicator, actor, team, time].filter(Boolean).flatMap(signal => signal!.evidence),
       action: makeAction(
         "performance_indicator_by_owner_or_team",
         "Performance indicators by owner or team",
         "group_by",
         actor ? [actor.physicalColumn] : team ? [team.physicalColumn] : [],
-        indicator ? [indicator.physicalColumn] : [],
+        pairedPerformanceMeasures,
         scope,
         undefined,
-        indicator ? { [indicator.physicalColumn]: "AVG" } : undefined
+        pairedPerformanceMeasures.length > 0 ? pairedPerformanceAggregations : undefined
       ),
       blockedReasons: [
         ...(!indicator ? ["A KPI, score, target, actual, or other performance indicator is required."] : []),
@@ -281,16 +314,16 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       requiredFamilies: ["indicator"],
       requiredSignals: ["indicator.*"],
       optionalSignals: ["entity.*", "location.*", "item.*", "status.*"],
-      evidence: [indicator, indicatorDimension].filter(Boolean).flatMap(signal => signal!.evidence),
+      evidence: [indicator, actualIndicator, targetIndicator, indicatorDimension].filter(Boolean).flatMap(signal => signal!.evidence),
       action: makeAction(
         "performance_indicator_by_business_dimension",
         "Performance indicator by business group",
         "group_by",
         indicator && indicatorDimension ? [indicatorDimension.physicalColumn] : [],
-        indicator ? [indicator.physicalColumn] : [],
+        pairedPerformanceMeasures,
         scope,
         undefined,
-        indicator ? { [indicator.physicalColumn]: "AVG" } : undefined
+        pairedPerformanceMeasures.length > 0 ? pairedPerformanceAggregations : undefined
       ),
       blockedReasons: [
         ...(!indicator ? ["A usable KPI, score, target, actual, or numeric indicator is required."] : []),
@@ -479,10 +512,10 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       requiredFamilies: ["money", "time"],
       requiredSignals: ["money.*", "time.*"],
       optionalSignals: ["location.*", "item.*", "entity.*"],
-      evidence: [money, time].filter(Boolean).flatMap(signal => signal!.evidence),
-      action: makeAction("money_over_time", "Money over time", "trend", time ? [time.physicalColumn] : [], money ? [money.physicalColumn] : [], scope),
+      evidence: [revenue, time].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction("money_over_time", "Money over time", "trend", time ? [time.physicalColumn] : [], revenue ? [revenue.physicalColumn] : [], scope),
       blockedReasons: [
-        ...(!money ? ["A usable money measure is required."] : []),
+        ...(!revenue ? ["A usable business-value measure is required."] : []),
         ...(!time ? ["A usable time field is required."] : [])
       ]
     }));
@@ -500,13 +533,44 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       action: makeAction(
         "profit_or_margin",
         "Profit or margin performance",
-        "group_by",
+        time ? "trend" : "group_by",
         time ? [time.physicalColumn] : location ? [location.physicalColumn] : item ? [item.physicalColumn] : actor ? [actor.physicalColumn] : [],
         profit ? [profit.physicalColumn] : revenue && cost ? [revenue.physicalColumn] : [],
-        scope
+        scope,
+        undefined,
+        profit ? { [profit.physicalColumn]: profit.id === "money.margin" ? "AVG" : "SUM" } : undefined
       ),
       blockedReasons: [
         ...(!profit && !(revenue && cost) ? ["A profit/margin field or revenue+cost pair is required."] : []),
+        ...(!time && !location && !item && !actor ? ["A time, location, item, or actor dimension is required."] : [])
+      ]
+    }));
+
+  questions.push(candidate({
+      id: "margin_performance_context",
+      label: "Margin context for profit performance",
+      prompt: "How does margin move alongside profit across the same time or business grain?",
+      lens: "Profitability context",
+      intent: time ? "trend" : "ranking",
+      requiredFamilies: ["money"],
+      requiredSignals: ["money.margin", "money.profit"],
+      optionalSignals: ["time.*", "location.*", "item.*", "entity.*"],
+      evidence: [margin, profit, time, location, item, actor].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: margin && profit && margin.physicalColumn !== profit.physicalColumn
+        ? makeAction(
+          "margin_performance_context",
+          "Margin context for profit performance",
+          time ? "trend" : "group_by",
+          time ? [time.physicalColumn] : location ? [location.physicalColumn] : item ? [item.physicalColumn] : actor ? [actor.physicalColumn] : [],
+          [margin.physicalColumn],
+          scope,
+          undefined,
+          { [margin.physicalColumn]: "AVG" }
+        )
+        : undefined,
+      blockedReasons: [
+        ...(!margin ? ["A margin measure is required."] : []),
+        ...(!profit || profit.physicalColumn === margin?.physicalColumn ? ["A distinct profit measure is required to add margin context."] : []),
         ...(!time && !location && !item && !actor ? ["A time, location, item, or actor dimension is required."] : [])
       ]
     }));
@@ -544,10 +608,10 @@ export function appendUniversalQuestionsPrimary(questions: QuestionCandidate[], 
       requiredFamilies: ["money", "location"],
       requiredSignals: ["money.*", "location.*"],
       optionalSignals: ["time.*", "item.*"],
-      evidence: [money, location].filter(Boolean).flatMap(signal => signal!.evidence),
-      action: makeAction("money_by_location", "Money by location", "group_by", location ? [location.physicalColumn] : [], money ? [money.physicalColumn] : [], scope),
+      evidence: [revenue, location].filter(Boolean).flatMap(signal => signal!.evidence),
+      action: makeAction("money_by_location", "Money by location", "group_by", location ? [location.physicalColumn] : [], revenue ? [revenue.physicalColumn] : [], scope),
       blockedReasons: [
-        ...(!money ? ["A usable money measure is required."] : []),
+        ...(!revenue ? ["A usable business-value measure is required."] : []),
         ...(!location ? ["A location/store/warehouse dimension is required."] : [])
       ]
     }));

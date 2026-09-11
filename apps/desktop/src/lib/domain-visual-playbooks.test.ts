@@ -44,6 +44,15 @@ describe('Official domain visual playbooks V2', () => {
       domainId: 'finance', primaryText: 'revenue by month', companionText: 'COGS by month',
     })?.id).toBe('finance-revenue-cost-shared-grain');
     expect(matchOfficialDomainCombinationRecipe({
+      domainId: 'finance', primaryText: 'gross profit by month', companionText: 'margin rate by month',
+    })?.id).toBe('finance-profit-margin-shared-grain');
+    expect(matchOfficialDomainCombinationRecipe({
+      domainId: 'operations', primaryText: 'delivery workload by carrier', companionText: 'delivery fee by carrier',
+    })?.id).toBe('operations-volume-cost-shared-grain');
+    expect(matchOfficialDomainCombinationRecipe({
+      domainId: 'performance', primaryText: 'actual by team', companionText: 'target by team',
+    })?.id).toBe('performance-actual-target-shared-grain');
+    expect(matchOfficialDomainCombinationRecipe({
       domainId: 'customer', primaryText: 'revenue by customer', companionText: 'stock quantity by warehouse',
     })).toBeNull();
   });

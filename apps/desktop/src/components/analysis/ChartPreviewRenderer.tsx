@@ -1,12 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import * as echarts from 'echarts';
 import type { ChartPreviewModel } from '../../lib/chart-preview-model';
 import type { DrillThroughPoint } from '../../lib/drill-through-export';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
 import { formatValue, inferSemanticType } from '../../lib/display-formatter';
-import type { GovernedVisualizationPlanV1 } from '../../lib/visualization-planner';
+import { applyVisualizationPresentationShaping, type GovernedVisualizationPlanV1 } from '../../lib/visualization-planner';
 import type { VisualizationRendererFamilyV1 } from '../../lib/visualization-renderer-registry';
 import { generateDashboardChartOptions } from '../dashboards/DashboardChartWidget';
+import { useUiLanguage } from '../../lib/ui-language';
 
 type ChartClickParams = {
   dataIndex?: number;
@@ -22,6 +23,12 @@ export const ChartPreviewRenderer: React.FC<{
 }> = ({ model, visualizationPlan, rendererFamilyOverride, heightClassName, onDrillThrough }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const { preferences } = useDisplayPreferences();
+  const { localize } = useUiLanguage();
+  const displayRows = useMemo(() => applyVisualizationPresentationShaping({
+    rows: model.rows,
+    dimensionField: model.xField ?? '',
+    shaping: visualizationPlan?.presentationShaping ?? null,
+  }), [model.rows, model.xField, visualizationPlan?.presentationShaping]);
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -30,7 +37,7 @@ export const ChartPreviewRenderer: React.FC<{
     const chartInstance = echarts.init(chartRef.current);
     const xField = model.xField || '';
     const primaryYField = model.seriesFields[0] || model.yField || '';
-    const primarySample = primaryYField ? model.rows[0]?.[primaryYField] : undefined;
+    const primarySample = primaryYField ? displayRows[0]?.[primaryYField] : undefined;
     const primarySemantic = primaryYField ? inferSemanticType(primaryYField, primarySample) : 'number';
     const valueType = primarySemantic === 'currency' ? 'currency' : 'number';
     const coarseType = model.chartType === 'line' ? 'line' : model.chartType === 'scatter' ? 'scatter' : 'bar';
@@ -43,7 +50,7 @@ export const ChartPreviewRenderer: React.FC<{
       rendererFamily: family,
       patternId: visualizationPlan?.patternId ?? null,
       colorSemantics,
-      data: model.rows,
+      data: displayRows,
       xAxisKey: xField,
       seriesKey: model.yField || primaryYField,
       seriesKeys: model.seriesFields,
@@ -56,7 +63,7 @@ export const ChartPreviewRenderer: React.FC<{
     chartInstance.getZr().setCursorStyle(drillEnabled ? 'pointer' : 'default');
     const handleClick = (params: ChartClickParams) => {
       if (!drillEnabled || !onDrillThrough || typeof params.dataIndex !== 'number') return;
-      const row = model.rows[params.dataIndex];
+      const row = displayRows[params.dataIndex];
       if (!row) return;
       const rawValue = row[xField];
       const label = formatValue(rawValue, inferSemanticType(xField, rawValue), preferences);
@@ -78,7 +85,7 @@ export const ChartPreviewRenderer: React.FC<{
       window.removeEventListener('resize', handleResize);
       chartInstance.dispose();
     };
-  }, [model, onDrillThrough, preferences, rendererFamilyOverride, visualizationPlan]);
+  }, [displayRows, model, onDrillThrough, preferences, rendererFamilyOverride, visualizationPlan]);
 
   if (model.status === 'empty') {
     return (
@@ -127,10 +134,17 @@ export const ChartPreviewRenderer: React.FC<{
   }
 
   return (
-    <div
-      className={`${heightClassName ?? 'h-[360px]'} w-full rounded-[18px] bg-white transition-[filter] duration-200`}
-      ref={chartRef}
-      data-testid="chart-preview-canvas"
-    />
+    <>
+      <div
+        className={`${heightClassName ?? 'h-[360px]'} w-full rounded-[18px] bg-white transition-[filter] duration-200`}
+        ref={chartRef}
+        data-testid="chart-preview-canvas"
+      />
+      {visualizationPlan?.presentationShaping?.kind === 'top_n' && (
+        <p data-testid="chart-presentation-shaping-note" className="mt-1 text-[11px] text-slate-500">
+          {localize(`Showing top ${visualizationPlan.presentationShaping.limit} of ${visualizationPlan.presentationShaping.sourceCategoryCount} categories.`)}
+        </p>
+      )}
+    </>
   );
 };

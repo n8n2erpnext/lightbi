@@ -204,6 +204,12 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     },
     combinationRecipes: [
       {
+        id: 'operations-volume-cost-shared-grain', label: 'Volume and cost in one operational story',
+        primaryMetricHints: ['delivery count','shipment count','volume','workload','count'], companionMetricHints: ['delivery fee','freight','cost','expense'],
+        presentation: 'combo_bar_line', allowExplicitMultiUnit: true,
+        rationale: 'Throughput and cost may share one visual only when the same route/carrier/resource grain is governed and both axes are explicit.',
+      },
+      {
         id: 'operations-volume-delay-shared-grain', label: 'Volume and delay/downtime in one operational story',
         primaryMetricHints: ['delivery count','shipment count','volume','defect quantity','count'], companionMetricHints: ['delay','downtime','minutes','duration'],
         presentation: 'combo_bar_line', allowExplicitMultiUnit: true,

@@ -488,6 +488,7 @@ export function projectCanonicalBusinessPerspectives(
         .map((bundle) => bundle.kind),
       capabilityIds: unique([
         ...(multiPeriodRoles.includes("sales") ? ["sales_revenue"] : []),
+        ...(periods(accountingWithGrossProfit).length > 1 ? ["gross_profit"] : []),
         ...(multiPeriodRoles.includes("logistics") ? ["delivery_count"] : []),
       ]),
       state: "needs_evidence",

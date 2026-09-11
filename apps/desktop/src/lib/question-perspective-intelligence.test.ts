@@ -43,6 +43,34 @@ describe('DPR-2 Question/Perspective Intelligence', () => {
     expect(revenue[0].actionId).toBe('action:governed-revenue');
   });
 
+  it('does not merge Actual-only trend with Actual-versus-Target because paired measures are a distinct semantic question', () => {
+    const performance = structuredClone(understanding);
+    performance.profile.detectedDomains = ['performance'];
+    performance.signals = [
+      { canonicalId: 'time.transaction_date', label: 'Date', domain: 'operations', physicalColumn: 'Date', confidence: 100, evidence: [], cardinality: 6, role: 'time', usableForDefaultQuestion: true },
+      { canonicalId: 'indicator.actual', label: 'Actual', domain: 'performance', physicalColumn: 'Actual', confidence: 100, evidence: [], cardinality: 6, role: 'measure', usableForDefaultQuestion: true },
+      { canonicalId: 'indicator.target', label: 'Target', domain: 'performance', physicalColumn: 'Target', confidence: 100, evidence: [], cardinality: 1, role: 'measure', usableForDefaultQuestion: true },
+    ];
+    performance.recommendedQuestions = [
+      { id: 'universal:actual_vs_target', label: 'Actual versus target performance', userPrompt: 'Compare Actual with Target over time.', domain: 'performance', perspectiveId: 'Actual versus target', requiredSignals: ['indicator.actual', 'indicator.target'], optionalSignals: [], dimensions: ['Date'], measures: ['Actual', 'Target'], fitScore: 100, actionKind: 'trend', executionScope: 'full_local_file', caveats: [] },
+      { id: 'universal:indicator_over_time', label: 'Indicator over time', userPrompt: 'Show Actual over time.', domain: 'performance', perspectiveId: 'Indicator trend', requiredSignals: ['indicator.actual'], optionalSignals: [], dimensions: ['Date'], measures: ['Actual'], fitScore: 100, actionKind: 'trend', executionScope: 'full_local_file', caveats: [] },
+    ];
+    performance.availableActions = [
+      { id: 'universal:action_actual_vs_target', questionId: 'universal:actual_vs_target', label: 'Actual versus target performance', actionKind: 'trend', dimensions: ['Date'], measures: ['Actual', 'Target'], measureAggregations: { Actual: 'AVG', Target: 'AVG' }, executionScope: 'full_local_file' },
+      { id: 'universal:action_indicator_over_time', questionId: 'universal:indicator_over_time', label: 'Indicator over time', actionKind: 'trend', dimensions: ['Date'], measures: ['Actual'], measureAggregations: { Actual: 'AVG' }, executionScope: 'full_local_file' },
+    ];
+    performance.unavailableActions = [];
+
+    const result = buildQuestionPerspectiveIntelligence({
+      presentation, understanding: performance, selectedPerspectiveId: 'performance',
+      advisor: () => ({ brainVersion: 'x', indexVersion: 'x', candidates: [], authorityNotes: [] }),
+    });
+    expect(result.candidates.some(item => item.actionId === 'universal:action_actual_vs_target')).toBe(true);
+    expect(result.candidates.some(item => item.actionId === 'universal:action_indicator_over_time')).toBe(true);
+    expect(result.primary?.actionId).toBe('universal:action_actual_vs_target');
+    expect(result.primary?.title).toContain('Actual versus target');
+  });
+
   it('allows MB to contribute ordinal relevance/context but never to strengthen answerability or action authority', () => {
     const noAdvice = buildQuestionPerspectiveIntelligence({ presentation, understanding, selectedPerspectiveId: 'finance', advisor: () => ({ brainVersion: 'x', indexVersion: 'x', candidates: [], authorityNotes: [] }) });
     const withAdvice = buildQuestionPerspectiveIntelligence({ presentation, understanding, selectedPerspectiveId: 'finance', advisor: () => advisory('concept.finance', 'finance') });
@@ -102,4 +130,22 @@ describe('DPR-2 Question/Perspective Intelligence', () => {
     expect(result.policy.retrievalScoreIsConfidence).toBe(false);
     expect(result.policy.mbMayStrengthenAuthority).toBe(false);
   });
+  it('keeps an explicit context question as supporting material instead of letting it outrank the direct finance answer', () => {
+    const finance = structuredClone(understanding);
+    finance.profile.detectedDomains = ['finance'];
+    finance.recommendedQuestions = [
+      { id:'universal:profit_or_margin', label:'Profit or margin performance', userPrompt:'Compare profit performance over time.', domain:'finance', perspectiveId:'Profitability', requiredSignals:['money.profit'], optionalSignals:['money.margin'], dimensions:['Date'], measures:['Gross Profit'], fitScore:100, actionKind:'trend', executionScope:'full_local_file', caveats:[] },
+      { id:'universal:margin_performance_context', label:'Margin context for profit performance', userPrompt:'How does margin move alongside profit?', domain:'finance', perspectiveId:'Profitability context', requiredSignals:['money.margin','money.profit'], optionalSignals:[], dimensions:['Date'], measures:['Margin'], fitScore:100, actionKind:'trend', executionScope:'full_local_file', caveats:[] },
+    ];
+    finance.availableActions = [
+      { id:'action_profit', questionId:'universal:profit_or_margin', label:'Profit', actionKind:'trend', dimensions:['Date'], measures:['Gross Profit'], executionScope:'full_local_file' },
+      { id:'action_margin', questionId:'universal:margin_performance_context', label:'Margin context', actionKind:'trend', dimensions:['Date'], measures:['Margin'], executionScope:'full_local_file' },
+    ];
+    const result = buildQuestionPerspectiveIntelligence({ presentation, understanding: finance, selectedPerspectiveId:'finance', advisor: () => ({ brainVersion:'x', indexVersion:'x', candidates:[], authorityNotes:[] }) });
+    expect(result.primary?.candidateId).toContain('profit_or_margin');
+    const context = result.candidates.find(item => item.candidateId.includes('margin_performance_context'));
+    expect(context?.rankReasons).toContain('supporting_context_penalty');
+    expect(context?.answerability).toBe('descriptive_only');
+  });
+
 });

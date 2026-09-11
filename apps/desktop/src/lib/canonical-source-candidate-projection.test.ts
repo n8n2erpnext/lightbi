@@ -113,6 +113,24 @@ describe("canonical source candidates and governed bundles", () => {
     });
   });
 
+  it("adds governed gross profit to Accounting period comparison only when direct profit evidence spans periods", () => {
+    const may = withMoney(candidate("accounting-may", "accounting", "2026-05"), "GrossProfit", "gross_profit");
+    const june = withMoney(candidate("accounting-june", "accounting", "2026-06"), "GrossProfit", "gross_profit");
+    const perspectives = projectCanonicalBusinessPerspectives([
+      { key: "accounting-may", candidates: may },
+      { key: "accounting-june", candidates: june },
+    ], []);
+
+    expect(perspectives.find((item) => item.perspectiveId === "period_comparison")).toMatchObject({
+      sourceKeys: ["accounting-june", "accounting-may"],
+      sourceRoles: ["accounting"],
+      periods: ["2026-05", "2026-06"],
+      capabilityIds: ["gross_profit"],
+      state: "needs_evidence",
+      blockers: [],
+    });
+  });
+
   it("exposes source-local profitability for an accounting file with direct gross-profit evidence", () => {
     const accounting = withMoney(candidate("accounting-june", "accounting", "2026-06"), "GrossProfit", "gross_profit");
     const perspectives = projectCanonicalBusinessPerspectives([{ key: "accounting-june", candidates: accounting }], []);

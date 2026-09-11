@@ -20,6 +20,16 @@ import {
 
 export const GOVERNED_VISUALIZATION_PLAN_VERSION = 'lightbi.visualization-plan.v1' as const;
 
+export type VisualizationPresentationShapingV1 = {
+  kind: 'top_n';
+  limit: number;
+  sourceCategoryCount: number;
+  omittedCategoryCount: number;
+  sortMetricId: string;
+  sortDirection: 'desc';
+  reason: 'high_cardinality_ranking';
+};
+
 export type GovernedVisualizationPlanInputV1 = {
   analyticalIntent: VisualizationAnalyticalIntentV1;
   availableRoles: VisualizationEvidenceRoleV1[];
@@ -29,6 +39,7 @@ export type GovernedVisualizationPlanInputV1 = {
   desirability?: MetricDesirabilityV1;
   requiredSurfaces?: VisualizationRendererSurfaceV1[];
   domainProfile?: DomainVisualProfileV1 | null;
+  presentationShaping?: VisualizationPresentationShapingV1 | null;
 };
 export type GovernedVisualizationCandidateV1 = {
   patternId: VisualizationPatternIdV1;
@@ -48,6 +59,7 @@ export type GovernedVisualizationPlanV1 = {
   status: 'planned' | 'abstained';
   candidates: GovernedVisualizationCandidateV1[];
   requiredSurfaces: VisualizationRendererSurfaceV1[];
+  presentationShaping?: VisualizationPresentationShapingV1 | null;
   patternRules: null | {
     colorSemantics: VisualizationColorSemanticsV1[];
     labelRules: string[];
@@ -110,6 +122,13 @@ export function createGovernedVisualizationPlan(
   input: GovernedVisualizationPlanInputV1,
 ): GovernedVisualizationPlanV1 {
   const requiredSurfaces = input.requiredSurfaces ?? ['preview','persistence','dashboard'];
+  const effectiveCardinality = input.presentationShaping?.kind === 'top_n'
+    ? {
+        ...(input.cardinality ?? {}),
+        categories: Math.min(input.cardinality?.categories ?? input.presentationShaping.sourceCategoryCount, input.presentationShaping.limit),
+        points: Math.min(input.cardinality?.points ?? input.presentationShaping.sourceCategoryCount, input.presentationShaping.limit),
+      }
+    : input.cardinality;
   const domainPrior = new Set(input.domainProfile?.preferredPatternIds ?? []);
   const queue = candidateOrder(input).map(patternId => ({ patternId, fallback: false }));
   const visited = new Set<VisualizationPatternIdV1>();
@@ -126,7 +145,7 @@ export function createGovernedVisualizationPlan(
       patternId: next.patternId,
       analyticalIntent: next.fallback ? undefined : input.analyticalIntent,
       availableRoles: input.availableRoles,
-      cardinality: input.cardinality,
+      cardinality: effectiveCardinality,
       units: input.units,
       requestedColorSemantics: input.requestedColorSemantics,
       desirability: input.desirability,
@@ -149,7 +168,8 @@ export function createGovernedVisualizationPlan(
   const seed = JSON.stringify({
     analyticalIntent: input.analyticalIntent,
     availableRoles: [...input.availableRoles].sort(),
-    cardinality: input.cardinality ?? null,
+    cardinality: effectiveCardinality ?? null,
+    presentationShaping: input.presentationShaping ?? null,
     units: input.units ?? null,
     requestedColorSemantics: input.requestedColorSemantics ?? null,
     desirability: input.desirability ?? 'unknown',
@@ -166,6 +186,7 @@ export function createGovernedVisualizationPlan(
     status: selected ? 'planned' : 'abstained',
     candidates,
     requiredSurfaces: [...requiredSurfaces],
+    presentationShaping: input.presentationShaping ?? null,
     patternRules: definition ? {
       colorSemantics: [...definition.colorSemantics],
       labelRules: [...definition.labelRules],
@@ -180,6 +201,27 @@ export function createGovernedVisualizationPlan(
       retrievalRankIsConfidence: false,
     },
   };
+}
+
+export function applyVisualizationPresentationShaping<T extends Record<string, unknown>>(input: {
+  rows: T[];
+  dimensionField: string;
+  shaping?: VisualizationPresentationShapingV1 | null;
+}): T[] {
+  const { rows, shaping } = input;
+  if (!shaping || shaping.kind !== 'top_n' || rows.length <= shaping.limit) return rows;
+  const metric = shaping.sortMetricId;
+  return rows
+    .map((row, index) => ({ row, index, value: Number(row[metric]) }))
+    .sort((a, b) => {
+      const aFinite = Number.isFinite(a.value); const bFinite = Number.isFinite(b.value);
+      if (aFinite && bFinite && a.value !== b.value) return b.value - a.value;
+      if (aFinite !== bFinite) return aFinite ? -1 : 1;
+      const byLabel = String(a.row[input.dimensionField] ?? '').localeCompare(String(b.row[input.dimensionField] ?? ''));
+      return byLabel || a.index - b.index;
+    })
+    .slice(0, shaping.limit)
+    .map(item => item.row);
 }
 
 export function analyticalIntentFromRuntimeIntentType(

@@ -202,7 +202,7 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   stock_age: "inventory.age",
   stock_threshold: "inventory.age_bucket",
   reorder_level: "inventory.age_bucket",
-  inventory: "inventory.age_bucket",
+  inventory: "inventory.on_hand",
 
   retention: "engagement.outcome",
   purchase_behavior: "engagement.outcome",
@@ -233,9 +233,9 @@ const CORE_ID_BY_CANONICAL: Record<string, string> = {
   row_type: "event.activity",
 
   kpi: "indicator.metric",
-  target: "indicator.metric",
-  achievement: "indicator.metric",
-  actual: "indicator.metric",
+  target: "indicator.target",
+  achievement: "indicator.achievement",
+  actual: "indicator.actual",
   assessment: "indicator.assessment",
   credit_score: "indicator.credit_score",
   app_size: "indicator.app_size",
@@ -273,6 +273,12 @@ function aliasesToPatterns(signal: SemanticSignalDefinition): RegExp[] {
 
   const broadPatterns = aliases.map(alias => {
     const escaped = escapeRegExp(alias);
+    // `sales` is a business-value token, not a prefix matcher. Without this
+    // boundary, the revenue registry rule also matches headers such as
+    // `Salesperson`, turning an entity dimension into a money measure.
+    if (/^sales$/i.test(alias)) {
+      return new RegExp(`(?:^|[^a-z0-9])${escaped}(?:$|[^a-z0-9])`, "i");
+    }
     if (/^[a-z0-9]+$/i.test(alias) && alias.length <= 4) {
       return new RegExp(`\\b${escaped}\\b`, "i");
     }
@@ -345,7 +351,7 @@ function makeRegistryBackedRules(): SignalRule[] {
 
 const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   // Money is intentionally broad. Industry-specific overlays should inherit it.
-  { id: "money.revenue", family: "money", role: "measure", label: "Revenue / Total Amount", patterns: [/doanh thu|tổng tiền|thành tiền|sales|revenue|gross amount|net amount|total amount|transaction value/i] },
+  { id: "money.revenue", family: "money", role: "measure", label: "Revenue / Total Amount", patterns: [/doanh thu|tổng tiền|thành tiền|\bsales\b|sales(?:\s|_|-)*(?:amount|value|revenue|total)|revenue|gross amount|net amount|total amount|transaction value/i] },
   { id: "money.receivable", family: "money", role: "measure", label: "Receivable / Amount Due", patterns: [/tiền phải thu|phải thu|amount due|receivable|\bar\b/i] },
   { id: "money.payable", family: "money", role: "measure", label: "Payable", patterns: [/phải trả|payable|ap\b/i] },
   { id: "money.debt", family: "money", role: "measure", label: "Debt / Outstanding", patterns: [/công nợ|nợ|debt|outstanding/i] },
@@ -364,7 +370,7 @@ const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   { id: "money.payment_voucher", family: "money", role: "measure", label: "Voucher Payment", patterns: [/pmh|phiếu mua hàng|voucher|gift/i] },
   { id: "money.refund_or_change", family: "money", role: "measure", label: "Refund / Change", patterns: [/hoàn tiền|tiền thối|thối lại|refund|change/i] },
   { id: "money.rounding", family: "money", role: "measure", label: "Rounding", patterns: [/làm tròn|rounding|rounding amount|rounding adjustment|round off|round-off|round amount/i] },
-  { id: "money.fee", family: "money", role: "measure", label: "Fee", patterns: [/phí|fee|shipping|delivery/i] },
+  { id: "money.fee", family: "money", role: "measure", label: "Fee", patterns: [/phí|\bfee\b|(?:shipping|delivery|freight)\s*(?:fee|charge|cost)|(?:fee|charge|cost)\s*(?:shipping|delivery|freight)/i] },
   { id: "money.cod", family: "money", role: "measure", label: "COD / Cash on Delivery", patterns: [/thu hộ|\bcod\b|cash on delivery/i] },
 
   { id: "time.transaction_date", family: "time", role: "time", label: "Transaction Date", patterns: [/ngày bán|ngày xuất|ngày giao dịch|transaction date|invoice date|date/i] },
@@ -464,6 +470,9 @@ const CORE_COMPAT_SIGNAL_RULES: SignalRule[] = [
   { id: "indicator.economic", family: "indicator", role: "measure", label: "Economic / Finance Indicator", patterns: [/^finance\s*:/i, /\bgdp\b|gross domestic product|economic output|income per capita/i] },
   { id: "indicator.infrastructure", family: "indicator", role: "measure", label: "Infrastructure / Service Indicator", patterns: [/^(transit|business)\s*:/i, /passenger[- ]km|internet users|mobile phone subscribers/i] },
   { id: "indicator.population", family: "indicator", role: "measure", label: "Population / Social Indicator", patterns: [/^population\s*:/i, /birth rate|population|ages?\s+\d/i] },
+  { id: "indicator.target", family: "indicator", role: "measure", label: "Target / Goal", patterns: [/^target$|target value|goal|quota|budget target|mục tiêu|muc tieu/i] },
+  { id: "indicator.actual", family: "indicator", role: "measure", label: "Actual / Result", patterns: [/^actual$|actual value|achieved value|realized|thực tế|thuc te/i] },
+  { id: "indicator.achievement", family: "indicator", role: "measure", label: "Achievement / Progress", patterns: [/achievement|progress(?: pct| percent| percentage)?|completion rate|tỷ lệ đạt|ty le dat/i] },
   { id: "indicator.health", family: "indicator", role: "measure", label: "Health Indicator", patterns: [/^health\s*:/i, /mortality|life expectancy|health expenditure/i] },
   { id: "indicator.metric", family: "indicator", role: "measure", label: "Indicator / Metric", patterns: [/^[a-z][^:]{1,48}:\s*.+/i, /per 100|per 1,000|% of|% gdp|index|rate|ratio|life expectancy|population|kpi|target|actual|achievement|productivity|utilization|efficiency|quality score|progress|xếp hạng|xep hang|thứ hạng|thu hang|điểm|diem|sao|rating|score/i] }
 ];

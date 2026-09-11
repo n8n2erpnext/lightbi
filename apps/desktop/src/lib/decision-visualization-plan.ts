@@ -1,6 +1,6 @@
 import type { DomainVisualProfileV1 } from './domain-visual-profile';
 import type { MetricDesirabilityV1, VisualizationAnalyticalIntentV1, VisualizationColorSemanticsV1, VisualizationEvidenceRoleV1 } from './visualization-ontology';
-import { createGovernedVisualizationPlan, type GovernedVisualizationPlanV1 } from './visualization-planner';
+import { createGovernedVisualizationPlan, type GovernedVisualizationPlanV1, type VisualizationPresentationShapingV1 } from './visualization-planner';
 import type { VisualizationRendererSurfaceV1 } from './visualization-renderer-registry';
 import type { VisualizationSuitabilityInputV1 } from './visualization-suitability';
 
@@ -63,6 +63,7 @@ export type CreateDecisionVisualizationPlanInputV1 = {
   desirability?: MetricDesirabilityV1;
   requiredSurfaces?: VisualizationRendererSurfaceV1[];
   domainProfile?: DomainVisualProfileV1 | null;
+  presentationShaping?: VisualizationPresentationShapingV1 | null;
 };
 
 function stableId(value: string): string {
@@ -115,6 +116,7 @@ export function createDecisionVisualizationPlan(input: CreateDecisionVisualizati
     desirability: input.desirability,
     requiredSurfaces: input.requiredSurfaces,
     domainProfile: input.domainProfile,
+    presentationShaping: input.presentationShaping ?? null,
   });
   if (visualizationPlan.status !== 'planned') throw new Error('DECISION_VISUALIZATION_NO_SAFE_PLAN');
   const seed = JSON.stringify({ perspectiveId: input.perspectiveId, dimensionField: input.dimensionField, xFieldRole, selectedScope, sourceCount: input.sourceCount, sourceRefs, rows: scopedRows, metricIds, visualizationPlanId: visualizationPlan.planId });

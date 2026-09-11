@@ -48,12 +48,16 @@ function signalUsability(signal: UniversalSignal, rowCount: number): boolean {
     // dictionary extensible without turning every dated report title into a
     // trend axis.
     const header = normalizeHeader(signal.physicalColumn).trim();
-    const explicitTimeHeader = /^(date|day|month|year|period|fiscal month|fiscal year|transaction date|invoice date|order date|report date|ngay|thang|nam|ky|ngay bao cao|ngay giao dich|ngày|tháng|năm|kỳ|ngày báo cáo|ngày giao dịch)$/i.test(header);
+    const explicitTimeHeader = /^(date|day|month|year|period|reporting period|reporting month|reporting year|fiscal period|fiscal month|fiscal year|transaction date|invoice date|order date|report date|ngay|thang|nam|ky|ky bao cao|thang bao cao|nam bao cao|ngay bao cao|ngay giao dich|ngày|tháng|năm|kỳ|kỳ báo cáo|tháng báo cáo|năm báo cáo|ngày báo cáo|ngày giao dịch)$/i.test(header);
     if (signal.health.inferredType !== "date" && !explicitTimeHeader) return false;
   }
   if (signal.id === "engagement.outcome") {
     return signal.health.distinctCount >= 2 && signal.health.distinctCount <= 20;
   }
+  // A constant numeric target is valid benchmark evidence. Generic dominance
+  // filtering still applies to all other measures so this does not turn
+  // constant KPIs into default analytical measures.
+  if (signal.id === "indicator.target" && signal.health.inferredType === "number") return true;
   if (signal.health.dominanceRatio != null && signal.health.dominanceRatio >= 0.9) return false;
   if (signal.role === "dimension" || signal.role === "status") {
     if (signal.health.distinctCount > Math.max(100, rowCount * 0.5)) return false;
@@ -221,7 +225,7 @@ export function inferOverlays(signals: UniversalSignal[]): IndustryOverlay[] {
   if (ids.has("document.shipment") || ids.has("location.route") || ids.has("entity.driver") || ids.has("status.delivery")) {
     overlays.add("logistics");
   }
-  if (ids.has("inventory.age") || ids.has("inventory.age_bucket") || ids.has("status.stock")) {
+  if (ids.has("inventory.on_hand") || ids.has("inventory.age") || ids.has("inventory.age_bucket") || ids.has("status.stock")) {
     overlays.add("inventory");
   }
   if (ids.has("engagement.outcome") || ids.has("engagement.campaign_attempts") || ids.has("engagement.contact_channel")) {

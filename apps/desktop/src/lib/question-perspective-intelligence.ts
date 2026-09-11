@@ -104,10 +104,17 @@ function signalFor(value: string, understanding: DatasetUnderstandingResult): st
   return normalizeToken(canonical?.canonicalId ?? value);
 }
 
-function semanticKey(metricId: string | null, actionKind: string | null, dimensions: readonly string[], understanding: DatasetUnderstandingResult): string {
-  const metric = metricId ? signalFor(metricId, understanding) : 'no_metric';
+function semanticKey(
+  measureIds: readonly string[],
+  derivedMeasureIds: readonly string[],
+  actionKind: string | null,
+  dimensions: readonly string[],
+  understanding: DatasetUnderstandingResult,
+): string {
+  const measures = unique(measureIds.map(value => signalFor(value, understanding))).join('+') || 'no_metric';
+  const derived = unique(derivedMeasureIds.map(value => normalizeToken(value))).join('+') || 'no_derived';
   const dims = unique(dimensions.map(value => signalFor(value, understanding))).join('+') || 'no_dimension';
-  return `${normalizeToken(actionKind ?? 'unknown')}|${metric}|${dims}`;
+  return `${normalizeToken(actionKind ?? 'unknown')}|${measures}|${derived}|${dims}`;
 }
 
 function canonicalAnswerability(item: CanonicalAnalysisPresentationV1, action: AnalysisAction | undefined): QuestionAnswerabilityV1 {
@@ -149,7 +156,7 @@ function canonicalCandidate(item: CanonicalAnalysisPresentationV1, understanding
     rankScore: 0,
     rankReasons: [],
     mbAdvice: { ...EMPTY_MB_ADVICE },
-    semanticKey: semanticKey(item.metricId, action?.actionKind ?? null, dimensions, understanding),
+    semanticKey: semanticKey(action?.measures ?? (item.metricId ? [item.metricId] : []), action?.derivedMeasures?.map(measure => measure.id) ?? [], action?.actionKind ?? null, dimensions, understanding),
   };
 }
 
@@ -179,7 +186,7 @@ function universalCandidate(question: BusinessQuestion, action: AnalysisAction |
     rankScore: 0,
     rankReasons: [],
     mbAdvice: { ...EMPTY_MB_ADVICE },
-    semanticKey: semanticKey(metricId, action?.actionKind ?? question.actionKind, dimensions, understanding),
+    semanticKey: semanticKey(action?.measures ?? question.measures ?? [], action?.derivedMeasures?.map(measure => measure.id) ?? [], action?.actionKind ?? question.actionKind, dimensions, understanding),
   };
 }
 
@@ -304,6 +311,7 @@ function rankCandidate(candidate: WorkingCandidate, selectedPerspectiveId: strin
     const text = normalizeToken(`${candidate.title} ${candidate.description}`);
     if (focusTokens.some(token => text.includes(token))) { score += 8; reasons.push('focus_text_match'); }
   }
+  if (/\bcontext\b/i.test(`${candidate.title} ${candidate.description}`)) { score -= 18; reasons.push('supporting_context_penalty'); }
   if (candidate.advisoryRankPrior > 0) { score += candidate.advisoryRankPrior; reasons.push(`mb_advisory_ordinal_prior:${candidate.advisoryRankPrior}`); }
   return { ...candidate, rankScore: score, rankReasons: reasons };
 }

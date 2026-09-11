@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createGovernedVisualizationPlan, analyticalIntentFromRuntimeIntentType } from './visualization-planner';
+import { applyVisualizationPresentationShaping, createGovernedVisualizationPlan, analyticalIntentFromRuntimeIntentType } from './visualization-planner';
 import type { DomainVisualProfileV1 } from './domain-visual-profile';
 
 const domainProfile = (preferredPatternIds: DomainVisualProfileV1['preferredPatternIds']): DomainVisualProfileV1 => ({
@@ -8,6 +8,20 @@ const domainProfile = (preferredPatternIds: DomainVisualProfileV1['preferredPatt
   conceptIds: ['concept.test'], evidenceRequirements: [], constraints: [], priorities: [], abstainWhen: [],
   unmappedChartFamilies: [],
   policy: { mayAuthorizeMetric: false, mayAuthorizeFormula: false, mayAuthorizeJoin: false, mayChooseRenderer: false, retrievalRankIsConfidence: false },
+});
+
+describe('high-cardinality presentation shaping', () => {
+  it('sorts and bounds presentation rows without mutating the governed result rows', () => {
+    const rows = Array.from({ length: 30 }, (_, index) => ({ group: `G${index}`, value: index }));
+    const shaped = applyVisualizationPresentationShaping({
+      rows, dimensionField: 'group',
+      shaping: { kind: 'top_n', limit: 15, sourceCategoryCount: 30, omittedCategoryCount: 15, sortMetricId: 'value', sortDirection: 'desc', reason: 'high_cardinality_ranking' },
+    });
+    expect(rows).toHaveLength(30);
+    expect(shaped).toHaveLength(15);
+    expect(shaped[0]).toEqual({ group: 'G29', value: 29 });
+    expect(shaped[14]).toEqual({ group: 'G15', value: 15 });
+  });
 });
 
 describe('DPR-6 governed visualization planner', () => {

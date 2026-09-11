@@ -2892,8 +2892,15 @@
     ,"Pattern preview · presentation only": "Xem trước mẫu biểu đồ · chỉ dùng cho trình bày"
     ,"Renderer pending": "Bộ dựng biểu đồ đang chờ hoàn thiện"
     ,"Template saved as an unbound chart card. Bind real BA or Advanced fields before using it.": "Đã lưu mẫu thành thẻ biểu đồ chưa gắn dữ liệu. Hãy gắn trường dữ liệu thật từ BA hoặc Advanced trước khi sử dụng."
+    ,"Achievement / Progress": "Thành tích / Tiến độ"
+    ,"Actual / Result": "Thực tế / Kết quả"
+    ,"Target / Goal": "Mục tiêu / Chỉ tiêu"
+    ,"Actual versus target performance": "Hiệu suất thực tế so với mục tiêu"
+    ,"Margin context for profit performance": "Bối cảnh biên lợi nhuận cho hiệu quả lợi nhuận"
+    ,"Volume and cost in one operational story": "Khối lượng và chi phí trong cùng một câu chuyện vận hành"
   },
   "patterns": [
+    { "source": "^Showing top ([\\d,.]+) of ([\\d,.]+) categories\\.$", "target": "Hiển thị $1 mục đầu trong tổng số $2 danh mục." },
     {
       "source": "^What evidence is needed to evaluate (.+)\\?$",
       "target": "Cần bằng chứng nào để đánh giá $1?"

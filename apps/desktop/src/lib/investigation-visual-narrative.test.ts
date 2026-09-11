@@ -51,6 +51,15 @@ describe('Investigation visual narrative adapter', () => {
     expect(result.plan.layoutCount).toBe(1);
     expect(result.plan.rejected).toContainEqual({ candidateId: 'cost', reason: 'not_complementary' });
   });
+  it('rejects a near-duplicate Revenue trend support before Micro Brain ranking can affect membership', () => {
+    const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money', items: [
+      item({ id: 'revenue-trend', primary: true, question: 'How is Revenue changing over time?', actionType: 'trend', dimension: 'Date', metric: 'Revenue' }),
+      item({ id: 'money-over-time', question: 'Money over time', actionType: 'trend', dimension: 'Date', metric: 'Revenue', confidence: 95 }),
+    ] });
+    expect(result.plan.layoutCount).toBe(1);
+    expect(result.plan.rejected).toContainEqual({ candidateId: 'money-over-time', reason: 'duplicate_information' });
+  });
+
   it('combines governed operations volume and downtime only on a shared grain', () => {
     const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'operations', items: [
       item({ id: 'volume', primary: true, question: 'Delivery volume by carrier', dimension: 'carrier', metric: 'delivery_count' }),
@@ -85,12 +94,32 @@ describe('Investigation visual narrative adapter', () => {
     const executive = buildInvestigationVisualNarrativePlan({ primaryDomain: 'inventory', selectedPerspectiveId: 'executive_overview', items });
     const inventory = buildInvestigationVisualNarrativePlan({ primaryDomain: 'inventory', selectedPerspectiveId: 'inventory_health', items });
     const admitted = (result: typeof executive) => result.plan.units.flatMap(unit => unit.candidateIds).sort();
-    expect(executive.plan.layoutCount).toBe(5);
-    expect(inventory.plan.layoutCount).toBe(5);
+    expect(executive.plan.layoutCount).toBe(3);
+    expect(inventory.plan.layoutCount).toBe(3);
     expect(admitted(executive)).not.toEqual(admitted(inventory));
     expect(executive.plan.primaryCandidateId).toBe('primary');
     expect(inventory.plan.primaryCandidateId).toBe('primary');
     expect(executive.plan.governance).toMatchObject({ mbAuthority: 'advisory_only', deterministicMembershipFinal: true, rawJoinAllowed: false });
   });
 
+
+  it('combines delivery workload and carrier cost only when the governed carrier grain aligns', () => {
+    const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'operations', items: [
+      item({ id: 'volume', primary: true, question: 'Delivery workload by carrier', dimension: 'Carrier', metric: 'record_count' }),
+      item({ id: 'cost', question: 'Carrier cost impact by delivery fee', dimension: 'Carrier', metric: 'Delivery Fee' }),
+    ] });
+    expect(result.plan.layoutCount).toBe(1);
+    expect(result.plan.units[0]).toMatchObject({ presentation: 'combo_bar_line', primaryAnchor: true });
+    expect(result.plan.units[0].candidateIds).toEqual(expect.arrayContaining(['volume','cost']));
+  });
+
+  it('combines profit and margin context on one finance visual when the time grain aligns', () => {
+    const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'finance', items: [
+      item({ id: 'profit', primary: true, question: 'Profit performance over time', actionType: 'trend', dimension: 'Date', metric: 'Gross Profit', renderer: 'line' }),
+      item({ id: 'margin', question: 'Margin context for profit performance', actionType: 'trend', dimension: 'Date', metric: 'Margin', renderer: 'line' }),
+    ] });
+    expect(result.plan.layoutCount).toBe(1);
+    expect(result.plan.units[0]).toMatchObject({ presentation: 'combo_bar_line', primaryAnchor: true });
+    expect(result.plan.units[0].candidateIds).toEqual(expect.arrayContaining(['profit','margin']));
+  });
 });

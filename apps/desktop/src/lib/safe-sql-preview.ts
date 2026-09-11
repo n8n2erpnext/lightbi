@@ -159,7 +159,8 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
         const tDimExact = quoteExactIdent(op.timeDimension);
         const isPeriodDimension = isPeriodLikeDimension(op.timeDimension);
         const tDimValueExpr = isPeriodDimension ? periodLabelExpr(tDimLower) : duckdbTimestampExpr(tDimLower);
-        const tDimBucketExpr = isPeriodDimension ? tDimValueExpr : `STRFTIME(CAST(${tDimValueExpr} AS DATE), '%Y-%m-%d')`;
+        const adaptiveBucketExpr = `CASE WHEN __lightbi_time_grain = 'hour' THEN STRFTIME(DATE_TRUNC('hour', __lightbi_time_value), '%Y-%m-%d %H:00') WHEN __lightbi_time_grain = 'day' THEN STRFTIME(CAST(__lightbi_time_value AS DATE), '%Y-%m-%d') WHEN __lightbi_time_grain = 'week' THEN STRFTIME(CAST(DATE_TRUNC('week', __lightbi_time_value) AS DATE), '%Y-%m-%d') WHEN __lightbi_time_grain = 'month' THEN STRFTIME(CAST(DATE_TRUNC('month', __lightbi_time_value) AS DATE), '%Y-%m') ELSE CONCAT(CAST(DATE_PART('year', __lightbi_time_value) AS INTEGER), '-Q', CAST(DATE_PART('quarter', __lightbi_time_value) AS INTEGER)) END`;
+        const tDimBucketExpr = isPeriodDimension ? tDimValueExpr : adaptiveBucketExpr;
         const tDimOrderExpr = isPeriodDimension ? periodOrderExpr(tDimValueExpr) : tDimBucketExpr;
         const tMeasures = op.measures.map(m => {
           const lowerM = quoteLowercaseIdent(m);
@@ -181,13 +182,22 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
           return `CAST(COUNT(${lowerM}) AS INTEGER) AS ${exactM}`;
         });
         
-        // Safe DuckDB dialect for trend: explicitly filter out NULL dates
-        selectClause = [`${tDimBucketExpr} AS ${tDimExact}`, ...tMeasures].join(', ');
-        whereClause = isPeriodDimension
-          ? `\nWHERE ${tDimLower} IS NOT NULL AND ${tDimValueExpr} <> ''`
-          : `\nWHERE ${tDimLower} IS NOT NULL AND ${tDimValueExpr} IS NOT NULL`;
-        groupByClause = `\nGROUP BY ${tDimBucketExpr}`;
-        orderByClause = `\nORDER BY ${tDimOrderExpr}, ${tDimBucketExpr}`;
+        // Safe DuckDB dialect for trend: period-like labels keep their source grain, while true
+        // timestamps derive an adaptive bucket from the full-file span inside DuckDB. The internal
+        // grain marker is stripped by the executor and retained only as provenance.
+        if (isPeriodDimension) {
+          selectClause = [`${tDimBucketExpr} AS ${tDimExact}`, ...tMeasures].join(', ');
+          whereClause = `\nWHERE ${tDimLower} IS NOT NULL AND ${tDimValueExpr} <> ''`;
+          groupByClause = `\nGROUP BY ${tDimBucketExpr}`;
+          orderByClause = `\nORDER BY ${tDimOrderExpr}, ${tDimBucketExpr}`;
+        } else {
+          const innerTimeValue = duckdbTimestampExpr(tDimLower);
+          const aggregateSelect = [`${tDimBucketExpr} AS ${tDimExact}`, ...tMeasures, `__lightbi_time_grain AS "__lightbi_time_grain__"`].join(', ');
+          const spanDays = `DATE_DIFF('day', CAST(__lightbi_min_time AS DATE), CAST(__lightbi_max_time AS DATE))`;
+          const grainPolicy = `CASE WHEN ${spanDays} <= 2 AND __lightbi_distinct_time_parts > 1 THEN 'hour' WHEN ${spanDays} <= 45 THEN 'day' WHEN ${spanDays} <= 180 THEN 'week' WHEN ${spanDays} <= 730 THEN 'month' ELSE 'quarter' END`;
+          preview.sql = `WITH __lightbi_time_source AS (SELECT *, ${innerTimeValue} AS __lightbi_time_value FROM __LIGHTBI_PREVIEW_TABLE__), __lightbi_time_stats AS (SELECT MIN(__lightbi_time_value) AS __lightbi_min_time, MAX(__lightbi_time_value) AS __lightbi_max_time, COUNT(DISTINCT STRFTIME(__lightbi_time_value, '%H:%M:%S')) AS __lightbi_distinct_time_parts FROM __lightbi_time_source WHERE __lightbi_time_value IS NOT NULL), __lightbi_time_policy AS (SELECT ${grainPolicy} AS __lightbi_time_grain FROM __lightbi_time_stats) SELECT ${aggregateSelect} FROM __lightbi_time_source CROSS JOIN __lightbi_time_policy WHERE __lightbi_time_value IS NOT NULL GROUP BY ${tDimBucketExpr}, __lightbi_time_grain ORDER BY ${tDimBucketExpr}${limitClause};`;
+          preview.warnings.push('Adaptive temporal grain is selected from the full-file timestamp span before trend rendering.');
+        }
         break;
       case "distribution":
         if (hasMainOp) break;
@@ -220,7 +230,7 @@ export function createSafeSqlPreview(plan: RuntimePlanPreview): SafeSqlPreview {
     }
   }
 
-  if (preview.status === "ready" && selectClause) {
+  if (preview.status === "ready" && selectClause && !preview.sql) {
     preview.sql = `SELECT ${selectClause}\nFROM __LIGHTBI_PREVIEW_TABLE__${whereClause}${groupByClause}${orderByClause}${limitClause};`;
   }
 

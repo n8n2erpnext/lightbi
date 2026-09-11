@@ -87,6 +87,37 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(resolveInvestigationVisualizationIntent(intent, rankAction)).toBe('ranking');
   });
 
+  it('recognizes an exhaustive payment mix as part-to-whole composition and selects a donut for a small category set', () => {
+    const paymentAction = {
+      ...action('group_by'), id: 'action_payment_mix', opportunityName: 'Payment method mix',
+      description: 'How is revenue split across payment methods?', dimensions: ['Payment Method'], measures: ['Revenue'],
+    };
+    const intent = { ...runtimeIntent('group_by'), id: 'intent_payment_mix', sourceActionId: 'action_payment_mix', dimensions: ['Payment Method'], measures: ['Revenue'] };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: paymentAction, runtimeIntent: intent, primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money',
+      chartModel: {
+        id: 'chart_payment', sourceResultId: 'result_payment', status: 'ready', chartType: 'bar', title: 'Payment mix',
+        xField: 'Payment Method', yField: 'Revenue', seriesFields: ['Revenue'],
+        rows: [{ 'Payment Method': 'Cash', Revenue: 40 }, { 'Payment Method': 'Card', Revenue: 30 }, { 'Payment Method': 'Bank', Revenue: 20 }, { 'Payment Method': 'Voucher', Revenue: 10 }],
+        warnings: [], source: 'duckdb_preview_result',
+      },
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('composition');
+    expect(plan?.visualizationPlan.patternId).toBe('composition_donut');
+    expect(plan?.visualizationPlan.rendererFamily).toBe('donut');
+  });
+
+  it('recognizes a delivery-status mix as count-based part-to-whole composition instead of a numeric histogram', () => {
+    const statusAction = { ...action('group_by'), id: 'action_delivery_mix', opportunityName: 'Delivery completion mix', description: 'What share of deliveries are completed, retried, failed, or in progress?', actionType: 'distribution' as const, dimensions: ['Status'], measures: [] };
+    const intent = { ...runtimeIntent('group_by'), id: 'intent_delivery_mix', sourceActionId: 'action_delivery_mix', type: 'distribution' as const, dimensions: ['Status'], measures: [], expectedShape: 'bar_chart' as const };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: statusAction, runtimeIntent: intent, primaryDomain: 'operations', selectedPerspectiveId: 'ops_flow',
+      chartModel: { id: 'chart_delivery_mix', sourceResultId: 'result_delivery_mix', status: 'ready', chartType: 'bar', title: 'Delivery completion mix', xField: 'Status', yField: 'record_count', seriesFields: ['record_count'], rows: [{ Status: 'Completed', record_count: 70 }, { Status: 'Retry', record_count: 15 }, { Status: 'Failed', record_count: 10 }, { Status: 'In progress', record_count: 5 }], warnings: [], source: 'duckdb_preview_result' },
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('composition');
+    expect(plan?.visualizationPlan.patternId).toBe('composition_donut');
+  });
+
   it('does not misclassify a categorical status distribution as a numeric histogram', () => {
     const statusAction = { ...action('group_by'), id: 'action_status', opportunityName: 'Status breakdown', description: 'Status breakdown', actionType: 'distribution' as const, dimensions: ['status'], measures: [] };
     const intent = { ...runtimeIntent('group_by'), id: 'intent_status', sourceActionId: 'action_status', type: 'distribution' as const, dimensions: ['status'], measures: [], expectedShape: 'bar_chart' as const };
@@ -128,6 +159,26 @@ describe('DPR-6 Investigation visualization adapter', () => {
     expect(plan?.visualizationPlan.governance).toMatchObject({ metricAuthority: 'upstream_only', mbAuthority: 'advisory_only', deterministicSuitabilityFinal: true });
   });
 
+  it('keeps the full governed high-cardinality result while planning a bounded Top-N ranking presentation', () => {
+    const rows = Array.from({ length: 30 }, (_, index) => ({ Salesperson: `NV${String(index + 1).padStart(2, '0')}`, Revenue: (30 - index) * 1000 }));
+    const rankAction = {
+      ...action('group_by'), id: 'action_salespeople', opportunityName: 'Which salespeople contribute the most revenue?',
+      description: 'Rank salespeople by revenue', dimensions: ['Salesperson'], measures: ['Revenue'],
+    };
+    const rankIntent = { ...runtimeIntent('group_by'), id: 'intent_salespeople', sourceActionId: 'action_salespeople', dimensions: ['Salesperson'], measures: ['Revenue'] };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: rankAction, runtimeIntent: rankIntent, primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money',
+      chartModel: { id: 'chart_salespeople', sourceResultId: 'result_salespeople', status: 'ready', chartType: 'bar', title: 'Salespeople by revenue', xField: 'Salesperson', yField: 'Revenue', seriesFields: ['Revenue'], rows, warnings: [], source: 'duckdb_preview_result' },
+    });
+    expect(plan?.result.rows).toHaveLength(30);
+    expect(plan?.visualizationPlan.patternId).toBe('ranking_bar');
+    expect(plan?.visualizationPlan.rendererFamily).toBe('row');
+    expect(plan?.visualizationPlan.presentationShaping).toEqual({
+      kind: 'top_n', limit: 15, sourceCategoryCount: 30, omittedCategoryCount: 15,
+      sortMetricId: 'Revenue', sortDirection: 'desc', reason: 'high_cardinality_ranking',
+    });
+  });
+
   it('does not let an inventory perspective force a special intent when the question only asks a generic category comparison', () => {
     const genericAction = { ...action('group_by'), opportunityName: 'Stock by store', description: 'Show stock quantity by store' };
     const plan = buildInvestigationDecisionVisualizationPlan({
@@ -136,6 +187,55 @@ describe('DPR-6 Investigation visualization adapter', () => {
     });
     expect(plan?.visualizationPlan.analyticalIntent).toBe('category_comparison');
     expect(plan?.visualizationPlan.patternId).toBe('ranking_bar');
+  });
+
+
+  it('materializes explicit actual and target on one governed target-combo visual', () => {
+    const rows = Array.from({ length: 12 }, (_, index) => ({ Date: `2026-${String(index + 1).padStart(2, '0')}-01`, Actual: 80 + index, Target: 100 }));
+    const targetAction = {
+      id: 'action_actual_vs_target', opportunityName: 'Actual versus target performance', label: 'Actual versus target performance',
+      description: 'How does the actual result compare with the target over time?', actionType: 'trend' as const,
+      dimensions: ['Date'], measures: ['Actual','Target'], confidenceScore: 100, source: 'dataset_understanding' as const,
+    };
+    const intent = {
+      id: 'intent_actual_vs_target', sourceActionId: targetAction.id, type: 'trend' as const,
+      dimensions: ['Date'], measures: ['Actual','Target'], expectedShape: 'line_chart' as const,
+      status: 'ready' as const, warnings: [], blockedReasons: [], source: 'analysis_action' as const,
+    };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      analysisAction: targetAction, runtimeIntent: intent, primaryDomain: 'performance', selectedPerspectiveId: 'performance_ranking',
+      chartModel: { id: 'chart_target', sourceResultId: 'result_target', status: 'ready', chartType: 'line', title: targetAction.opportunityName, xField: 'Date', yField: 'Actual', seriesFields: ['Actual','Target'], rows, warnings: [], source: 'duckdb_preview_result' },
+    });
+    expect(plan?.visualizationPlan).toMatchObject({ analyticalIntent: 'target_attainment', patternId: 'target_combo', rendererFamily: 'combo_bar_line' });
+    expect(plan?.result.metricIds).toEqual(['Actual','Target']);
+  });
+  it('uses the governed base count for status composition even when derived rate fields are present', () => {
+    const rows = [
+      { Status: 'Delivered', record_count: 70, completed_deliveries: 70, total_deliveries: 70, delivery_completion_rate: 1 },
+      { Status: 'Failed', record_count: 20, completed_deliveries: 0, total_deliveries: 20, delivery_completion_rate: 0 },
+      { Status: 'Pending', record_count: 10, completed_deliveries: 0, total_deliveries: 10, delivery_completion_rate: 0 },
+    ];
+    const action = { id:'delivery_completion_mix', opportunityName:'Delivery completion mix', description:'What share of deliveries are completed, failed, or pending?', actionType:'group_by' as const, dimensions:['Status'], measures:['record_count'], confidenceScore:100, source:'dataset_understanding' as const };
+    const intent = { sourceActionId:'delivery_completion_mix', type:'group_by' as const, dimensions:['Status'], measures:['record_count'], derivedMeasures:[{ id:'delivery_completion_rate', label:'delivery_completion_rate', type:'positive_rate' as const, sourceColumn:'Status', positiveValues:['Delivered'], numeratorLabel:'completed_deliveries', denominatorLabel:'total_deliveries' }], expectedShape:'bar_chart' as const, status:'ready' as const, warnings:[], blockedReasons:[], source:'analysis_action' as const };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      chartModel: { id:'c', sourceResultId:'r', status:'ready', chartType:'bar', title:'Completion', xField:'Status', yField:'completed_deliveries', seriesFields:['record_count','completed_deliveries','total_deliveries','delivery_completion_rate'], rows, warnings:[], source:'duckdb_preview_result' },
+      runtimeIntent:intent, analysisAction:action, primaryDomain:'operations', selectedPerspectiveId:'operations',
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('composition');
+    expect(plan?.result.metricIds).toEqual(['record_count']);
+    expect(plan?.visualizationPlan.patternId).toBe('composition_donut');
+  });
+
+  it('treats an exactly two-point time result as period comparison before trend', () => {
+    const rows = [{ 'Reporting Period':'2026-05', Revenue:100 }, { 'Reporting Period':'2026-06', Revenue:130 }];
+    const action = { id:'money_over_time', opportunityName:'Money over time', description:'Revenue across reporting periods', actionType:'trend' as const, dimensions:['Reporting Period'], measures:['Revenue'], confidenceScore:100, source:'dataset_understanding' as const };
+    const intent = { sourceActionId:'money_over_time', type:'trend' as const, dimensions:['Reporting Period'], measures:['Revenue'], expectedShape:'line_chart' as const, status:'ready' as const, warnings:[], blockedReasons:[], source:'analysis_action' as const };
+    const plan = buildInvestigationDecisionVisualizationPlan({
+      chartModel:{ id:'c2', sourceResultId:'r2', status:'ready', chartType:'line', title:'Revenue', xField:'Reporting Period', yField:'Revenue', seriesFields:['Revenue'], rows, warnings:[], source:'duckdb_preview_result' },
+      runtimeIntent:intent, analysisAction:action, primaryDomain:'revenue', selectedPerspectiveId:'revenue',
+    });
+    expect(plan?.visualizationPlan.analyticalIntent).toBe('period_comparison');
+    expect(plan?.visualizationPlan.patternId).not.toBe('trend_line');
   });
 
 });

@@ -136,7 +136,7 @@ export const VISUALIZATION_PATTERN_LIBRARY_V1: VisualizationPatternDefinitionV1[
     oneOfRequiredRoleSets:[['category','series','part_measure','denominator'],['ordered_time','series','part_measure','denominator']], optionalRoles:[], unitPolicy:'single_unit', cardinality:{maxCategories:12,maxSeries:6}, colorSemantics:['categorical'],
     negativeRules:['Do not normalize without a valid denominator or when parts do not describe the intended whole.'], fallbacks:['composition_stack','evidence_table'] }),
   pattern({ id:'target_combo', label:'Actual and target trend', family:'target', intents:['target_attainment','period_comparison','relationship'],
-    oneOfRequiredRoleSets:[['ordered_time','measure','target'],['ordered_time','measure','rate']], optionalRoles:['comparison_measure'], unitPolicy:'explicit_multi_unit', cardinality:{maxSeries:3,maxPoints:60}, colorSemantics:['neutral','categorical'],
+    oneOfRequiredRoleSets:[['ordered_time','measure','target'],['category','measure','target'],['ordered_time','measure','rate']], optionalRoles:['comparison_measure'], unitPolicy:'explicit_multi_unit', cardinality:{maxSeries:3,maxPoints:60}, colorSemantics:['neutral','categorical'],
     negativeRules:['Do not combine unrelated measures or hide a secondary unit behind an unlabeled axis.'], fallbacks:['trend_line','target_bullet','evidence_table'] }),
   pattern({ id:'composition_donut', label:'Part-to-whole composition', family:'composition', intents:['composition'],
     oneOfRequiredRoleSets:[['category','part_measure','denominator']], optionalRoles:[], unitPolicy:'single_unit', cardinality:{maxCategories:6,maxSeries:1}, colorSemantics:['categorical'],
