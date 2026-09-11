@@ -99,7 +99,7 @@ describe('Investigation visual narrative adapter', () => {
     expect(admitted(executive)).toEqual(admitted(inventory));
     expect(executive.plan.primaryCandidateId).toBe('primary');
     expect(inventory.plan.primaryCandidateId).toBe('primary');
-    expect(executive.plan.governance).toMatchObject({ mbAuthority: 'advisory_only', deterministicMembershipFinal: true, rawJoinAllowed: false });
+    expect(executive.plan.governance).toMatchObject({ mbAuthority: 'presentation_vote_within_legal_set', deterministicMembershipFinal: true, rawJoinAllowed: false });
   });
 
 

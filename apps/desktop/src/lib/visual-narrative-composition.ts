@@ -12,7 +12,20 @@ export type VisualNarrativeHeightIntentV1 = 'compact' | 'standard' | 'tall';
 export type VisualNarrativePresentationV1 = 'single' | 'grouped_compare' | 'combo_bar_line';
 export type VisualNarrativeComplementarityV1 =
   | 'primary_answer' | 'legal_combination' | 'same_metric_new_dimension'
-  | 'same_metric_new_intent' | 'evidence_detail';
+  | 'same_metric_new_intent' | 'evidence_detail' | 'official_domain_complement';
+
+
+export type VisualNarrativeStoryTargetV1 = {
+  layoutCount: VisualNarrativeLayoutCountV1;
+  companionRoles: VisualNarrativeStoryRoleV1[];
+  source: 'pre_execution_story_plan' | 'derived_from_materialized_candidates';
+};
+
+export type VisualNarrativeDegradationV1 = {
+  degradedFrom: 3 | 5 | null;
+  missingRoles: VisualNarrativeStoryRoleV1[];
+  reasons: Array<'planned_companion_not_materialized' | 'insufficient_legal_companions'>;
+};
 
 export type VisualNarrativeCombinationHintV1 = {
   groupId: string;
@@ -58,13 +71,16 @@ export type VisualNarrativeUnitV1 = {
 };
 export type VisualNarrativeRejectionReasonV1 =
   | 'evidence_required' | 'duplicate_question' | 'duplicate_story'
-  | 'duplicate_information' | 'not_complementary' | 'layout_normalization' | 'visual_budget_exceeded';
+  | 'duplicate_information' | 'not_complementary' | 'visual_budget_exceeded'
+  | 'story_target_degraded' | 'story_target_exceeded';
 
 export type VisualNarrativeCompositionPlanV1 = {
   schemaVersion: typeof VISUAL_NARRATIVE_COMPOSITION_VERSION;
   primaryCandidateId: string;
   layoutCount: VisualNarrativeLayoutCountV1;
   layoutMode: 'single' | 'hero_plus_two' | 'hero_plus_four';
+  target: VisualNarrativeStoryTargetV1;
+  degradation: VisualNarrativeDegradationV1;
   units: VisualNarrativeUnitV1[];
   rejected: Array<{ candidateId: string; reason: VisualNarrativeRejectionReasonV1 }>;
   governance: {
@@ -72,8 +88,8 @@ export type VisualNarrativeCompositionPlanV1 = {
     primaryAnchorStable: true;
     duplicateSemanticVisualsForbidden: true;
     deterministicMembershipFinal: true;
-    domainAuthority: 'advisory_only';
-    mbAuthority: 'advisory_only';
+    domainAuthority: 'presentation_policy_within_governed_evidence';
+    mbAuthority: 'presentation_vote_within_legal_set';
     rawJoinAllowed: false;
     allowedVisualCounts: readonly [1, 3, 5];
   };
@@ -128,6 +144,7 @@ function complementarityToPrimary(
   candidate: VisualNarrativeCandidateV1,
 ): VisualNarrativeComplementarityV1 | null {
   if (canCombine(primary, candidate)) return 'legal_combination';
+  if (candidate.officialComplementToPrimary) return 'official_domain_complement';
   if (!metricsOverlap(primary, candidate)) return null;
   const sameIntent = normalize(primary.analyticalIntent) === normalize(candidate.analyticalIntent);
   const sameDimension = normalize(primary.dimensionField) === normalize(candidate.dimensionField);
@@ -198,6 +215,7 @@ function layoutMode(count: VisualNarrativeLayoutCountV1): VisualNarrativeComposi
 export function createVisualNarrativeCompositionPlan(input: {
   candidates: VisualNarrativeCandidateV1[];
   officialDomainId?: string | null;
+  storyTarget?: VisualNarrativeStoryTargetV1 | null;
 }): VisualNarrativeCompositionPlanV1 {
   const primary = [...input.candidates]
     .filter(candidate => candidate.isPrimary)
@@ -251,53 +269,56 @@ export function createVisualNarrativeCompositionPlan(input: {
   const storyOrder = officialDomainStoryOrder(input.officialDomainId);
   const storyRank = new Map(storyOrder.map((role, index) => [role, index] as const));
   const defaultStoryRank = storyOrder.length + 1;
+  const admittedSupports = deterministicallyAdmitted.slice(1);
+  const derivedLayoutCount: VisualNarrativeLayoutCountV1 = admittedSupports.length >= 4 ? 5 : admittedSupports.length >= 2 ? 3 : 1;
+  const target: VisualNarrativeStoryTargetV1 = input.storyTarget ?? {
+    layoutCount: derivedLayoutCount,
+    companionRoles: admittedSupports.slice(0, derivedLayoutCount === 5 ? 4 : derivedLayoutCount === 3 ? 2 : 0).map(candidate => candidate.storyRole),
+    source: 'derived_from_materialized_candidates',
+  };
+  const targetRoleRank = new Map(
+    (target.source === 'pre_execution_story_plan' ? target.companionRoles : [])
+      .map((role, index) => [role, index] as const),
+  );
+  const defaultTargetRank = targetRoleRank.size + 1;
   const eligible = [
     primary,
-    ...deterministicallyAdmitted.slice(1).sort((a, b) =>
-      (storyRank.get(a.storyRole) ?? defaultStoryRank) - (storyRank.get(b.storyRole) ?? defaultStoryRank)
+    ...admittedSupports.sort((a, b) =>
+      (targetRoleRank.get(a.storyRole) ?? defaultTargetRank) - (targetRoleRank.get(b.storyRole) ?? defaultTargetRank)
+      || (storyRank.get(a.storyRole) ?? defaultStoryRank) - (storyRank.get(b.storyRole) ?? defaultStoryRank)
       || (b.advisoryRankPrior ?? 0) - (a.advisoryRankPrior ?? 0)
       || b.decisionImportance - a.decisionImportance
       || a.id.localeCompare(b.id)),
   ];
 
-  let units = eligible.slice(0, 5).map(singleUnit);
-  for (const candidate of eligible.slice(5)) {
-    rejected.push({ candidateId: candidate.id, reason: 'visual_budget_exceeded' });
-  }
-
   const candidateById = new Map(eligible.map(candidate => [candidate.id, candidate] as const));
-  const mergeAt = (leftIndex: number, rightIndex: number): boolean => {
-    const leftIds = units[leftIndex]?.candidateIds ?? [];
-    const rightIds = units[rightIndex]?.candidateIds ?? [];
-    if (leftIds.length !== 1 || rightIds.length !== 1) return false;
-    const left = candidateById.get(leftIds[0]);
-    const right = candidateById.get(rightIds[0]);
-    if (!left || !right || !canCombine(left, right)) return false;
-    const merged = combinedUnit(left, right);
-    units = units.filter((_unit, index) => index !== leftIndex && index !== rightIndex);
-    units.push(merged);
-    return true;
-  };
-  if (units.length === 2) {
-    if (!mergeAt(0, 1)) {
-      const demoted = units.find(unit => !unit.primaryAnchor) ?? units[1];
-      for (const candidateId of demoted.candidateIds) rejected.push({ candidateId, reason: 'layout_normalization' });
-      units = units.filter(unit => unit !== demoted);
-    }
-  }
+  let units: VisualNarrativeUnitV1[] = [];
+  const supports = eligible.slice(1);
+  const targetSupportSlots = target.layoutCount - 1;
 
-  if (units.length === 4) {
-    let merged = false;
-    for (let left = 1; left < units.length && !merged; left += 1) {
-      for (let right = left + 1; right < units.length && !merged; right += 1) merged = mergeAt(left, right);
+  if (target.layoutCount === 1) {
+    const combination = supports.find(candidate => canCombine(primary, candidate));
+    if (combination) {
+      units = [combinedUnit(primary, combination)];
+      for (const candidate of supports) {
+        if (candidate.id !== combination.id) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+      }
+    } else {
+      units = [singleUnit(primary)];
+      for (const candidate of supports) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
     }
-    if (!merged) {
-      for (let right = 1; right < units.length && !merged; right += 1) merged = mergeAt(0, right);
-    }
-    if (!merged) {
-      const demoted = [...units].reverse().find(unit => !unit.primaryAnchor) ?? units[units.length - 1];
-      for (const candidateId of demoted.candidateIds) rejected.push({ candidateId, reason: 'layout_normalization' });
-      units = units.filter(unit => unit !== demoted);
+  } else if (supports.length >= targetSupportSlots) {
+    const chosen = supports.slice(0, targetSupportSlots);
+    units = [singleUnit(primary), ...chosen.map(singleUnit)];
+    for (const candidate of supports.slice(targetSupportSlots)) rejected.push({ candidateId: candidate.id, reason: 'story_target_exceeded' });
+  } else {
+    const legalLowerCount: VisualNarrativeLayoutCountV1 = supports.length >= 2 ? 3 : 1;
+    if (legalLowerCount === 3) {
+      units = [singleUnit(primary), ...supports.slice(0, 2).map(singleUnit)];
+      for (const candidate of supports.slice(2)) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
+    } else {
+      units = [singleUnit(primary)];
+      for (const candidate of supports) rejected.push({ candidateId: candidate.id, reason: 'story_target_degraded' });
     }
   }
 
@@ -305,12 +326,32 @@ export function createVisualNarrativeCompositionPlan(input: {
   units = units.map(unit => ({ ...unit, widthIntent: unit.primaryAnchor ? 'full' : 'half' }));
   const count = units.length as VisualNarrativeLayoutCountV1;
   if (![1, 3, 5].includes(count)) throw new Error(`VISUAL_NARRATIVE_LAYOUT_INVALID:${count}`);
+  const finalCandidateIds = new Set(units.flatMap(unit => unit.candidateIds));
+  const finalRoles = new Set(
+    [...finalCandidateIds]
+      .map(candidateId => candidateById.get(candidateId)?.storyRole)
+      .filter((role): role is VisualNarrativeStoryRoleV1 => Boolean(role) && role !== 'answer'),
+  );
+  const missingRoles = target.companionRoles.filter(role => !finalRoles.has(role));
+  const degradedFrom = target.layoutCount > count && target.layoutCount !== 1 ? target.layoutCount as 3 | 5 : null;
+  const degradation: VisualNarrativeDegradationV1 = {
+    degradedFrom,
+    missingRoles,
+    reasons: degradedFrom
+      ? [...new Set<VisualNarrativeDegradationV1['reasons'][number]>([
+          ...(missingRoles.length > 0 ? ['planned_companion_not_materialized' as const] : []),
+          'insufficient_legal_companions' as const,
+        ])]
+      : [],
+  };
 
   return {
     schemaVersion: VISUAL_NARRATIVE_COMPOSITION_VERSION,
     primaryCandidateId: primary.id,
     layoutCount: count,
     layoutMode: layoutMode(count),
+    target,
+    degradation,
     units,
     rejected,
     governance: {
@@ -318,8 +359,8 @@ export function createVisualNarrativeCompositionPlan(input: {
       primaryAnchorStable: true,
       duplicateSemanticVisualsForbidden: true,
       deterministicMembershipFinal: true,
-      domainAuthority: 'advisory_only',
-      mbAuthority: 'advisory_only',
+      domainAuthority: 'presentation_policy_within_governed_evidence',
+      mbAuthority: 'presentation_vote_within_legal_set',
       rawJoinAllowed: false,
       allowedVisualCounts: [1, 3, 5],
     },

@@ -128,6 +128,20 @@ export const Investigation: React.FC = () => {
     decisionVisualizationPlan?: DecisionVisualizationPlanV1 | null;
   }>>([]);
   const [isLoadingSupportingCharts, setIsLoadingSupportingCharts] = useState(false);
+  const presentationStoryRequestPlan = useMemo(() => {
+    if (!session?.supportingAnalyses?.length || session.focusSubject) return null;
+    const capabilityInventory = buildPresentationCapabilityInventory({
+      primaryAction: session.analysisAction,
+      primaryRuntimeIntent: session.runtimeIntent,
+      supportingAnalyses: session.supportingAnalyses,
+    });
+    return planPresentationStoryRequests({
+      inventory: capabilityInventory,
+      primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
+      perspectiveId: selectedPerspectiveId,
+      budget: 6,
+    });
+  }, [session?.id, session?.supportingAnalyses, session?.analysisAction, session?.runtimeIntent, session?.focusSubject, primaryAnalysisAuthority?.domain.primaryDomain, selectedPerspectiveId]);
   // The overview is descriptive context beside a full-source governed result.
   // Build it once from a bounded representative sample so wide operational
   // files cannot block navigation by rescanning and sorting every row on each
@@ -243,17 +257,11 @@ export const Investigation: React.FC = () => {
       setSupportingCharts([]);
       return;
     }
-    const capabilityInventory = buildPresentationCapabilityInventory({
-      primaryAction: session.analysisAction,
-      primaryRuntimeIntent: session.runtimeIntent,
-      supportingAnalyses: session.supportingAnalyses,
-    });
-    const storyRequestPlan = planPresentationStoryRequests({
-      inventory: capabilityInventory,
-      primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
-      perspectiveId: selectedPerspectiveId,
-      budget: 6,
-    });
+    const storyRequestPlan = presentationStoryRequestPlan;
+    if (!storyRequestPlan) {
+      setSupportingCharts([]);
+      return;
+    }
     // Execute a bounded role-aware request plan over capabilities that already
     // exist in the governed workspace. Presentation planning may choose a
     // companion beyond the old first-six order, but cannot create metrics,
@@ -311,7 +319,7 @@ export const Investigation: React.FC = () => {
       if (supportingRuns.current.isCurrent(run)) setIsLoadingSupportingCharts(false);
     });
     return () => supportingRuns.current.cancel();
-  }, [session?.id, primaryAnalysisAuthority?.domain.primaryDomain, selectedPerspectiveId]);
+  }, [session?.id, presentationStoryRequestPlan]);
 
   if (!session) {
     return (
@@ -440,6 +448,11 @@ export const Investigation: React.FC = () => {
       return buildInvestigationVisualNarrativePlan({
         primaryDomain: primaryAnalysisAuthority?.domain.primaryDomain ?? null,
         selectedPerspectiveId,
+        storyTarget: presentationStoryRequestPlan ? {
+          layoutCount: presentationStoryRequestPlan.targetLayoutCount,
+          companionRoles: [...presentationStoryRequestPlan.targetCompanionRoles],
+          source: 'pre_execution_story_plan',
+        } : null,
         items: [
           {
             id: analysisAction.id, isPrimary: true,
@@ -462,7 +475,7 @@ export const Investigation: React.FC = () => {
       console.warn('Visual narrative composition skipped', error);
       return null;
     }
-  }, [analysisAction, chartModel, currentCanonicalArtifact?.identity, focusComparison.status, primaryAnalysisAuthority?.domain.primaryDomain, primaryDecisionVisualizationPlan, runtimeIntent, selectedPerspectiveId, session.canonicalHandoff?.artifactIdentity, session.datasetId, supportingCharts]);
+  }, [analysisAction, chartModel, currentCanonicalArtifact?.identity, focusComparison.status, primaryAnalysisAuthority?.domain.primaryDomain, primaryDecisionVisualizationPlan, runtimeIntent, selectedPerspectiveId, session.canonicalHandoff?.artifactIdentity, session.datasetId, supportingCharts, presentationStoryRequestPlan]);
 
   const visualNarrativeCanvasItems = visualNarrative && chartModel ? [
     {

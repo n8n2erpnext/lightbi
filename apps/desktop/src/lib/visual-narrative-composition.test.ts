@@ -118,14 +118,32 @@ describe('Visual Narrative Composition V1', () => {
     expect(plan.units[0].candidateIds).toEqual(['primary', 'cost']);
   });
 
-  it('normalizes one primary plus one non-combinable complement back to one visual', () => {
+  it('keeps one visual when no pre-execution story target justifies a second companion', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [
       candidate(),
       candidate({ id: 'driver', isPrimary: false, managementQuestion: 'Which product drives revenue?', storyRole: 'driver', analyticalIntent: 'ranking', dimensionField: 'product', decisionImportance: 90 }),
     ] });
     expect(plan.layoutCount).toBe(1);
-    expect(plan.rejected).toContainEqual({ candidateId: 'driver', reason: 'layout_normalization' });
+    expect(plan.rejected).toContainEqual({ candidateId: 'driver', reason: 'story_target_exceeded' });
   });
+  it('records explicit degradation when a planned three-visual story materializes only one legal companion', () => {
+    const plan = createVisualNarrativeCompositionPlan({
+      storyTarget: { layoutCount: 3, companionRoles: ['driver', 'composition'], source: 'pre_execution_story_plan' },
+      candidates: [
+        candidate(),
+        candidate({ id: 'driver', isPrimary: false, managementQuestion: 'Which product drives revenue?', storyRole: 'driver', analyticalIntent: 'ranking', dimensionField: 'product', decisionImportance: 90 }),
+      ],
+    });
+    expect(plan.layoutCount).toBe(1);
+    expect(plan.target.layoutCount).toBe(3);
+    expect(plan.degradation).toEqual({
+      degradedFrom: 3,
+      missingRoles: ['driver', 'composition'],
+      reasons: ['planned_companion_not_materialized', 'insufficient_legal_companions'],
+    });
+    expect(plan.rejected).toContainEqual({ candidateId: 'driver', reason: 'story_target_degraded' });
+  });
+
   it('uses a balanced three-visual story when two distinct complements are evidence-backed', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [
       candidate(),
@@ -137,7 +155,7 @@ describe('Visual Narrative Composition V1', () => {
     expect(plan.units.map(unit => unit.widthIntent)).toEqual(['full', 'half', 'half']);
   });
 
-  it('normalizes four visuals to three rather than leaving an orphan grid cell', () => {
+  it('bounds a derived four-candidate story to the legal three-visual target', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [
       candidate(),
       candidate({ id: 'a', isPrimary: false, managementQuestion: 'Revenue by product?', storyRole: 'driver', analyticalIntent: 'ranking', dimensionField: 'product', decisionImportance: 90 }),
@@ -145,7 +163,7 @@ describe('Visual Narrative Composition V1', () => {
       candidate({ id: 'c', isPrimary: false, managementQuestion: 'Revenue by branch?', storyRole: 'risk', analyticalIntent: 'risk_concentration', dimensionField: 'branch', decisionImportance: 70 }),
     ] });
     expect(plan.layoutCount).toBe(3);
-    expect(plan.rejected).toContainEqual({ candidateId: 'c', reason: 'layout_normalization' });
+    expect(plan.rejected).toContainEqual({ candidateId: 'c', reason: 'story_target_exceeded' });
   });
   it('admits five distinct visuals as hero plus four without changing the primary anchor', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [
@@ -161,12 +179,12 @@ describe('Visual Narrative Composition V1', () => {
     expect(plan.units[0].primaryAnchor).toBe(true);
   });
 
-  it('keeps domain and Micro Brain advisory-only in membership governance', () => {
+  it('records bounded presentation authority while truth and joins remain governed', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [candidate()] });
     expect(plan.governance).toEqual(expect.objectContaining({
       deterministicMembershipFinal: true,
-      domainAuthority: 'advisory_only',
-      mbAuthority: 'advisory_only',
+      domainAuthority: 'presentation_policy_within_governed_evidence',
+      mbAuthority: 'presentation_vote_within_legal_set',
       rawJoinAllowed: false,
       allowedVisualCounts: [1, 3, 5],
     }));

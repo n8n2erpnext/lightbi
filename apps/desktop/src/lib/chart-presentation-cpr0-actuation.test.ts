@@ -31,7 +31,7 @@ describe('CPR-0 chart-presentation actuation diagnostics', () => {
     expect(finance.patternId).toBe('variance_diverging');
   });
 
-  it.fails('lets official domain complements materially actuate a three-visual story when evidence is legal', () => {
+  it('lets official domain complements materially actuate a three-visual story when evidence is legal', () => {
     const plan = createVisualNarrativeCompositionPlan({ candidates: [
       candidate(),
       candidate({ id: 'driver', isPrimary: false, managementQuestion: 'Which products drive order volume?',

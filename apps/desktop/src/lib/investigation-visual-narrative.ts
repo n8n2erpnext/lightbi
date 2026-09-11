@@ -19,6 +19,7 @@ import {
   type VisualNarrativeCandidateV1,
   type VisualNarrativeCompositionPlanV1,
   type VisualNarrativeStoryRoleV1,
+  type VisualNarrativeStoryTargetV1,
 } from './visual-narrative-composition';
 
 export type InvestigationVisualNarrativeInputItemV1 = {
@@ -140,6 +141,7 @@ export function buildInvestigationVisualNarrativePlan(input: {
   selectedPerspectiveId?: string | null;
   items: InvestigationVisualNarrativeInputItemV1[];
   advisor?: (query: MicroBrainPresentationQueryV1) => MicroBrainPresentationAdviceV1;
+  storyTarget?: VisualNarrativeStoryTargetV1 | null;
 }): { candidates: VisualNarrativeCandidateV1[]; plan: VisualNarrativeCompositionPlanV1; advice: MicroBrainPresentationAdviceV1 } {
   const primaryItem = input.items.find(item => item.isPrimary);
   if (!primaryItem) throw new Error('INVESTIGATION_VISUAL_NARRATIVE_PRIMARY_REQUIRED');
@@ -194,5 +196,5 @@ export function buildInvestigationVisualNarrativePlan(input: {
     candidate.advisoryRankPrior = presentationAdvisoryPrior(advice, candidate);
   }
 
-  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates, officialDomainId: input.primaryDomain }), advice };
+  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates, officialDomainId: input.primaryDomain, storyTarget: input.storyTarget }), advice };
 }

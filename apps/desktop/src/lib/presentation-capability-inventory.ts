@@ -4,7 +4,7 @@ import type { RuntimePlanPreview } from './runtime-planner-preview';
 import { officialDomainComplementRoles, officialDomainStoryOrder } from './domain-visual-playbooks';
 import { resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
 import type { VisualizationAnalyticalIntentV1 } from './visualization-ontology';
-import type { VisualNarrativeStoryRoleV1 } from './visual-narrative-composition';
+import type { VisualNarrativeLayoutCountV1, VisualNarrativeStoryRoleV1 } from './visual-narrative-composition';
 import { adviseMicroBrainPresentation, type MicroBrainPresentationAdviceV1, type MicroBrainPresentationQueryV1 } from './understanding-core/micro-brain/presentation-advisor';
 import { createPresentationBallot, microBrainStoryRoleOrder, type PresentationBallotTraceV1 } from './presentation-ballot';
 
@@ -62,6 +62,8 @@ export type PresentationStoryRequestPlanV1 = {
   primaryActionId: string;
   primaryAnalyticalIntent: VisualizationAnalyticalIntentV1;
   requestedRoles: VisualNarrativeStoryRoleV1[];
+  targetLayoutCount: VisualNarrativeLayoutCountV1;
+  targetCompanionRoles: VisualNarrativeStoryRoleV1[];
   budget: number;
   selections: PresentationStoryRequestSelectionV1[];
   ballotTrace: PresentationBallotTraceV1;
@@ -156,6 +158,23 @@ export function planPresentationStoryRequests(input: {
     defaultOptionIds: legalRoles,
     limit: Math.min(budget, legalRoles.length),
   });
+  const legalRoleSet = new Set(legalRoles);
+  const preferredRoleSet = new Set<VisualNarrativeStoryRoleV1>([
+    ...mbRoles.filter(role => legalRoleSet.has(role)),
+    ...requestedRoles.filter(role => legalRoleSet.has(role)),
+  ]);
+  const ballotRoles = ballotTrace.selectedOptionIds.map(role => role as VisualNarrativeStoryRoleV1);
+  const preferredRoles = ballotRoles.filter(role => preferredRoleSet.has(role));
+  // Five visuals require an explicit domain/MB story with four companion roles.
+  // In the absence of that strong signal, two distinct ready roles may still
+  // justify a conservative three-visual story; generic diversity never plans 5.
+  const targetLayoutCount: VisualNarrativeLayoutCountV1 = preferredRoles.length >= 4
+    ? 5
+    : preferredRoles.length >= 2 || legalRoles.length >= 2
+      ? 3
+      : 1;
+  const targetRoleSource = preferredRoles.length >= 2 ? preferredRoles : ballotRoles;
+  const targetCompanionRoles = targetRoleSource.slice(0, targetLayoutCount === 5 ? 4 : targetLayoutCount === 3 ? 2 : 0);
   const selected = new Map<string, PresentationStoryRequestSelectionV1>();
 
   const addBestForRole = (role: VisualNarrativeStoryRoleV1, reason: PresentationStoryRequestReasonV1) => {
@@ -194,6 +213,8 @@ export function planPresentationStoryRequests(input: {
     primaryActionId: input.inventory.primaryActionId,
     primaryAnalyticalIntent: input.inventory.primaryAnalyticalIntent,
     requestedRoles: [...requestedRoles],
+    targetLayoutCount,
+    targetCompanionRoles,
     budget,
     selections: [...selected.values()],
     ballotTrace,
