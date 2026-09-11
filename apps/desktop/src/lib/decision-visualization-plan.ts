@@ -63,6 +63,7 @@ export type CreateDecisionVisualizationPlanInputV1 = {
   desirability?: MetricDesirabilityV1;
   requiredSurfaces?: VisualizationRendererSurfaceV1[];
   domainProfile?: DomainVisualProfileV1 | null;
+  officialDomainId?: string | null;
   presentationShaping?: VisualizationPresentationShapingV1 | null;
 };
 
@@ -116,6 +117,7 @@ export function createDecisionVisualizationPlan(input: CreateDecisionVisualizati
     desirability: input.desirability,
     requiredSurfaces: input.requiredSurfaces,
     domainProfile: input.domainProfile,
+    officialDomainId: input.officialDomainId ?? input.perspectiveId,
     presentationShaping: input.presentationShaping ?? null,
   });
   if (visualizationPlan.status !== 'planned') throw new Error('DECISION_VISUALIZATION_NO_SAFE_PLAN');

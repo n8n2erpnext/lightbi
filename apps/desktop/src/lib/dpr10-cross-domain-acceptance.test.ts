@@ -46,7 +46,7 @@ const supportedCases: SupportedAcceptanceCase[] = [
     domain: 'customer', viewId: 'customer_segmentation', questionNeedle: /customer/i,
     rows: [{ segment: 'SMB', customer_count: 25 }, { segment: 'Enterprise', customer_count: 10 }],
     dimensionField: 'segment', metricIds: ['customer_count'], analyticalIntent: 'category_comparison',
-    availableRoles: ['category', 'measure'], expectedPattern: 'category_compare',
+    availableRoles: ['category', 'measure'], expectedPattern: 'ranking_bar',
   },
   {
     domain: 'performance', viewId: 'target_achievement', questionNeedle: /target/i,
@@ -146,6 +146,7 @@ describe('DPR-10 cross-domain acceptance', () => {
       metricIds: ['governed_value'], analyticalIntent: 'category_comparison' as const,
       availableRoles: ['category', 'measure'] as VisualizationEvidenceRoleV1[],
       cardinality: { categories: 30, series: 1 }, requiredSurfaces: ['preview', 'persistence', 'dashboard'] as const,
+      officialDomainId: 'test_rejectable',
     };
     const withoutAdvice = createDecisionVisualizationPlan(base);
     const withAdvice = createDecisionVisualizationPlan({ ...base, domainProfile });

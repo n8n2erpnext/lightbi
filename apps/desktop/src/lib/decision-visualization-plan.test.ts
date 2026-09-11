@@ -42,7 +42,7 @@ describe('DecisionVisualizationPlan v2', () => {
     });
     expect(plan.result.dimensionField).toBe('Store');
     expect(plan.primaryVisualization.type).toBe('bar');
-    expect(plan.visualizationPlan.patternId).toBe('category_compare');
+    expect(plan.visualizationPlan.patternId).toBe('ranking_bar');
   });
   it('preserves both measures for a relationship scatter plan', () => {
     const plan = createDecisionVisualizationPlan({

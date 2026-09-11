@@ -1,3 +1,5 @@
+import { officialDomainStoryOrder } from './domain-visual-playbooks';
+
 export const VISUAL_NARRATIVE_COMPOSITION_VERSION = 'lightbi.visual-narrative-composition.v1' as const;
 
 export type VisualNarrativeStoryRoleV1 =
@@ -195,6 +197,7 @@ function layoutMode(count: VisualNarrativeLayoutCountV1): VisualNarrativeComposi
 }
 export function createVisualNarrativeCompositionPlan(input: {
   candidates: VisualNarrativeCandidateV1[];
+  officialDomainId?: string | null;
 }): VisualNarrativeCompositionPlanV1 {
   const primary = [...input.candidates]
     .filter(candidate => candidate.isPrimary)
@@ -245,10 +248,14 @@ export function createVisualNarrativeCompositionPlan(input: {
     deterministicallyAdmitted.push(candidate);
   }
 
+  const storyOrder = officialDomainStoryOrder(input.officialDomainId);
+  const storyRank = new Map(storyOrder.map((role, index) => [role, index] as const));
+  const defaultStoryRank = storyOrder.length + 1;
   const eligible = [
     primary,
     ...deterministicallyAdmitted.slice(1).sort((a, b) =>
-      (b.advisoryRankPrior ?? 0) - (a.advisoryRankPrior ?? 0)
+      (storyRank.get(a.storyRole) ?? defaultStoryRank) - (storyRank.get(b.storyRole) ?? defaultStoryRank)
+      || (b.advisoryRankPrior ?? 0) - (a.advisoryRankPrior ?? 0)
       || b.decisionImportance - a.decisionImportance
       || a.id.localeCompare(b.id)),
   ];

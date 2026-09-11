@@ -1,4 +1,5 @@
 import type { DomainBAId } from './domain-ba-playbooks';
+import { OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2, type OfficialDomainVisualPlaybookV2 } from './domain-visual-playbooks';
 import {
   VISUALIZATION_PATTERN_BY_ID_V1,
   type VisualizationAnalyticalIntentV1,
@@ -42,56 +43,22 @@ const governed = {
  * (Retail/Store Sales, Customer Profitability, Supplier Quality, KPI and
  * financial/variance examples) and the existing LightBI domain playbooks.
  */
-export const OFFICIAL_DOMAIN_CHART_SETS_V1: Readonly<Record<DomainBAId, OfficialDomainChartSetV1>> = {
-  revenue: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'revenue', label: 'Revenue / Sales',
-    primaryPatternIds: ['trend_line', 'category_compare', 'target_combo'],
-    supportingPatternIds: ['ranking_bar', 'composition_stack', 'composition_100', 'composition_donut', 'variance_waterfall'],
-    governance: governed,
-    researchBasis: ['Power BI Store Sales / Retail Analysis', 'LightBI revenue BA playbook'],
-  },
-  finance: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'finance', label: 'Finance',
-    primaryPatternIds: ['variance_waterfall', 'trend_line', 'kpi_summary'],
-    supportingPatternIds: ['variance_diverging', 'composition_stack', 'target_combo', 'relationship_scatter', 'evidence_table'],
-    governance: governed,
-    researchBasis: ['Power BI financial/KPI/variance patterns', 'Customer Profitability sample', 'LightBI finance BA playbook'],
-  },
-  inventory: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'inventory', label: 'Inventory',
-    primaryPatternIds: ['ranking_bar', 'trend_line', 'distribution_histogram'],
-    supportingPatternIds: ['distribution_box', 'matrix_heatmap', 'concentration_pareto', 'evidence_table'],
-    governance: governed,
-    researchBasis: ['Power BI Retail Analysis inventory context', 'inventory-management dashboard practice', 'LightBI inventory BA playbook'],
-  },
-  operations: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'operations', label: 'Operations',
-    primaryPatternIds: ['trend_line', 'process_control', 'ranking_bar'],
-    supportingPatternIds: ['distribution_histogram', 'distribution_box', 'concentration_pareto', 'matrix_heatmap', 'process_funnel'],
-    governance: governed,
-    researchBasis: ['Power BI Supplier Quality Analysis', 'operational quality/process monitoring practice', 'LightBI operations BA playbook'],
-  },
-  customer: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'customer', label: 'Customer',
-    primaryPatternIds: ['ranking_bar', 'trend_line', 'relationship_scatter'],
-    supportingPatternIds: ['cohort_retention', 'composition_donut', 'process_funnel', 'relationship_bubble', 'evidence_table'],
-    governance: governed,
-    researchBasis: ['Power BI Customer Profitability sample', 'cohort/retention analysis practice', 'LightBI customer BA playbook'],
-  },
-  performance: {
-    schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
-    domainId: 'performance', label: 'Performance',
-    primaryPatternIds: ['target_combo', 'target_bullet', 'kpi_summary'],
-    supportingPatternIds: ['trend_line', 'variance_diverging', 'ranking_bar', 'small_multiples', 'profile_radar'],
-    governance: governed,
-    researchBasis: ['Power BI KPI target guidance', 'scorecard/performance dashboard practice', 'LightBI performance BA playbook'],
-  },
-};
+export const OFFICIAL_DOMAIN_CHART_SETS_V1: Readonly<Record<DomainBAId, OfficialDomainChartSetV1>> = Object.freeze(
+  Object.fromEntries(
+    (Object.entries(OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2) as Array<[DomainBAId, OfficialDomainVisualPlaybookV2]>).map(([domainId, playbook]) => [
+      domainId,
+      {
+        schemaVersion: OFFICIAL_DOMAIN_CHART_SET_VERSION,
+        domainId,
+        label: playbook.label,
+        primaryPatternIds: [...playbook.chartSet.primaryPatternIds],
+        supportingPatternIds: [...playbook.chartSet.supportingPatternIds],
+        governance: governed,
+        researchBasis: [...playbook.researchBasis],
+      },
+    ]),
+  ) as Record<DomainBAId, OfficialDomainChartSetV1>,
+);
 
 const OFFICIAL_DOMAIN_IDS = new Set<DomainBAId>(Object.keys(OFFICIAL_DOMAIN_CHART_SETS_V1) as DomainBAId[]);
 
@@ -103,6 +70,17 @@ export function getOfficialDomainChartSet(domainId: string | null | undefined): 
 export function officialDomainPatternOrder(domainId: string | null | undefined): VisualizationPatternIdV1[] {
   const set = getOfficialDomainChartSet(domainId);
   return set ? [...new Set([...set.primaryPatternIds, ...set.supportingPatternIds])] : [];
+}
+
+export function officialDomainPatternOrderForIntent(
+  domainId: string | null | undefined,
+  intent: VisualizationAnalyticalIntentV1,
+): VisualizationPatternIdV1[] {
+  const playbook = domainId ? OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2[domainId as DomainBAId] : undefined;
+  if (!playbook) return [];
+  const preferred = playbook.intentPatternPreferences[intent] ?? [];
+  return [...new Set([...preferred, ...officialDomainPatternOrder(domainId)])]
+    .filter(patternId => VISUALIZATION_PATTERN_BY_ID_V1.get(patternId)?.intents.includes(intent));
 }
 
 export function officialDomainIntentPriority(

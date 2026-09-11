@@ -194,5 +194,5 @@ export function buildInvestigationVisualNarrativePlan(input: {
     candidate.advisoryRankPrior = presentationAdvisoryPrior(advice, candidate);
   }
 
-  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates }), advice };
+  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates, officialDomainId: input.primaryDomain }), advice };
 }

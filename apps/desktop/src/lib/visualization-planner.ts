@@ -10,7 +10,7 @@ import {
   type VisualizationPatternIdV1,
 } from './visualization-ontology';
 import { evaluateVisualizationSuitability, type VisualizationSuitabilityInputV1 } from './visualization-suitability';
-import { officialDomainVisualPatternOrder } from './domain-visual-playbooks';
+import { officialDomainPatternOrderForIntent } from './domain-chart-sets';
 import {
   rendererCapabilityForPattern,
   rendererSupportsSurfaces,
@@ -39,6 +39,7 @@ export type GovernedVisualizationPlanInputV1 = {
   desirability?: MetricDesirabilityV1;
   requiredSurfaces?: VisualizationRendererSurfaceV1[];
   domainProfile?: DomainVisualProfileV1 | null;
+  officialDomainId?: string | null;
   presentationShaping?: VisualizationPresentationShapingV1 | null;
 };
 export type GovernedVisualizationCandidateV1 = {
@@ -110,7 +111,8 @@ function candidateOrder(input: GovernedVisualizationPlanInputV1): VisualizationP
     .filter(pattern => pattern.intents.includes(input.analyticalIntent))
     .map(pattern => pattern.id);
   const defaults = DEFAULT_PATTERN_ORDER[input.analyticalIntent] ?? intentPatterns;
-  const officialDomain = officialDomainVisualPatternOrder(input.domainProfile?.domainId, input.analyticalIntent);
+  const officialDomainId = input.officialDomainId ?? input.domainProfile?.domainId;
+  const officialDomain = officialDomainPatternOrderForIntent(officialDomainId, input.analyticalIntent);
   const domain = (input.domainProfile?.preferredPatternIds ?? [])
     .filter(patternId => VISUALIZATION_PATTERN_BY_ID_V1.get(patternId)?.intents.includes(input.analyticalIntent));
   // MB advice is ranked for this exact question/perspective. It may reorder only
@@ -129,7 +131,11 @@ export function createGovernedVisualizationPlan(
         points: Math.min(input.cardinality?.points ?? input.presentationShaping.sourceCategoryCount, input.presentationShaping.limit),
       }
     : input.cardinality;
-  const domainPrior = new Set(input.domainProfile?.preferredPatternIds ?? []);
+  const officialDomainId = input.officialDomainId ?? input.domainProfile?.domainId;
+  const domainPrior = new Set([
+    ...(input.domainProfile?.preferredPatternIds ?? []),
+    ...officialDomainPatternOrderForIntent(officialDomainId, input.analyticalIntent),
+  ]);
   const queue = candidateOrder(input).map(patternId => ({ patternId, fallback: false }));
   const visited = new Set<VisualizationPatternIdV1>();
   const candidates: GovernedVisualizationCandidateV1[] = [];
@@ -175,6 +181,7 @@ export function createGovernedVisualizationPlan(
     desirability: input.desirability ?? 'unknown',
     requiredSurfaces,
     domainConceptIds: input.domainProfile?.conceptIds ?? [],
+    officialDomainId: officialDomainId ?? null,
     selected,
   });
   return {

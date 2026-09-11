@@ -22,6 +22,7 @@ export type OfficialDomainVisualPlaybookV2 = {
   domainId: DomainBAId;
   label: string;
   storyOrder: VisualNarrativeStoryRoleV1[];
+  chartSet: { primaryPatternIds: VisualizationPatternIdV1[]; supportingPatternIds: VisualizationPatternIdV1[] };
   intentPatternPreferences: Partial<Record<VisualizationAnalyticalIntentV1, VisualizationPatternIdV1[]>>;
   complementRolesByIntent: Partial<Record<VisualizationAnalyticalIntentV1, VisualNarrativeStoryRoleV1[]>>;
   combinationRecipes: DomainVisualCombinationRecipeV2[];
@@ -58,6 +59,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'revenue', label: 'Revenue / Sales',
     storyOrder: ['answer','change','driver','composition','comparison','risk','evidence'],
+    chartSet: { primaryPatternIds: ['trend_line','category_compare','target_combo'], supportingPatternIds: ['ranking_bar','composition_stack','composition_100','composition_donut','variance_waterfall'] },
     intentPatternPreferences: {
       trend: ['trend_line','trend_area','small_multiples'],
       period_comparison: ['category_compare','grouped_compare','variance_diverging','trend_line'],
@@ -94,6 +96,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'finance', label: 'Finance / Profitability',
     storyOrder: ['answer','comparison','change','driver','risk','composition','evidence'],
+    chartSet: { primaryPatternIds: ['variance_waterfall','trend_line','kpi_summary'], supportingPatternIds: ['variance_diverging','composition_stack','target_combo','relationship_scatter','evidence_table'] },
     intentPatternPreferences: {
       trend: ['trend_line','trend_area'],
       period_comparison: ['variance_diverging','grouped_compare','category_compare'],
@@ -137,6 +140,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'inventory', label: 'Inventory / Stock',
     storyOrder: ['answer','risk','comparison','change','distribution','driver','evidence'],
+    chartSet: { primaryPatternIds: ['ranking_bar','trend_line','distribution_histogram'], supportingPatternIds: ['distribution_box','matrix_heatmap','concentration_pareto','evidence_table'] },
     intentPatternPreferences: {
       single_value: ['kpi_summary','target_bullet'],
       period_comparison: ['grouped_compare','variance_diverging','category_compare'],
@@ -183,6 +187,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'operations', label: 'Operations / Logistics',
     storyOrder: ['answer','risk','change','driver','comparison','distribution','evidence'],
+    chartSet: { primaryPatternIds: ['trend_line','process_control','ranking_bar'], supportingPatternIds: ['distribution_histogram','distribution_box','concentration_pareto','matrix_heatmap','process_funnel'] },
     intentPatternPreferences: {
       single_value: ['kpi_summary'],
       trend: ['trend_line','process_control','calendar_intensity'],
@@ -234,6 +239,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'customer', label: 'Customer',
     storyOrder: ['answer','driver','risk','comparison','change','composition','relationship','evidence'],
+    chartSet: { primaryPatternIds: ['ranking_bar','trend_line','relationship_scatter'], supportingPatternIds: ['cohort_retention','composition_donut','process_funnel','relationship_bubble','evidence_table'] },
     intentPatternPreferences: {
       ranking: ['ranking_bar','concentration_pareto'],
       composition: ['composition_stack','composition_100','composition_donut'],
@@ -271,6 +277,7 @@ export const OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2: Readonly<Record<DomainBAId, Of
     schemaVersion: OFFICIAL_DOMAIN_VISUAL_PLAYBOOK_VERSION,
     domainId: 'performance', label: 'Performance / KPI',
     storyOrder: ['answer','comparison','risk','change','driver','evidence'],
+    chartSet: { primaryPatternIds: ['target_combo','target_bullet','kpi_summary'], supportingPatternIds: ['trend_line','variance_diverging','ranking_bar','small_multiples','profile_radar'] },
     intentPatternPreferences: {
       single_value: ['kpi_summary','target_bullet'],
       target_attainment: ['target_combo','target_bullet','kpi_summary'],
@@ -325,6 +332,11 @@ export function getOfficialDomainVisualPlaybook(domainId: string | null | undefi
   if (!domainId || !OFFICIAL_DOMAIN_IDS.has(domainId as DomainBAId)) return null;
   return OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2[domainId as DomainBAId];
 }
+
+export function officialDomainStoryOrder(domainId: string | null | undefined): VisualNarrativeStoryRoleV1[] {
+  return [...(getOfficialDomainVisualPlaybook(domainId)?.storyOrder ?? [])];
+}
+
 
 export function officialDomainVisualPatternOrder(
   domainId: string | null | undefined,

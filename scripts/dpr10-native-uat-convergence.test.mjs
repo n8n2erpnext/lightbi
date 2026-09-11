@@ -195,15 +195,21 @@ test('DPR-10 Gate D exposes the canonical 30-chart library and preserves officia
   const templates = await read('apps/desktop/src/lib/visualization-chart-templates.ts');
   const ontology = await read('apps/desktop/src/lib/visualization-ontology.ts');
   const domainSets = await read('apps/desktop/src/lib/domain-chart-sets.ts');
+  const domainPlaybooks = await read('apps/desktop/src/lib/domain-visual-playbooks.ts');
   const domainProfile = await read('apps/desktop/src/lib/domain-visual-profile.ts');
   const planner = await read('apps/desktop/src/lib/visualization-planner.ts');
   const investigationPlan = await read('apps/desktop/src/lib/investigation-visualization-plan.ts');
   assert.match(templates, /VISUALIZATION_PATTERN_LIBRARY_V1\.map/);
   assert.match(ontology, /export type VisualizationPatternIdV1 =/);
   assert.match(domainSets, /OFFICIAL_DOMAIN_CHART_SETS_V1/);
+  assert.match(domainSets, /OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2/);
+  assert.match(domainSets, /playbook\.chartSet\.primaryPatternIds/);
+  assert.match(domainSets, /playbook\.chartSet\.supportingPatternIds/);
   for (const domain of ['revenue','finance','inventory','operations','customer','performance']) {
-    assert.match(domainSets, new RegExp(`\\b${domain}: \\{`));
+    assert.match(domainPlaybooks, new RegExp(`\\b${domain}: \\{`));
   }
+  assert.match(domainPlaybooks, /chartSet: \{ primaryPatternIds:/);
+  assert.match(planner, /officialDomainPatternOrderForIntent/);
   assert.match(domainProfile, /selectionSource: officialPrior\.length > 0 \? 'official_domain_prior' : 'inferred_domain_advice'/);
   assert.match(domainProfile, /candidateLibraryScope: 'canonical_30_patterns'/);
   assert.match(planner, /deterministicSuitabilityFinal: true/);

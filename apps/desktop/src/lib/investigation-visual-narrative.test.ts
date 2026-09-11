@@ -82,7 +82,7 @@ describe('Investigation visual narrative adapter', () => {
     expect(result.plan.layoutCount).toBe(1);
     expect(result.plan.units[0].candidateIds).toEqual(['volume']);
   });
-  it('changes bounded presentation membership when the user perspective changes while keeping the same governed evidence', () => {
+  it('keeps deterministic membership stable across user perspectives while advisory evidence stays bounded', () => {
     const items = [
       item({ id: 'primary', primary: true, question: 'Where is inventory concentration exposure by warehouse?', dimension: 'Warehouse', metric: 'inventory_value', confidence: 90 }),
       item({ id: 'trend', question: 'Inventory value trend over time', actionType: 'trend', dimension: 'Month', metric: 'inventory_value', renderer: 'line', confidence: 80 }),
@@ -96,7 +96,7 @@ describe('Investigation visual narrative adapter', () => {
     const admitted = (result: typeof executive) => result.plan.units.flatMap(unit => unit.candidateIds).sort();
     expect(executive.plan.layoutCount).toBe(3);
     expect(inventory.plan.layoutCount).toBe(3);
-    expect(admitted(executive)).not.toEqual(admitted(inventory));
+    expect(admitted(executive)).toEqual(admitted(inventory));
     expect(executive.plan.primaryCandidateId).toBe('primary');
     expect(inventory.plan.primaryCandidateId).toBe('primary');
     expect(executive.plan.governance).toMatchObject({ mbAuthority: 'advisory_only', deterministicMembershipFinal: true, rawJoinAllowed: false });
