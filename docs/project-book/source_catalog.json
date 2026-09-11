@@ -1,14 +1,14 @@
 {
   "schemaVersion": "lightbi.project-book.source-catalog.v1",
-  "snapshotDate": "2026-09-10",
-  "generatedAt": "2026-09-10T11:35:53.575141Z",
+  "snapshotDate": "2026-09-11",
+  "generatedAt": "2026-09-11T04:30:00Z",
   "branch": "docs/ba-da-mode-future-20260903",
-  "head": "268ab1b7c0911fee4de105dc752a9d3cc1f11b40",
+  "head": "b03912ffe7f71d3be609eee1e506c4273b3f5f7b",
   "worktreeDirty": true,
   "scope": "All project Markdown and JSON outside dependency/build/project-book directories.",
   "counts": {
-    "total": 951,
-    "markdown": 534,
+    "total": 953,
+    "markdown": 536,
     "json": 417,
     "docsJson": 354,
     "references": 0
@@ -9789,6 +9789,14 @@
       "title": "Agent Handoff: Virtual Business View Real Data Execution"
     },
     {
+      "path": "docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_NARRATIVE_AUDIT_REMEDIATION_2026-09-11.md",
+      "extension": ".md",
+      "bytes": 34316,
+      "sha256": "90e452b716abeabcdb59c3b4a37baa9b81ee827c76449cf7a439df49e1f5a7c5",
+      "suggestedCategory": "historical-provenance",
+      "title": "LightBI Visual Narrative Audit + Semantic Remediation Handoff — 2026-09-11"
+    },
+    {
       "path": "docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_REGRESSION_QA_PHASE1.md",
       "extension": ".md",
       "bytes": 1227,
@@ -9935,8 +9943,8 @@
     {
       "path": "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md",
       "extension": ".md",
-      "bytes": 170473,
-      "sha256": "777aa1b97cf2b9cb651b42cb5d0e27cc2c29db3525e74152d5ce5a6db43dbdcc",
+      "bytes": 178429,
+      "sha256": "b2a551778dc2c68604753200712898611ac0cecc4ccda9987f3e1b558a01bee0",
       "suggestedCategory": "historical-provenance",
       "title": "Agent Implementation Plan — Decision Presentation + UI/UX Refactor — 2026-09-04"
     },
@@ -10291,6 +10299,14 @@
       "sha256": "7a97737d8f07b144227d707b2414eee061538318a52e441ad2e8455bf35181fd",
       "suggestedCategory": "historical-provenance",
       "title": "ROADMAP-MVP-V1 Phase 3: Decision Readiness Guidance"
+    },
+    {
+      "path": "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_VISUAL_NARRATIVE_AUDIT_REMEDIATION_SESSION_2026-09-11.md",
+      "extension": ".md",
+      "bytes": 29042,
+      "sha256": "eb2c7354ed1208122fb69d1b942489af212fb1fb701160ec2840d4aeafda4807",
+      "suggestedCategory": "historical-provenance",
+      "title": "Session Context Reconstruction — Visual Narrative Audit + Chart Intelligence Remediation — 2026-09-11"
     },
     {
       "path": "docs/history/audits/AUDIT-bvq-remnants.md",

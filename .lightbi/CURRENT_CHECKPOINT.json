@@ -1,41 +1,45 @@
 {
   "schema": "lightbi.current-checkpoint.v1",
-  "updatedAt": "2026-09-10T18:35:00+07:00",
-  "status": "dpr10_visual_narrative_next_web_accepted_owner_uat_pending",
-  "activeRuntime": "NEXT Core 5272 PID 3376963; Gateway 5273 PID 2436036 serving dpr10-visual-narrative-6ba98d9d; Control Plane 5274 PID 1116289 serving trust-ready 435e38a; Production/51xx untouched",
+  "updatedAt": "2026-09-11T11:30:00+07:00",
+  "status": "dpr10_visual_narrative_semantic_remediation_handoff_multi_r10_pending",
+  "activeRuntime": "NEXT Core 5272 PID 3376963; public Gateway 5273 PID 2436036 still serving Product 6ba98d9d; Control Plane 5274 PID 1116289; private audit Gateway 5293 PID 216483 serves dirty remediation dist; Production/51xx untouched",
   "sourceCandidate": {
     "repo": "/home/ubuntu/n8n2erpnext/LightBI-dpr0-contract-freeze",
     "branch": "codex/dpr0-contract-freeze",
-    "head": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
-    "remoteMatches": true,
-    "worktreeClean": true,
+    "baseHead": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
+    "worktreeClean": false,
+    "modifiedFiles": 25,
     "liveUiSource": "6ba98d9d39a95adc5f0ddd9a5aaa48c63cea2220",
-    "liveUiRoot": "/home/ubuntu/services/lightbi-next-web/dpr10-visual-narrative-6ba98d9d"
-  },
-  "controlPlane": {
-    "sourceCommit": "435e38a5bba2d7cecf44399d2ac2dffc8eb0e30b",
-    "pid": 1116289,
-    "generation": "g-2026-09-05-next-034",
-    "runtimeChannel": "internal",
-    "productionAuthority": false
+    "auditOrigin": "http://127.0.0.1:5293/app/"
   },
   "dpr10": {
-    "state": "ACTIVE — Visual Narrative source/live machine acceptance green; owner Web UAT pending before native E3/E4",
-    "canonicalPlanSection": "23B.15",
-    "releaseEvidence": "Visual Narrative 17 files/92 tests; exact-commit release_1_0_suite=passed; build 3832; governed 11 files/50 tests; LIVE_UAT=PASS",
-    "liveVisualNarrative": "Single Revenue one 220px answer visual; Single Dashboard 4 KPI full row + full-width hero; Multi two-period comparison 230px; Multi Dashboard KPI 7/7/6 + full-width hero; perspective probe preserves governed vs safe-descriptive authority"
+    "state": "ACTIVE — §23B.16 audit-driven semantic remediation unfinished; Single/synthetic largely green; Multi R10 valid 34-perspective execution still pending",
+    "canonicalPlanSection": "23B.16",
+    "completed": [
+      "synthetic 14-oracle controlled benchmark no oracle violation",
+      "canonical current matrix 126/126 executed with late semantic defects fixed",
+      "semantic-surrogate and duplicate-information gates hardened",
+      "latest strict MB A/B observed 0 degraded intervention"
+    ],
+    "pending": [
+      "repair Multi matrix harness lifecycle/surface assumptions",
+      "execute valid 34-perspective Multi matrix",
+      "fresh aggregate + full test:release-1.0 on exact dirty tree",
+      "docs closeout then separate Product/Docs commits",
+      "immutable NEXT 5273 deploy and owner Web UAT"
+    ]
   },
-  "nextAction": "Owner tests https://lightbi-next.thaiduy.digital/app on exact Product 6ba98d9d. Do not trigger native E3/E4 until owner accepts Web visual-story/layout behavior; after acceptance rebuild Windows native from this exact SHA. Do not touch Production/51xx.",
+  "nextAction": "Read AGENT_HANDOFF_VISUAL_NARRATIVE_AUDIT_REMEDIATION_2026-09-11.md, verify dirty Product state, then repair Multi R10 harness and execute all 34 perspectives on private 5293. Do not count current multi-r10-matrix failures as Product failures; they are polluted by page/context lifecycle errors. Do not touch Production/51xx.",
   "blockers": [
-    "Owner Web UAT is required before native rebuild",
-    "Native Windows E3/E4 must be rebuilt from post-Web accepted exact Product SHA",
-    "Owner packaged UAT remains required for DPR-10 closure"
+    "Multi R10 systematic browser closeout incomplete",
+    "final exact-worktree release-authoritative suite not yet run",
+    "remediation Product changes not committed/deployed/owner accepted"
   ],
   "productionTouched": false,
   "readFirst": [
     "docs/project-book/LIBRARY_RULES.md",
-    "docs/project-book/LIGHTBI_PROJECT_BOOK.md#152-2026-09-10-visual-narrative-composition-is-live-on-next-owner-web-uat-is-next",
-    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b15-visual-narrative-composition--perspective-aware-chart-intelligence--2026-09-10",
-    "docs/project-book/LIGHTBI_CODE_MAP.md#22a-visual-narrative-composition-owns-presentation-set-membership-not-analytical-truth"
+    "docs/history/agent/handoffs/AGENT_HANDOFF_VISUAL_NARRATIVE_AUDIT_REMEDIATION_2026-09-11.md",
+    "docs/history/agent/walkthroughs/AGENT_WALKTHROUGH_VISUAL_NARRATIVE_AUDIT_REMEDIATION_SESSION_2026-09-11.md",
+    "docs/history/agent/plans/AGENT_IMPLEMENTATION_PLAN_DECISION_PRESENTATION_UI_UX_REFACTOR_2026-09-04.md#23b16-visual-narrative-semantic-remediation--audit-driven-implementation-gate--2026-09-10"
   ]
 }
