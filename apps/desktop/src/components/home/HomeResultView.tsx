@@ -2,6 +2,14 @@ import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { ChevronRight } from 'lucide-react';
 import { homeGuidance } from '../../content/home-guidance';
+import { businessReasonSummary } from '../../lib/business-reason-copy';
+import { useUiLanguage } from '../../lib/ui-language';
+
+
+const HomeBlockedReasons: React.FC<{ reasons: string[] }> = ({ reasons }) => {
+  const { t } = useUiLanguage();
+  return <p className="mt-2 break-words text-[11px] text-amber-800">{businessReasonSummary(reasons).map(reason => t(reason)).join(' ')}</p>;
+};
 
 interface HomeResultViewProps {
   result: any;
@@ -15,7 +23,7 @@ export const HomeResultView: React.FC<HomeResultViewProps> = ({ result, chartOpt
       <h3 className="text-sm font-semibold">Analysis needs source review</h3>
       <p className="mt-1 text-xs leading-5">{result.message || 'This analysis cannot run with the current governed source state.'}</p>
       {Array.isArray(result.blockedReasons) && result.blockedReasons.length > 0 && (
-        <p className="mt-2 break-words text-[11px] text-amber-800">{result.blockedReasons.join(', ')}</p>
+        <HomeBlockedReasons reasons={result.blockedReasons} />
       )}
     </div>
   ) : (

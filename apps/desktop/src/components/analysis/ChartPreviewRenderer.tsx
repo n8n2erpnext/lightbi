@@ -14,6 +14,8 @@ type ChartClickParams = {
   seriesName?: string;
 };
 
+const DRILL_UNSAFE_FAMILIES = new Set(['histogram','box_plot','pareto','calendar_heatmap','heatmap','cohort_heatmap','sankey','small_multiples']);
+
 export const ChartPreviewRenderer: React.FC<{
   model: ChartPreviewModel;
   visualizationPlan?: GovernedVisualizationPlanV1 | null;
@@ -24,6 +26,9 @@ export const ChartPreviewRenderer: React.FC<{
   const chartRef = useRef<HTMLDivElement>(null);
   const { preferences } = useDisplayPreferences();
   const { localize } = useUiLanguage();
+  const coarseType = model.chartType === 'line' ? 'line' : model.chartType === 'scatter' ? 'scatter' : 'bar';
+  const rendererFamily = rendererFamilyOverride ?? visualizationPlan?.rendererFamily ?? (coarseType === 'line' ? 'line' : coarseType === 'scatter' ? 'scatter' : 'bar');
+  const drillEnabled = Boolean(onDrillThrough && model.xField && !DRILL_UNSAFE_FAMILIES.has(String(rendererFamily)));
   const displayRows = useMemo(() => applyVisualizationPresentationShaping({
     rows: model.rows,
     dimensionField: model.xField ?? '',
@@ -40,8 +45,7 @@ export const ChartPreviewRenderer: React.FC<{
     const primarySample = primaryYField ? displayRows[0]?.[primaryYField] : undefined;
     const primarySemantic = primaryYField ? inferSemanticType(primaryYField, primarySample) : 'number';
     const valueType = primarySemantic === 'currency' ? 'currency' : 'number';
-    const coarseType = model.chartType === 'line' ? 'line' : model.chartType === 'scatter' ? 'scatter' : 'bar';
-    const family = rendererFamilyOverride ?? visualizationPlan?.rendererFamily ?? (coarseType === 'line' ? 'line' : coarseType === 'scatter' ? 'scatter' : 'bar');
+    const family = rendererFamily;
     const colorSemantics = visualizationPlan?.patternRules?.colorSemantics ?? null;
 
     chartInstance.setOption(generateDashboardChartOptions({
@@ -58,8 +62,6 @@ export const ChartPreviewRenderer: React.FC<{
       colSpan: 20,
     }, preferences, false));
 
-    const drillUnsafeFamilies = new Set(['histogram','box_plot','pareto','calendar_heatmap','heatmap','cohort_heatmap','sankey','small_multiples']);
-    const drillEnabled = Boolean(onDrillThrough && xField && !drillUnsafeFamilies.has(String(family)));
     chartInstance.getZr().setCursorStyle(drillEnabled ? 'pointer' : 'default');
     const handleClick = (params: ChartClickParams) => {
       if (!drillEnabled || !onDrillThrough || typeof params.dataIndex !== 'number') return;
@@ -85,7 +87,7 @@ export const ChartPreviewRenderer: React.FC<{
       window.removeEventListener('resize', handleResize);
       chartInstance.dispose();
     };
-  }, [displayRows, model, onDrillThrough, preferences, rendererFamilyOverride, visualizationPlan]);
+  }, [displayRows, drillEnabled, model, onDrillThrough, preferences, rendererFamily, visualizationPlan]);
 
   if (model.status === 'empty') {
     return (
@@ -143,6 +145,11 @@ export const ChartPreviewRenderer: React.FC<{
       {visualizationPlan?.presentationShaping?.kind === 'top_n' && (
         <p data-testid="chart-presentation-shaping-note" className="mt-1 text-[11px] text-slate-500">
           {localize(`Showing top ${visualizationPlan.presentationShaping.limit} of ${visualizationPlan.presentationShaping.sourceCategoryCount} categories.`)}
+        </p>
+      )}
+      {drillEnabled && (
+        <p data-testid="chart-drill-affordance" className="mt-1.5 text-[11px] leading-5 text-slate-500">
+          {localize('Click a chart point or bar to filter this evidence and continue to BA Step 2.')}
         </p>
       )}
     </>

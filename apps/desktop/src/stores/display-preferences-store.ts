@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { isChartPalettePresetIdV1, type ChartPalettePresetIdV1 } from '../lib/visualization-palette';
 
 export interface DisplayPreferences {
   language: string;
@@ -14,6 +15,7 @@ export interface DisplayPreferences {
   dateFormat: 'locale' | 'short' | 'long' | 'iso';
   timeFormat: 'locale' | '12h' | '24h';
   datetimeFormat: 'locale' | 'compact' | 'detailed';
+  chartPalette: ChartPalettePresetIdV1;
 }
 
 interface DisplayPreferencesState {
@@ -34,7 +36,8 @@ export const DEFAULT_PREFERENCES: DisplayPreferences = {
   negativeStyle: 'minus',
   dateFormat: 'locale',
   timeFormat: 'locale',
-  datetimeFormat: 'locale'
+  datetimeFormat: 'locale',
+  chartPalette: 'lightbi'
 };
 
 export function migrateDisplayPreferences(
@@ -48,6 +51,9 @@ export function migrateDisplayPreferences(
     language: persistedPreferences.language ?? (locale === 'vi-VN' ? 'vi' : 'en'),
     currencyCode: persistedPreferences.currencyCode
       ?? (locale === 'vi-VN' ? 'VND' : locale === 'ar-SA' ? 'SAR' : 'USD'),
+    chartPalette: isChartPalettePresetIdV1(persistedPreferences.chartPalette)
+      ? persistedPreferences.chartPalette
+      : defaults.chartPalette,
   };
 }
 
@@ -60,7 +66,7 @@ export const useDisplayPreferences = create<DisplayPreferencesState>()(
     }),
     {
       name: 'lightbi-display-preferences',
-      version: 2,
+      version: 3,
       merge: (persisted, current) => {
         const persistedState = persisted as Partial<DisplayPreferencesState> | undefined;
         const persistedPreferences: Partial<DisplayPreferences> = persistedState?.preferences ?? {};

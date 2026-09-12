@@ -1,6 +1,8 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { useDisplayPreferences } from '../../stores/display-preferences-store';
+import { CHART_PALETTE_PRESET_IDS_V1, CHART_PALETTE_PRESETS_V1 } from '../../lib/visualization-palette';
+import { useUiLanguage } from '../../lib/ui-language';
 
 interface Props {
   isOpen: boolean;
@@ -21,6 +23,7 @@ const PreferenceField: React.FC<PreferenceFieldProps> = ({ label, children }) =>
 
 export const DisplayPreferencesModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const { preferences, updatePreferences, resetPreferences } = useDisplayPreferences();
+  const { t } = useUiLanguage();
 
   if (!isOpen) return null;
 
@@ -52,6 +55,32 @@ export const DisplayPreferencesModal: React.FC<Props> = ({ isOpen, onClose }) =>
                 <option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
               </select>
             </PreferenceField></div>
+          </div>
+
+          <div className="border-b border-[var(--lb-divider)] py-4" data-testid="chart-palette-preferences">
+            <div className="text-[12px] font-semibold text-black/60">{t('Chart palette')}</div>
+            <p className="mt-1 text-[11px] leading-5 text-black/45">{t('Applies immediately to supported charts without changing data or calculations.')}</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-5">
+              {CHART_PALETTE_PRESET_IDS_V1.map((presetId) => {
+                const preset = CHART_PALETTE_PRESETS_V1[presetId];
+                const active = preferences.chartPalette === presetId;
+                return (
+                  <button
+                    key={presetId}
+                    type="button"
+                    data-testid={`chart-palette-${presetId}`}
+                    aria-pressed={active}
+                    onClick={() => updatePreferences({ chartPalette: presetId })}
+                    className={`min-w-0 border px-2 py-2 text-left transition-colors ${active ? 'border-blue-500 bg-blue-50/60' : 'border-[var(--lb-divider)] bg-white hover:bg-black/[0.025]'}`}
+                  >
+                    <span className="flex gap-1" aria-hidden="true">
+                      {preset.qualitative.slice(0, 4).map((color) => <span key={color} className="h-3 flex-1 rounded-sm" style={{ backgroundColor: color }} />)}
+                    </span>
+                    <span className="mt-1.5 block truncate text-[11px] font-medium text-black/65">{t(preset.label)}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="grid border-b border-[var(--lb-divider)] md:grid-cols-2 md:divide-x md:divide-[var(--lb-divider)]">

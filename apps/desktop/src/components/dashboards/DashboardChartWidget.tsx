@@ -110,7 +110,7 @@ export const generateDashboardChartOptions = (
   } = props;
   const family = rendererFamily ?? legacyFamily(chartType);
   const keys = [...new Set((props.seriesKeys?.length ? props.seriesKeys : [seriesKey]).filter(Boolean))];
-  const palette = visualizationPalette({ family, colorSemantics });
+  const palette = visualizationPalette({ family, colorSemantics, presetId: preferences.chartPalette });
   const uiLanguage = typeof preferences.language === 'string' ? preferences.language : String(preferences.locale ?? '').toLowerCase().startsWith('vi') ? 'vi' : 'en';
   const uiText = (source: string) => translateCatalogMessage(uiLanguage, source);
   const axisFormatter = (value: any) => formatValue(value, valueType, preferences, { compact: isCompact });

@@ -33,6 +33,7 @@ import { validateCanonicalMultiSourceInvestigationHandoff, type CanonicalMultiSo
 import { executeCanonicalMultiSourceMetric } from '../lib/understanding-core/governed-multisource-duckdb-boundary';
 import { formatValue } from '../lib/display-formatter';
 import { useUiLanguage } from '../lib/ui-language';
+import { businessReasonSummary } from '../lib/business-reason-copy';
 import { createSingleSourceBAOverview, sampleSingleSourceBARows } from '../lib/single-source-ba-overview';
 import type { DecisionVisualizationPlanV1 } from '../lib/decision-visualization-plan';
 import { buildInvestigationDecisionVisualizationPlan } from '../lib/investigation-visualization-plan';
@@ -846,7 +847,7 @@ export const Investigation: React.FC = () => {
                   </details>}
                 </div>
               ) : previewResult?.status === 'blocked' ? (
-                <div className="flex h-64 w-full flex-col items-center justify-center border-y border-amber-200 bg-amber-50/50 p-6 text-center text-amber-700"><AlertTriangle className="mb-2 h-8 w-8 text-amber-500" /><span className="text-sm font-medium">Analysis Blocked</span><span className="mt-1 text-xs text-amber-600">{previewResult.blockedReasons.join(', ') || 'Canonical preflight did not authorize execution.'}</span></div>
+                <div className="flex h-64 w-full flex-col items-center justify-center border-y border-amber-200 bg-amber-50/50 p-6 text-center text-amber-700"><AlertTriangle className="mb-2 h-8 w-8 text-amber-500" /><span className="text-sm font-medium">Analysis Blocked</span><span className="mt-1 text-xs text-amber-600">{previewResult.blockedReasons.length ? businessReasonSummary(previewResult.blockedReasons).map(reason => t(reason)).join(' ') : t('Canonical preflight did not authorize execution.')}</span></div>
               ) : previewResult?.status === 'failed' ? (
                 <div className="flex h-64 w-full flex-col items-center justify-center border-y border-red-200 bg-red-50/50 p-6 text-center text-red-500"><AlertTriangle className="mb-2 h-8 w-8 text-red-400" /><span className="text-sm font-medium">Execution Failed</span><span className="mt-1 text-xs text-red-400">{previewResult.errorMessage || 'Preview could not be rendered.'}</span></div>
               ) : previewResult?.rows && previewResult.rows.length > 0 && runtimeIntent.expectedShape === 'table' ? (

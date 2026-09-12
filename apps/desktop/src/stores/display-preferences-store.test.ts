@@ -12,6 +12,7 @@ describe('display-preferences-store', () => {
     expect(state.preferences.locale).toBe('en-US');
     expect(state.preferences.language).toBe('en');
     expect(state.preferences.currencyCode).toBe('USD');
+    expect(state.preferences.chartPalette).toBe('lightbi');
   });
 
   it('updates preferences partially', () => {
@@ -37,6 +38,11 @@ describe('display-preferences-store', () => {
     const migrated = migrateDisplayPreferences({ locale: 'vi-VN' });
     expect(migrated.language).toBe('vi');
     expect(migrated.currencyCode).toBe('VND');
+  });
+
+  it('migrates chart palette safely and rejects unknown persisted palette ids', () => {
+    expect(migrateDisplayPreferences({ chartPalette: 'ocean' }).chartPalette).toBe('ocean');
+    expect(migrateDisplayPreferences({ chartPalette: 'unknown' as any }).chartPalette).toBe('lightbi');
   });
 
   it('resets to defaults', () => {
