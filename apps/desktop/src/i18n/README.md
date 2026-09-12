@@ -37,3 +37,15 @@ consistently instead of translating the same concept differently on each screen.
 
 New language files are auto-discovered at build time. A released desktop binary must be
 rebuilt to package a newly added file; no application code needs to change.
+
+## Vietnamese semantic QA
+
+Vietnamese follows the same source-aware policy used by the `erpnext2vi` localization project:
+
+- prefer the real business meaning over word-for-word translation;
+- translate by the English source and product context, never by global replacement of a Vietnamese word;
+- keep familiar technical vocabulary such as API, SQL, Dashboard, Theme, JSON, OAuth, Webhook, Pivot, SLA and KPI when that is clearer to Vietnamese users;
+- use data/BI vocabulary consistently: `row` = **dòng**, `dimension` = **chiều phân tích**, `metric/measure` = **chỉ số**, `grain` = **mức chi tiết**, `evidence` = **bằng chứng**;
+- domain-specific terms override generic dictionary meanings, e.g. `Margin` = **Biên lợi nhuận**, `Lead` = **Khách hàng tiềm năng**, `Patient` = **Bệnh nhân**, `Quotation` = **Báo giá**, `Shift` = **Ca làm**.
+
+`language-semantic-quality.test.ts` guards the reviewed glossary, placeholder parity and known machine-translation failure modes. New UI copy must be present in both English/Vietnamese catalogs; the debt baseline is intentionally empty.

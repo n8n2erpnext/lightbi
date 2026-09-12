@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Package, Truck, Building2, Calendar, Weight, BarChart3, AlertCircle } from 'lucide-react';
+import { useUiLanguage } from '../../lib/ui-language';
 
 interface LogisticsDatasetSummaryProps {
   columns: string[];
@@ -8,6 +9,7 @@ interface LogisticsDatasetSummaryProps {
 }
 
 export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = ({ columns, rows, rowCount }) => {
+  const { t } = useUiLanguage();
   const summary = useMemo(() => {
     // Helpers for string normalization
     const normalize = (s: string) => s.toLowerCase()
@@ -59,7 +61,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
         .slice(0, 3)
         .map(([name, count]) => ({ name, count }));
     } else {
-      stats.missingFields.push("Route/Tuyến");
+      stats.missingFields.push("Route");
     }
 
     // Shipment Stats
@@ -67,7 +69,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
       const shipments = rows.map(r => String(r[shipmentCol] || '')).filter(Boolean);
       stats.shipmentCount = new Set(shipments).size;
     } else {
-      stats.missingFields.push("Shipment/Kiện");
+      stats.missingFields.push("Shipment");
     }
 
     // Weight Stats
@@ -79,7 +81,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
       });
       stats.totalWeight = sum;
     } else {
-      stats.missingFields.push("Weight/Trọng lượng");
+      stats.missingFields.push("Weight");
     }
 
     // Branch Stats
@@ -92,7 +94,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
         .slice(0, 3)
         .map(([name, count]) => ({ name, count }));
     } else {
-      stats.missingFields.push("Branch/Bưu cục");
+      stats.missingFields.push("Branch");
     }
 
     // Date Stats
@@ -113,7 +115,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
         };
       }
     } else {
-      stats.missingFields.push("Date/Thời gian");
+      stats.missingFields.push("Date");
     }
 
     return stats;
@@ -126,35 +128,35 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
           <BarChart3 className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 leading-tight">Logistics Dataset Summary</h3>
-          <p className="text-xs text-gray-500">Quick insights extracted from raw sample rows</p>
+          <h3 className="font-semibold text-gray-900 leading-tight">{t('Logistics Dataset Summary')}</h3>
+          <p className="text-xs text-gray-500">{t('Quick insights extracted from raw sample rows')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="bg-gray-50 rounded-md p-3 border border-gray-100">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Database className="w-3 h-3"/> Rows / Cols</div>
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Database className="w-3 h-3"/> {t('Rows / Cols')}</div>
           <div className="font-semibold text-gray-900">{rowCount.toLocaleString()} <span className="text-gray-400 font-normal text-xs">× {columns.length}</span></div>
         </div>
         
         <div className="bg-gray-50 rounded-md p-3 border border-gray-100">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Package className="w-3 h-3"/> Shipments</div>
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Package className="w-3 h-3"/> {t('Shipments')}</div>
           <div className="font-semibold text-gray-900">
-            {summary.shipmentCount > 0 ? summary.shipmentCount.toLocaleString() : <span className="text-gray-400 font-normal italic text-xs">Not detected</span>}
+            {summary.shipmentCount > 0 ? summary.shipmentCount.toLocaleString() : <span className="text-gray-400 font-normal italic text-xs">{t('Not detected')}</span>}
           </div>
         </div>
 
         <div className="bg-gray-50 rounded-md p-3 border border-gray-100">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Truck className="w-3 h-3"/> Unique Routes</div>
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Truck className="w-3 h-3"/> {t('Unique Routes')}</div>
           <div className="font-semibold text-gray-900">
-            {summary.routeCount > 0 ? summary.routeCount.toLocaleString() : <span className="text-gray-400 font-normal italic text-xs">Not detected</span>}
+            {summary.routeCount > 0 ? summary.routeCount.toLocaleString() : <span className="text-gray-400 font-normal italic text-xs">{t('Not detected')}</span>}
           </div>
         </div>
 
         <div className="bg-gray-50 rounded-md p-3 border border-gray-100">
-          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Weight className="w-3 h-3"/> Total Weight</div>
+          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5"><Weight className="w-3 h-3"/> {t('Total Weight')}</div>
           <div className="font-semibold text-gray-900">
-            {summary.totalWeight > 0 ? summary.totalWeight.toLocaleString(undefined, { maximumFractionDigits: 2 }) : <span className="text-gray-400 font-normal italic text-xs">Not detected</span>}
+            {summary.totalWeight > 0 ? summary.totalWeight.toLocaleString(undefined, { maximumFractionDigits: 2 }) : <span className="text-gray-400 font-normal italic text-xs">{t('Not detected')}</span>}
           </div>
         </div>
       </div>
@@ -162,11 +164,11 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {summary.topRoutes.length > 0 && (
           <div className="border border-gray-100 rounded-md p-3">
-            <div className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-500"/> Top Routes</div>
+            <div className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-500"/> {t('Top Routes')}</div>
             <div className="space-y-1.5">
               {summary.topRoutes.map((r, i) => (
                 <div key={i} className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600 truncate mr-2">{r.name || '(Empty)'}</span>
+                  <span className="text-gray-600 truncate mr-2">{r.name || t('(Empty)')}</span>
                   <span className="font-medium text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">{r.count}</span>
                 </div>
               ))}
@@ -176,11 +178,11 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
 
         {summary.topBranches.length > 0 && (
           <div className="border border-gray-100 rounded-md p-3">
-            <div className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-500"/> Top Branches / Hubs</div>
+            <div className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-indigo-500"/> {t('Top Branches / Hubs')}</div>
             <div className="space-y-1.5">
               {summary.topBranches.map((b, i) => (
                 <div key={i} className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600 truncate mr-2">{b.name || '(Empty)'}</span>
+                  <span className="text-gray-600 truncate mr-2">{b.name || t('(Empty)')}</span>
                   <span className="font-medium text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded">{b.count}</span>
                 </div>
               ))}
@@ -190,7 +192,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
 
         {summary.dateRange && (
           <div className="border border-gray-100 rounded-md p-3 md:col-span-2 flex items-center justify-between">
-            <div className="text-xs font-medium text-gray-700 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-emerald-500"/> Detected Time Range</div>
+            <div className="text-xs font-medium text-gray-700 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-emerald-500"/> {t('Detected Time Range')}</div>
             <div className="text-xs font-semibold text-gray-900">
               {summary.dateRange.min} — {summary.dateRange.max}
             </div>
@@ -202,7 +204,7 @@ export const LogisticsDatasetSummary: React.FC<LogisticsDatasetSummaryProps> = (
         <div className="bg-amber-50 border border-amber-100 rounded-md p-2 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
           <p className="text-[11px] text-amber-700 leading-tight">
-            <strong>Missing dimensions:</strong> Could not auto-detect standard columns for {summary.missingFields.join(', ')}. Try mapping fields manually if needed.
+            <strong>{t('Missing dimensions:')}</strong> {t('Could not auto-detect standard columns for')} {summary.missingFields.map(field => t(field)).join(', ')}. {t('Try mapping fields manually if needed.')}
           </p>
         </div>
       )}

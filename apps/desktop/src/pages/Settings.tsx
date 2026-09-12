@@ -258,22 +258,22 @@ export const Settings: React.FC = () => {
               <span className="min-w-0 flex-1">
                 <span className="block font-medium text-slate-800">{t('Reporting currency')}</span>
                 <select
-                  aria-label="Reporting currency"
+                  aria-label={t('Reporting currency')}
                   value={preferences.currencyCode}
                   onChange={(event) => updatePreferences({ currencyCode: event.target.value })}
                   className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
                 >
-                  <option value="VND">VND — Việt Nam đồng</option>
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="EUR">EUR — Euro</option>
-                  <option value="GBP">GBP — British Pound</option>
-                  <option value="JPY">JPY — Japanese Yen</option>
-                  <option value="SGD">SGD — Singapore Dollar</option>
-                  <option value="THB">THB — Thai Baht</option>
-                  <option value="CNY">CNY — Chinese Yuan</option>
-                  <option value="KRW">KRW — Korean Won</option>
-                  <option value="AUD">AUD — Australian Dollar</option>
-                  <option value="CAD">CAD — Canadian Dollar</option>
+                  <option value="VND">{t('VND — Vietnamese Dong')}</option>
+                  <option value="USD">{t('USD — US Dollar')}</option>
+                  <option value="EUR">{t('EUR — Euro')}</option>
+                  <option value="GBP">{t('GBP — British Pound')}</option>
+                  <option value="JPY">{t('JPY — Japanese Yen')}</option>
+                  <option value="SGD">{t('SGD — Singapore Dollar')}</option>
+                  <option value="THB">{t('THB — Thai Baht')}</option>
+                  <option value="CNY">{t('CNY — Chinese Yuan')}</option>
+                  <option value="KRW">{t('KRW — Korean Won')}</option>
+                  <option value="AUD">{t('AUD — Australian Dollar')}</option>
+                  <option value="CAD">{t('CAD — Canadian Dollar')}</option>
                 </select>
               </span>
             </label>

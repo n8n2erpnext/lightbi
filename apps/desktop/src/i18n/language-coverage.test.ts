@@ -26,7 +26,7 @@ const debtBaseline = JSON.parse(
 const baselineMixedVietnamese = new Set(debtBaseline.mixedVietnameseMessageSources);
 const baselineUncatalogedEnglish = new Set(debtBaseline.uncatalogedEnglishSources);
 const baselineUncatalogedVietnamese = new Set(debtBaseline.uncatalogedVietnameseSources);
-const mixedLanguagePattern = /\b(?:dashboard|file|online|server|native|metadata|core|license(?: key)?|backend|easy mode|raw data|read-only|runtime|governed)\b/i;
+const mixedLanguagePattern = /\b(?:file|online|server|metadata|license(?: key)?|backend|easy mode|raw data|read-only|governed)\b/i;
 const uiObjectKeys = new Set([
   'title', 'placeholder', 'aria-label', 'label', 'name', 'intent', 'bestFor',
   'description', 'subtitle', 'heading', 'action', 'emptyMessage',

@@ -52,7 +52,7 @@ describe('CPR-6 C8/C9 owner-visible chart UX', () => {
     useDisplayPreferences.getState().updatePreferences({ language: 'vi', locale: 'vi-VN' });
     const onDrillThrough = vi.fn();
     render(<ChartPreviewRenderer model={model} onDrillThrough={onDrillThrough} />);
-    expect((await screen.findByTestId('chart-drill-affordance')).textContent).toContain('Nhấp vào điểm hoặc cột trên biểu đồ');
+    expect((await screen.findByTestId('chart-drill-affordance')).textContent).toContain('Nhấp vào để xem hoặc xuất');
     expect(chartMock.cursors).toContain('pointer');
     expect(chartMock.clickHandler).not.toBeNull();
     act(() => chartMock.clickHandler?.({ dataIndex: 0, seriesName: 'Revenue' }));

@@ -148,8 +148,8 @@ export const ChartPreviewRenderer: React.FC<{
         </p>
       )}
       {drillEnabled && (
-        <p data-testid="chart-drill-affordance" className="mt-1.5 text-[11px] leading-5 text-slate-500">
-          {localize('Click a chart point or bar to filter this evidence and continue to BA Step 2.')}
+        <p data-testid="chart-drill-affordance" title={localize('Click a chart point or bar to filter this evidence and continue to BA Step 2.')} className="mt-1.5 text-[11px] leading-5 text-slate-500">
+          {localize('Click to view or export')}
         </p>
       )}
     </>
