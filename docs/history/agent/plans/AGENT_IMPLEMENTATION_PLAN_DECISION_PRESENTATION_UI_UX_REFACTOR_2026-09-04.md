@@ -1482,6 +1482,8 @@ Restore an explicit interaction affordance beneath/adjacent to interactive analy
 
 **CPR-7 — broad end-to-end acceptance.** Run all six official domains, canonical Single, controlled synthetic oracle set, Multi matrix, MB A/B actuation and semantic-freeze regression. Report planned vs achieved 1/3/5, chart-family distribution, combo frequency where expected and all rejected-vote reasons. No module-only result may substitute for runtime evidence.
 
+**Status 2026-09-12: CPR-7 source-closed at Product SHA `38680c7b8601481124b1f6c085fe9f4f39bb4a0e`.** Broad runtime evidence: canonical Single 126/126, synthetic 13 executable + one intentional safety/coverage gap, Multi R10 34/34, six official domains 6/6, MB A/B + C0 21/21, authoritative release suite PASS. Exact evidence and the declared natural-layout-5 browser coverage note are recorded in `../walkthroughs/AGENT_CPR7_BROAD_RUNTIME_ACCEPTANCE_2026-09-12.md`.
+
 **CPR-8 — exact immutable NEXT owner UAT.** Build exact committed SHA, deploy by UI-only immutable Gateway 5273 rotation, rerun representative/browser matrix and hand the exact public NEXT candidate to the owner. Native E3/E4 stays blocked until explicit owner acceptance. Production/51xx remains untouched.
 
 #### 23B.17.14 Definition of Done
