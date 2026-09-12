@@ -53,7 +53,7 @@ describe('Investigation visual narrative adapter', () => {
   });
   it('rejects a near-duplicate Revenue trend support before Micro Brain ranking can affect membership', () => {
     const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money', items: [
-      item({ id: 'revenue-trend', primary: true, question: 'How is Revenue changing over time?', actionType: 'trend', dimension: 'Date', metric: 'Revenue' }),
+      item({ id: 'revenue-trend', primary: true, question: 'How is Revenue changing over time?', actionType: 'trend', dimension: 'time_period', metric: 'sales_revenue' }),
       item({ id: 'money-over-time', question: 'Money over time', actionType: 'trend', dimension: 'Date', metric: 'Revenue', confidence: 95 }),
     ] });
     expect(result.plan.layoutCount).toBe(1);

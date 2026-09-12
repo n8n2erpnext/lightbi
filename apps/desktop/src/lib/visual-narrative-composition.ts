@@ -66,6 +66,7 @@ export type VisualNarrativeCandidateV1 = {
   rendererFamily?: string | null;
   pointCount?: number;
   officialComplementToPrimary?: boolean;
+  presentationDuplicateOfPrimary?: boolean;
   advisoryRankPrior?: number;
   combination?: VisualNarrativeCombinationHintV1 | null;
   complementarityToPrimary?: VisualNarrativeComplementarityV1;
@@ -258,6 +259,10 @@ export function createVisualNarrativeCompositionPlan(input: {
     const question = normalize(candidate.managementQuestion);
     if (seenQuestions.has(question)) {
       rejected.push({ candidateId: candidate.id, reason: 'duplicate_question' });
+      continue;
+    }
+    if (candidate.presentationDuplicateOfPrimary) {
+      rejected.push({ candidateId: candidate.id, reason: 'duplicate_information' });
       continue;
     }
     if (deterministicallyAdmitted.some(existing => sameStory(existing, candidate))) {

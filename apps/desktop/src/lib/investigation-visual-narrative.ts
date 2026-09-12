@@ -6,9 +6,10 @@ import { inferSemanticType } from './display-formatter';
 import {
   matchOfficialDomainCombinationRecipe,
   officialDomainComplementRoles,
+  resolvePresentationPolicyDomain,
 } from './domain-visual-playbooks';
 import { resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
-import { visualNarrativeModelsCanAlign } from './visual-narrative-runtime';
+import { visualNarrativeModelsAreEquivalentSingleSeries, visualNarrativeModelsCanAlign } from './visual-narrative-runtime';
 import {
   adviseMicroBrainPresentation,
   type MicroBrainPresentationAdviceV1,
@@ -145,16 +146,24 @@ export function buildInvestigationVisualNarrativePlan(input: {
 }): { candidates: VisualNarrativeCandidateV1[]; plan: VisualNarrativeCompositionPlanV1; advice: MicroBrainPresentationAdviceV1 } {
   const primaryItem = input.items.find(item => item.isPrimary);
   if (!primaryItem) throw new Error('INVESTIGATION_VISUAL_NARRATIVE_PRIMARY_REQUIRED');
-  const candidates = input.items.map(item => baseCandidate(item, input.primaryDomain));
+  const presentationDomain = resolvePresentationPolicyDomain(input.primaryDomain, input.selectedPerspectiveId);
+  const candidates = input.items.map(item => baseCandidate(item, presentationDomain));
   const primary = candidates.find(candidate => candidate.isPrimary)!;
   const primaryText = textForRecipe(primaryItem);
+  for (const item of input.items.filter(candidate => !candidate.isPrimary)) {
+    const candidate = candidates.find(value => value.id === item.id)!;
+    if (candidate.analyticalIntent === primary.analyticalIntent
+      && visualNarrativeModelsAreEquivalentSingleSeries(primaryItem.chartModel, item.chartModel)) {
+      candidate.presentationDuplicateOfPrimary = true;
+    }
+  }
   const requestedCombination = input.storyTarget?.combinationRequest ?? null;
 
   for (const item of input.items.filter(candidate => !candidate.isPrimary)) {
     if (requestedCombination && item.id !== requestedCombination.companionCandidateId) continue;
     const candidate = candidates.find(value => value.id === item.id)!;
     const recipe = matchOfficialDomainCombinationRecipe({
-      domainId: input.primaryDomain,
+      domainId: presentationDomain,
       primaryText,
       companionText: textForRecipe(item),
     });
@@ -175,7 +184,7 @@ export function buildInvestigationVisualNarrativePlan(input: {
   }
 
   const primaryIntent = primary.analyticalIntent as Parameters<typeof officialDomainComplementRoles>[1];
-  const advisedRoles = new Set(officialDomainComplementRoles(input.primaryDomain, primaryIntent));
+  const advisedRoles = new Set(officialDomainComplementRoles(presentationDomain, primaryIntent));
   for (const candidate of candidates) {
     if (candidate.isPrimary || advisedRoles.size === 0) continue;
     if (advisedRoles.has(candidate.storyRole)) {
@@ -186,7 +195,7 @@ export function buildInvestigationVisualNarrativePlan(input: {
 
   const advisor = input.advisor ?? adviseMicroBrainPresentation;
   const advice = advisor({
-    domainId: input.primaryDomain ?? undefined,
+    domainId: presentationDomain ?? undefined,
     perspectiveId: input.selectedPerspectiveId ?? undefined,
     analyticalIntent: primary.analyticalIntent,
     userQuestion: primary.managementQuestion,
@@ -199,5 +208,5 @@ export function buildInvestigationVisualNarrativePlan(input: {
     candidate.advisoryRankPrior = presentationAdvisoryPrior(advice, candidate);
   }
 
-  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates, officialDomainId: input.primaryDomain, storyTarget: input.storyTarget }), advice };
+  return { candidates, plan: createVisualNarrativeCompositionPlan({ candidates, officialDomainId: presentationDomain, storyTarget: input.storyTarget }), advice };
 }

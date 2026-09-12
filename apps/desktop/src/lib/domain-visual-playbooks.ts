@@ -333,6 +333,15 @@ export function getOfficialDomainVisualPlaybook(domainId: string | null | undefi
   return OFFICIAL_DOMAIN_VISUAL_PLAYBOOKS_V2[domainId as DomainBAId];
 }
 
+export function resolvePresentationPolicyDomain(
+  primaryDomain: string | null | undefined,
+  selectedPerspectiveId: string | null | undefined,
+): string | null {
+  const selectedOfficial = getOfficialDomainVisualPlaybook(selectedPerspectiveId);
+  if (selectedOfficial) return selectedOfficial.domainId;
+  return primaryDomain ?? null;
+}
+
 export function officialDomainStoryOrder(domainId: string | null | undefined): VisualNarrativeStoryRoleV1[] {
   return [...(getOfficialDomainVisualPlaybook(domainId)?.storyOrder ?? [])];
 }

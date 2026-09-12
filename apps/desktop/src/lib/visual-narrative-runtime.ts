@@ -39,6 +39,50 @@ export function visualNarrativeModelsCanAlign(
   return true;
 }
 
+function presentationMetricAlias(left: string, right: string): boolean {
+  const leftTokens = normalized(left).split('_').filter(Boolean);
+  const rightTokens = normalized(right).split('_').filter(Boolean);
+  if (leftTokens.length === 0 || rightTokens.length === 0) return false;
+  const leftSet = new Set(leftTokens);
+  const rightSet = new Set(rightTokens);
+  const leftContainsRight = rightTokens.every(token => leftSet.has(token));
+  const rightContainsLeft = leftTokens.every(token => rightSet.has(token));
+  return leftContainsRight || rightContainsLeft;
+}
+
+export function visualNarrativeModelsAreEquivalentSingleSeries(
+  left: ChartPreviewModel,
+  right: ChartPreviewModel,
+): boolean {
+  // Duplicate detection is intentionally broader than combo alignment. Two
+  // presentation lanes may project the same governed grain under different
+  // field labels (for example `time_period` vs `Date`). A combo still requires
+  // declared grain compatibility, but duplicate suppression may compare the
+  // actual dimension members directly.
+  const leftField = left.xField ?? null;
+  const rightField = right.xField ?? null;
+  if (!leftField || !rightField || left.rows.length === 0 || right.rows.length === 0) return false;
+  if (left.seriesFields.length !== 1 || right.seriesFields.length !== 1) return false;
+  const leftKeys = new Set(left.rows.map(row => dimensionKey(row[leftField])));
+  const rightKeys = new Set(right.rows.map(row => dimensionKey(row[rightField])));
+  if (leftKeys.size !== rightKeys.size) return false;
+  for (const key of leftKeys) if (!rightKeys.has(key)) return false;
+  const leftMetric = left.seriesFields[0];
+  const rightMetric = right.seriesFields[0];
+  if (!presentationMetricAlias(leftMetric, rightMetric)) return false;
+  const rightByKey = new Map(right.rows.map(row => [dimensionKey(row[rightField]), row] as const));
+  for (const leftRow of left.rows) {
+    const rightRow = rightByKey.get(dimensionKey(leftRow[leftField]));
+    if (!rightRow) return false;
+    const leftValue = Number(leftRow[leftMetric]);
+    const rightValue = Number(rightRow[rightMetric]);
+    if (!Number.isFinite(leftValue) || !Number.isFinite(rightValue)) return false;
+    const tolerance = 1e-9 * Math.max(1, Math.abs(leftValue), Math.abs(rightValue));
+    if (Math.abs(leftValue - rightValue) > tolerance) return false;
+  }
+  return true;
+}
+
 function uniqueFieldName(field: string, used: Set<string>, label: string): string {
   if (!used.has(field)) return field;
   const base = `${field} · ${label}`;

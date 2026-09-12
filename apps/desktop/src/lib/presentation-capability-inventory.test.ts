@@ -8,6 +8,7 @@ import {
   resolveRequestedSupportingAnalyses,
   type PresentationSupportAnalysisV1,
 } from './presentation-capability-inventory';
+import type { MicroBrainPresentationAdviceV1 } from './understanding-core/micro-brain/presentation-advisor';
 
 function support(input: {
   id: string;
@@ -67,6 +68,29 @@ const primary = support({
   measures: ['Revenue'],
   confidence: 100,
 });
+
+function controlledAdvice(requiredRoles: string[]): MicroBrainPresentationAdviceV1 {
+  return {
+    brainVersion: 'cpr7-compound-primary-test',
+    indexVersion: 'cpr7-compound-primary-index',
+    authorityNotes: [],
+    candidates: [{
+      hit: {
+        conceptId: 'concept.cpr7.compound_primary', canonicalSignal: null,
+        sparseRank: 1, denseRank: 1, fusedRank: 1, rrfScore: 1, sparseScore: 1, denseSimilarity: 1,
+        positiveUnitIds: [], negativeUnitIds: [],
+      },
+      labels: ['CPR-7 compound-primary role diversity'],
+      definition: 'Controlled presentation-only role advice.',
+      presentation: {
+        schemaVersion: 'lightbi.micro-brain.presentation-advisory.v1',
+        advisoryKind: 'domain_profile', authority: 'advisory_only',
+        analyticalIntents: ['category_comparison'],
+        requiredRoles,
+      },
+    }],
+  };
+}
 
 describe('CPR-2 Presentation Capability Inventory and Story Request Planner', () => {
   it('is read-only over existing governed capabilities and never creates semantic authority', () => {
@@ -133,4 +157,32 @@ describe('CPR-2 Presentation Capability Inventory and Story Request Planner', ()
     expect(plan.selections.map(item => item.actionId)).not.toContain('blocked-mix');
     expect(plan.selections.map(item => item.actionId)).toContain('driver');
   });
+  it('does not pad an already compound primary from generic MB role diversity without official-domain support', () => {
+    const compoundPrimary = support({
+      id: 'carrier-cost-impact',
+      label: 'Carrier cost impact',
+      dimensions: ['Carrier'],
+      measures: ['Delivery Fee', 'record_count'],
+      confidence: 100,
+    });
+    const supporting = [
+      support({ id: 'location-volume', label: 'Operational volume by location', dimensions: ['Route'], measures: ['record_count'] }),
+      support({ id: 'completion-mix', label: 'Delivery completion mix share by Status', dimensions: ['Delivery Status'], measures: ['record_count'] }),
+    ];
+    const inventory = buildPresentationCapabilityInventory({
+      primaryAction: compoundPrimary.analysisAction,
+      primaryRuntimeIntent: compoundPrimary.runtimeIntent,
+      supportingAnalyses: supporting,
+    });
+    const plan = planPresentationStoryRequests({
+      inventory, primaryDomain: 'operations', perspectiveId: 'operations', budget: 6,
+      advisor: () => controlledAdvice(['driver', 'composition']),
+    });
+    expect(plan.ballotTrace.selectionBasis).toBe('mb_vote');
+    expect(plan.ballotTrace.selectedOptionIds).toEqual(expect.arrayContaining(['driver', 'composition']));
+    expect(plan.requestedRoles).toEqual(expect.arrayContaining(['risk', 'change', 'evidence']));
+    expect(plan.targetLayoutCount).toBe(1);
+    expect(plan.targetCompanionRoles).toEqual([]);
+  });
+
 });

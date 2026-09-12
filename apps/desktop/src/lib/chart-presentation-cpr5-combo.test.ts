@@ -57,6 +57,7 @@ function requestPlan(input: {
   primary: PresentationSupportAnalysisV1;
   supports: PresentationSupportAnalysisV1[];
   domain: string;
+  perspectiveId?: string;
 }): PresentationStoryRequestPlanV1 {
   return planPresentationStoryRequests({
     inventory: buildPresentationCapabilityInventory({
@@ -65,7 +66,7 @@ function requestPlan(input: {
       supportingAnalyses: input.supports,
     }),
     primaryDomain: input.domain,
-    perspectiveId: `${input.domain}_combo`,
+    perspectiveId: input.perspectiveId ?? `${input.domain}_combo`,
     budget: 6,
   });
 }
@@ -225,16 +226,16 @@ describe('CPR-5 first-class pre-execution compound planning', () => {
       id: 'margin', label: 'Margin over time', description: 'How does margin move with profit over time?',
       actionType: 'trend', dimension: 'Period', metric: 'gross_margin', confidence: 96,
     });
-    const request = requestPlan({ primary: profit, supports: [margin], domain: 'finance' });
+    const request = requestPlan({ primary: profit, supports: [margin], domain: 'revenue', perspectiveId: 'finance' });
     expect(request.combinationRequest).toMatchObject({
       recipeId: 'finance-profit-margin-shared-grain', companionActionId: 'margin', presentation: 'combo_bar_line',
     });
     expect(request.targetLayoutCount).toBe(1);
     const result = buildInvestigationVisualNarrativePlan({
-      primaryDomain: 'finance', selectedPerspectiveId: 'finance_combo', storyTarget: storyTarget(request),
+      primaryDomain: 'revenue', selectedPerspectiveId: 'finance', storyTarget: storyTarget(request),
       items: [
-        materialize({ item: profit, domain: 'finance', isPrimary: true }),
-        materialize({ item: margin, domain: 'finance' }),
+        materialize({ item: profit, domain: 'revenue', isPrimary: true }),
+        materialize({ item: margin, domain: 'revenue' }),
       ],
     });
     expect(result.plan.layoutCount).toBe(1);

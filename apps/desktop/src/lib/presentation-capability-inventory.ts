@@ -1,7 +1,7 @@
 import type { AnalysisAction } from './analysis-opportunity-actions';
 import type { RuntimeIntent } from './analysis-runtime-contract';
 import type { RuntimePlanPreview } from './runtime-planner-preview';
-import { matchOfficialDomainCombinationRecipe, officialDomainComplementRoles, officialDomainStoryOrder } from './domain-visual-playbooks';
+import { matchOfficialDomainCombinationRecipe, officialDomainComplementRoles, officialDomainStoryOrder, resolvePresentationPolicyDomain } from './domain-visual-playbooks';
 import { resolveInvestigationVisualizationIntent } from './investigation-visualization-plan';
 import type { VisualizationAnalyticalIntentV1 } from './visualization-ontology';
 import type { VisualNarrativeLayoutCountV1, VisualNarrativeStoryRoleV1 } from './visual-narrative-composition';
@@ -165,8 +165,9 @@ export function planPresentationStoryRequests(input: {
 }): PresentationStoryRequestPlanV1 {
   const budget = Math.max(1, Math.min(8, Math.trunc(input.budget ?? 6)));
   const ready = input.inventory.candidates.filter(candidate => candidate.runtimeReady);
-  const requestedRoles = officialDomainComplementRoles(input.primaryDomain, input.inventory.primaryAnalyticalIntent);
-  const storyOrder = officialDomainStoryOrder(input.primaryDomain).filter(role => role !== 'answer');
+  const presentationDomain = resolvePresentationPolicyDomain(input.primaryDomain, input.perspectiveId);
+  const requestedRoles = officialDomainComplementRoles(presentationDomain, input.inventory.primaryAnalyticalIntent);
+  const storyOrder = officialDomainStoryOrder(presentationDomain).filter(role => role !== 'answer');
   const legalRoles = [...new Set(ready.map(candidate => candidate.storyRole))];
   const primaryRecipeText = [
     input.inventory.primaryQuestion,
@@ -179,7 +180,7 @@ export function planPresentationStoryRequests(input: {
       const sharedDimension = sharedDeclaredDimension(input.inventory.primaryDimensions, candidate.dimensions);
       if (!sharedDimension) return null;
       const recipe = matchOfficialDomainCombinationRecipe({
-        domainId: input.primaryDomain,
+        domainId: presentationDomain,
         primaryText: primaryRecipeText,
         companionText: [candidate.label, ...candidate.dimensions, ...candidate.measures].filter(Boolean).join(' '),
       });
@@ -202,7 +203,7 @@ export function planPresentationStoryRequests(input: {
   const visualLegalRoles = [...new Set(visualReady.map(candidate => candidate.storyRole))];
   const advisor = input.advisor ?? adviseMicroBrainPresentation;
   const advice = advisor({
-    domainId: input.primaryDomain ?? undefined,
+    domainId: presentationDomain ?? undefined,
     perspectiveId: input.perspectiveId ?? undefined,
     analyticalIntent: input.inventory.primaryAnalyticalIntent,
     userQuestion: input.inventory.primaryQuestion,
@@ -229,14 +230,26 @@ export function planPresentationStoryRequests(input: {
     .map(role => role as VisualNarrativeStoryRoleV1)
     .filter(role => visualRoleSet.has(role));
   const preferredRoles = ballotRoles.filter(role => preferredRoleSet.has(role));
+  const officialAvailableRoles = [...new Set(requestedRoles.filter(role => visualRoleSet.has(role)))];
+  const primaryAlreadyCompound = input.inventory.primaryMeasures.length > 1;
+  // A primary capability that already carries multiple governed measures is
+  // already a compound answer. Generic MB role diversity alone must not pad it
+  // to 3/5 visuals; additional units need at least two official-domain roles
+  // that are actually available. A separate combination request is exempt
+  // because its companion is absorbed into the primary visual unit below.
+  const compoundPrimaryWithoutDomainStory = primaryAlreadyCompound
+    && !combinationRequest
+    && officialAvailableRoles.length < 2;
   // A planned compound companion is absorbed into the primary visual unit. It
   // must be requested for execution but must not consume one of the 1/3/5
   // standalone companion slots. Five visuals still require four non-combo roles.
-  const targetLayoutCount: VisualNarrativeLayoutCountV1 = preferredRoles.length >= 4
-    ? 5
-    : preferredRoles.length >= 2 || visualLegalRoles.length >= 2
-      ? 3
-      : 1;
+  const targetLayoutCount: VisualNarrativeLayoutCountV1 = compoundPrimaryWithoutDomainStory
+    ? 1
+    : preferredRoles.length >= 4
+      ? 5
+      : preferredRoles.length >= 2 || visualLegalRoles.length >= 2
+        ? 3
+        : 1;
   const targetRoleSource = preferredRoles.length >= 2 ? preferredRoles : ballotRoles;
   const targetCompanionRoles = targetRoleSource.slice(0, targetLayoutCount === 5 ? 4 : targetLayoutCount === 3 ? 2 : 0);
   const selected = new Map<string, PresentationStoryRequestSelectionV1>();
