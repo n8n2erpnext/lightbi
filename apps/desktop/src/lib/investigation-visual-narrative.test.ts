@@ -3,10 +3,10 @@ import { buildInvestigationVisualNarrativePlan, type InvestigationVisualNarrativ
 
 function item(input: {
   id: string; primary?: boolean; question: string; actionType?: 'group_by'|'trend'|'distribution';
-  dimension: string; metric: string; renderer?: string; values?: number[]; confidence?: number;
+  dimension: string; metric: string; renderer?: string; values?: number[]; dimensionValues?: Array<string | number>; confidence?: number;
 }): InvestigationVisualNarrativeInputItemV1 {
   const values = input.values ?? [10, 20, 30];
-  const rows = values.map((value, index) => ({ [input.dimension]: `G${index + 1}`, [input.metric]: value }));
+  const rows = values.map((value, index) => ({ [input.dimension]: input.dimensionValues?.[index] ?? `G${index + 1}`, [input.metric]: value }));
   const actionType = input.actionType ?? 'group_by';
   const expectedShape = actionType === 'trend' ? 'line_chart' : 'bar_chart';
   const chartType = actionType === 'trend' ? 'line' : 'bar';
@@ -55,6 +55,25 @@ describe('Investigation visual narrative adapter', () => {
     const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money', items: [
       item({ id: 'revenue-trend', primary: true, question: 'How is Revenue changing over time?', actionType: 'trend', dimension: 'time_period', metric: 'sales_revenue' }),
       item({ id: 'money-over-time', question: 'Money over time', actionType: 'trend', dimension: 'Date', metric: 'Revenue', confidence: 95 }),
+    ] });
+    expect(result.plan.layoutCount).toBe(1);
+    expect(result.plan.rejected).toContainEqual({ candidateId: 'money-over-time', reason: 'duplicate_information' });
+  });
+
+
+  it('rejects the runtime S02 duplicate when primary dates are epoch-ms and support dates are ISO strings', () => {
+    const values = [120, 180, 150];
+    const result = buildInvestigationVisualNarrativePlan({ primaryDomain: 'revenue', selectedPerspectiveId: 'revenue_money', items: [
+      item({
+        id: 'revenue-trend', primary: true, question: 'How is Revenue changing over time?', actionType: 'trend',
+        dimension: 'time_period', metric: 'sales_revenue', values,
+        dimensionValues: [Date.UTC(2026, 5, 10), Date.UTC(2026, 5, 11), Date.UTC(2026, 5, 12)],
+      }),
+      item({
+        id: 'money-over-time', question: 'Money over time', actionType: 'trend',
+        dimension: 'Date', metric: 'Revenue', values, confidence: 95,
+        dimensionValues: ['2026-06-10', '2026-06-11', '2026-06-12'],
+      }),
     ] });
     expect(result.plan.layoutCount).toBe(1);
     expect(result.plan.rejected).toContainEqual({ candidateId: 'money-over-time', reason: 'duplicate_information' });
