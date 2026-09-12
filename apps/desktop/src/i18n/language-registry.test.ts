@@ -33,7 +33,7 @@ describe('language catalog registry', () => {
   it('uses language-package patterns for dynamic UI sentences', () => {
     expect(translateCatalogMessage('vi-VN', '25 of 100 rows selected for export')).toBe('Đã chọn 25 / 100 dòng để xuất');
     expect(translateCatalogMessage('vi', 'What evidence is needed to evaluate capacity utilization?')).toBe('Cần bằng chứng nào để đánh giá capacity utilization?');
-    expect(translateCatalogMessage('vi', 'healthcare context makes this question relevant, but LightBI will not calculate it until governed evidence and action authority are available.')).toBe('Ngữ cảnh healthcare khiến câu hỏi này đáng xem xét, nhưng LightBI sẽ không tính toán cho đến khi có bằng chứng được quản trị và thẩm quyền thực thi phù hợp.');
+    expect(translateCatalogMessage('vi', 'healthcare context makes this question relevant, but LightBI will not calculate it until governed evidence and action authority are available.')).toBe('Bối cảnh healthcare cho thấy câu hỏi này có liên quan, nhưng LightBI sẽ chưa tính toán cho đến khi có đủ bằng chứng đã được xác thực và điều kiện thực thi phù hợp.');
   });
 
   it('translates legacy Vietnamese engine output when English is selected', () => {
@@ -75,12 +75,12 @@ describe('language catalog registry', () => {
     const cases: Array<[string, string]> = [
       ['Largest contribution by branch', 'Mức đóng góp lớn nhất theo branch'],
       ['Store A has the highest observed contribution in this breakdown with 42.5% across 170 rows.', 'Store A có mức đóng góp quan sát cao nhất trong phân rã này, chiếm 42.5% trên 170 dòng.'],
-      ['Inventory health is only partially testable. Verify Aging / dead stock, Turnover before attributing the result to these drivers.', 'Phân rã này hiện chỉ kiểm chứng được một phần. Cần bổ sung các tín hiệu còn thiếu trước khi quy kết kết quả cho các yếu tố này.'],
+      ['Inventory health is only partially testable. Verify Aging / dead stock, Turnover before attributing the result to these drivers.', 'Inventory health hiện chỉ kiểm chứng được một phần. Hãy xác minh Aging / dead stock, Turnover trước khi quy kết kết quả cho các yếu tố này.'],
       ['12 rows are above the IQR threshold and should be reviewed individually.', '12 dòng vượt ngưỡng IQR và cần được kiểm tra riêng.'],
       ['Store A represents 55.0% of the analyzed scope.', 'Store A chiếm 55.0% phạm vi đã phân tích.'],
-      ['Which records and sub-groups explain concentration risk?', 'Những bản ghi và nhóm con nào giải thích phát hiện này?'],
-      ['Can we add Aging / dead stock, Turnover to test the driver hypothesis?', 'Có thể bổ sung các tín hiệu còn thiếu để kiểm chứng giả thuyết về yếu tố tác động không?'],
-      ['Inventory / Stock decomposition is incomplete', 'Phân rã nghiệp vụ chưa đầy đủ'],
+      ['Which records and sub-groups explain concentration risk?', 'Những bản ghi và nhóm con nào giải thích concentration risk?'],
+      ['Can we add Aging / dead stock, Turnover to test the driver hypothesis?', 'Có thể bổ sung Aging / dead stock, Turnover để kiểm chứng giả thuyết về yếu tố tác động không?'],
+      ['Inventory / Stock decomposition is incomplete', 'Phân rã Inventory / Stock chưa đầy đủ'],
       ['Previous period unavailable', 'Chưa có kỳ trước'],
       ['Evidence limitation 2', 'Giới hạn bằng chứng 2'],
     ];
@@ -96,11 +96,11 @@ describe('language catalog registry', () => {
       ['3 evidence-backed perspectives', '3 góc nhìn dựa trên bằng chứng'],
       ['Business analysis from 331 data rows', 'Phân tích nghiệp vụ từ 331 dòng dữ liệu'],
       ['Business analysis from a representative sample of 1,000 / 14,862 rows', 'Phân tích nghiệp vụ từ mẫu đại diện 1,000 / 14,862 dòng'],
-      ['Inventory has moderate data trust and is exploratory only. Main finding: Store A is the largest contributor for record_count.', 'Inventory có độ tin cậy dữ liệu ở mức cần thận trọng và kết quả chỉ mang tính khám phá. Phát hiện chính: Store A là nhóm đóng góp lớn nhất cho record_count.'],
+      ['Inventory has moderate data trust and is exploratory only. Main finding: Store A is the largest contributor for record_count.', 'Inventory có độ tin cậy dữ liệu trung bình và kết quả chỉ mang tính khám phá. Phát hiện chính: Store A là nhóm đóng góp lớn nhất cho record_count.'],
       ['2 unusual values may distort this analysis.', '2 giá trị bất thường có thể làm sai lệch kết quả phân tích.'],
       ['Most extreme: 272,015.23', 'Bất thường nhất: 272,015.23'],
       ['Row 2: 272,015.23', 'Dòng 2: 272,015.23'],
-      ['bar chart', 'biểu đồ cột'],
+      ['bar chart', 'biểu đồ thanh'],
       ['table', 'bảng dữ liệu'],
       ['Aging / dead stock', 'Tuổi tồn / hàng chết'],
       ['HIGH', 'CAO'],
@@ -110,7 +110,7 @@ describe('language catalog registry', () => {
       ['Sales Revenue has the largest relative movement (10.2%). This is the strongest place to begin; it is an observation, not yet a cause.', 'Sales Revenue có mức biến động tương đối lớn nhất (10.2%). Đây là điểm nên kiểm tra đầu tiên; hiện mới là quan sát, chưa phải kết luận nguyên nhân.'],
       ['What drove the change in Sales Revenue from 2026-05 to 2026-06?', 'Yếu tố nào liên quan đến thay đổi của Sales Revenue từ 2026-05 đến 2026-06?'],
       ['Using VND from Settings.', 'Đang sử dụng VND từ Cài đặt.'],
-      ['Governed restriction: The action-candidate limitation remains active.', 'Hạn chế quản trị: Giới hạn đối với hành động đề xuất vẫn đang được áp dụng.'],
+      ['Governed restriction: The action-candidate limitation remains active.', 'Giới hạn bắt buộc: Giới hạn đối với hành động đề xuất vẫn đang được áp dụng.'],
     ];
     for (const [source, expected] of cases) expect(translateCatalogMessage('vi', source)).toBe(expected);
   });
